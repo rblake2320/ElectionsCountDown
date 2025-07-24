@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectionCountdown - Real-Time Election Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        'primary': '#1E40AF',
+                        'secondary': '#DC2626',
+                        'accent': '#7C3AED',
+                        'neutral-light': '#F8FAFC',
+                        'neutral-dark': '#1E293B'
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-neutral-light font-sans">
+
+<!-- @COMPONENT: Header [Navigation and branding] -->
+<header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <i class="fas fa-vote-yea text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-neutral-dark">ElectionCountdown</h1>
+                    <p class="text-xs text-slate-500">Real-time election tracking</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search elections..." class="w-64 pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true" data-implementation="Implement autocomplete search">
+                    <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
+                </div>
+                <button class="p-2 text-slate-600 hover:text-primary transition-colors">
+                    <i class="fas fa-cog text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- @END_COMPONENT: Header -->
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="flex flex-col lg:flex-row gap-6">
+        
+        <!-- @COMPONENT: FilterSidebar [Advanced filtering options] -->
+        <aside class="lg:w-80 space-y-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-semibold text-neutral-dark mb-4">Filters</h3>
+                
+                <!-- Time Range Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Time Range</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="all" class="w-4 h-4 text-primary" checked data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">All Upcoming</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="week" class="w-4 h-4 text-primary" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Next 7 Days</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="month" class="w-4 h-4 text-primary" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Next 30 Days</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="year" class="w-4 h-4 text-primary" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Next Year</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Election Type Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Election Type</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded" checked data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Federal</span>
+                            <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full" data-bind="federalCount">12</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded" checked data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">State</span>
+                            <span class="ml-auto bg-secondary text-white text-xs px-2 py-1 rounded-full" data-bind="stateCount">48</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded" checked data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Local</span>
+                            <span class="ml-auto bg-accent text-white text-xs px-2 py-1 rounded-full" data-bind="localCount">156</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded" checked data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Special</span>
+                            <span class="ml-auto bg-amber-500 text-white text-xs px-2 py-1 rounded-full" data-bind="specialCount">23</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Party Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-3">Party Focus</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-primary rounded" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Democratic</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-secondary rounded" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Republican</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-accent rounded" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Independent</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="w-4 h-4 text-green-600 rounded" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-600">Other Parties</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- State Filter -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-slate-700 mb-3">States</label>
+                    <select multiple class="w-full border border-slate-300 rounded-lg p-2 h-32" data-mock="true" data-implementation="Multi-select dropdown with state options">
+                        <option value="all">All States</option>
+                        <option value="AL">Alabama</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="CA">California</option>
+                        <option value="FL">Florida</option>
+                        <option value="GA">Georgia</option>
+                        <option value="NJ" selected>New Jersey</option>
+                        <option value="TX">Texas</option>
+                        <option value="VA" selected>Virginia</option>
+                    </select>
+                </div>
+
+                <button class="w-full bg-slate-100 text-slate-600 py-2 px-4 rounded-lg hover:bg-slate-200 transition-colors" data-event="click:clearFilters">
+                    <i class="fas fa-undo mr-2"></i>Clear Filters
+                </button>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-semibold text-neutral-dark mb-4">Quick Stats</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-slate-600">Total Elections</span>
+                        <span class="font-semibold text-neutral-dark" data-bind="totalElections">239</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-slate-600">Next Election</span>
+                        <span class="font-semibold text-primary" data-bind="nextElectionDays">15 days</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-slate-600">Active Races</span>
+                        <span class="font-semibold text-green-600" data-bind="activeRaces">127</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- @END_COMPONENT: FilterSidebar -->
+
+        <!-- @COMPONENT: MainContent [Election countdown grid] -->
+        <main class="flex-1 space-y-6">
+            
+            <!-- Summary Header -->
+            <div class="bg-gradient-to-r from-primary to-blue-600 rounded-xl p-6 text-white">
+                <h2 class="text-2xl font-bold mb-2">Upcoming Elections Dashboard</h2>
+                <p class="text-blue-100 mb-4">Real-time countdown to every federal, state, and local election</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white/10 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold" data-bind="nextElectionTime">15d 7h 23m</div>
+                        <div class="text-sm text-blue-100">Next Election</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold" data-bind="federalElections">12</div>
+                        <div class="text-sm text-blue-100">Federal Races</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold" data-bind="stateElections">48</div>
+                        <div class="text-sm text-blue-100">State Races</div>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-3 text-center">
+                        <div class="text-2xl font-bold" data-bind="localElections">179</div>
+                        <div class="text-sm text-blue-100">Local Races</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Election Cards Grid -->
+            <!-- @MAP: elections.map(election => ( -->
+            <div class="grid gap-6">
+                
+                <!-- New Jersey Governor Election -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">State</span>
+                                    <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">General</span>
+                                    <span class="text-xs text-slate-500">New Jersey</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-neutral-dark">New Jersey Governor Election</h3>
+                                <p class="text-slate-600">November 4, 2025 • Governor & Lt. Governor</p>
+                            </div>
+                            <button class="p-2 text-slate-400 hover:text-amber-500 transition-colors" data-event="click:toggleFavorite">
+                                <i class="far fa-star text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Real-time Countdown -->
+                        <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                            <div class="text-center">
+                                <div class="text-sm text-slate-600 mb-2">Time Remaining</div>
+                                <div class="grid grid-cols-5 gap-2 font-mono text-lg font-semibold">
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="days">158</div>
+                                        <div class="text-xs text-slate-500">Days</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="hours">07</div>
+                                        <div class="text-xs text-slate-500">Hours</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="minutes">23</div>
+                                        <div class="text-xs text-slate-500">Minutes</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="seconds">45</div>
+                                        <div class="text-xs text-slate-500">Seconds</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-lg text-slate-400" data-countdown="milliseconds">876</div>
+                                        <div class="text-xs text-slate-500">MS</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Candidates Section -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-neutral-dark">Leading Candidates</h4>
+                            
+                            <!-- Democratic Candidate -->
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                                        JS
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Josh Smith</div>
+                                        <div class="text-sm text-blue-600">Democratic Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-primary" data-mock="true">42%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+
+                            <!-- Republican Candidate -->
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-semibold">
+                                        MJ
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Maria Johnson</div>
+                                        <div class="text-sm text-red-600">Republican Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-secondary" data-mock="true">38%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+
+                            <!-- Independent Candidate -->
+                            <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-white font-semibold">
+                                        TC
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Tom Chen</div>
+                                        <div class="text-sm text-purple-600">Independent</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-accent" data-mock="true">15%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center text-sm text-slate-500">
+                            <span>Last updated: 2 hours ago</span>
+                            <button class="text-primary hover:text-blue-700 font-medium" data-event="click:viewDetails">
+                                View Details <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Virginia Governor Election -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">State</span>
+                                    <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2.5 py-0.5 rounded-full">General</span>
+                                    <span class="text-xs text-slate-500">Virginia</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-neutral-dark">Virginia Governor Election</h3>
+                                <p class="text-slate-600">November 4, 2025 • Governor, Lt. Governor, Attorney General</p>
+                            </div>
+                            <button class="p-2 text-amber-500 hover:text-amber-600 transition-colors" data-event="click:toggleFavorite">
+                                <i class="fas fa-star text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Real-time Countdown -->
+                        <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                            <div class="text-center">
+                                <div class="text-sm text-slate-600 mb-2">Time Remaining</div>
+                                <div class="grid grid-cols-5 gap-2 font-mono text-lg font-semibold">
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="days">158</div>
+                                        <div class="text-xs text-slate-500">Days</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="hours">07</div>
+                                        <div class="text-xs text-slate-500">Hours</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="minutes">23</div>
+                                        <div class="text-xs text-slate-500">Minutes</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="seconds">45</div>
+                                        <div class="text-xs text-slate-500">Seconds</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-lg text-slate-400" data-countdown="milliseconds">876</div>
+                                        <div class="text-xs text-slate-500">MS</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Candidates Section -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-neutral-dark">Leading Candidates</h4>
+                            
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-semibold">
+                                        LW
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Lisa Williams</div>
+                                        <div class="text-sm text-red-600">Republican Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-secondary" data-mock="true">46%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                                        DR
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">David Rodriguez</div>
+                                        <div class="text-sm text-blue-600">Democratic Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-primary" data-mock="true">44%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center text-sm text-slate-500">
+                            <span>Last updated: 4 hours ago</span>
+                            <button class="text-primary hover:text-blue-700 font-medium" data-event="click:viewDetails">
+                                View Details <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Texas Special Election -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Federal</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Special</span>
+                                    <span class="text-xs text-slate-500">Texas</span>
+                                </div>
+                                <h3 class="text-xl font-semibold text-neutral-dark">Texas District 18 Special Election</h3>
+                                <p class="text-slate-600">November 4, 2025 • U.S. House Representative</p>
+                            </div>
+                            <button class="p-2 text-slate-400 hover:text-amber-500 transition-colors" data-event="click:toggleFavorite">
+                                <i class="far fa-star text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Real-time Countdown -->
+                        <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                            <div class="text-center">
+                                <div class="text-sm text-slate-600 mb-2">Time Remaining</div>
+                                <div class="grid grid-cols-5 gap-2 font-mono text-lg font-semibold">
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="days">158</div>
+                                        <div class="text-xs text-slate-500">Days</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="hours">07</div>
+                                        <div class="text-xs text-slate-500">Hours</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="minutes">23</div>
+                                        <div class="text-xs text-slate-500">Minutes</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl text-primary" data-countdown="seconds">45</div>
+                                        <div class="text-xs text-slate-500">Seconds</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-lg text-slate-400" data-countdown="milliseconds">876</div>
+                                        <div class="text-xs text-slate-500">MS</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Candidates Section -->
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-neutral-dark">Leading Candidates</h4>
+                            
+                            <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                                        AS
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Amanda Silva</div>
+                                        <div class="text-sm text-blue-600">Democratic Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-primary" data-mock="true">52%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-semibold">
+                                        RB
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-dark" data-mock="true">Robert Brown</div>
+                                        <div class="text-sm text-red-600">Republican Party</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-lg font-semibold text-secondary" data-mock="true">43%</div>
+                                    <div class="text-xs text-slate-500">Polling</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-200 flex justify-between items-center text-sm text-slate-500">
+                            <span>Last updated: 1 hour ago</span>
+                            <button class="text-primary hover:text-blue-700 font-medium" data-event="click:viewDetails">
+                                View Details <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="text-center py-6">
+                    <button class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium" data-event="click:loadMore" data-implementation="Load more elections from API">
+                        Load More Elections
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- @END_MAP )) -->
+
+        </main>
+        <!-- @END_COMPONENT: MainContent -->
+    </div>
+</div>
+
+<!-- @COMPONENT: FloatingTimer [Quick access countdown] -->
+<div class="fixed bottom-6 right-6 bg-white rounded-full shadow-lg border border-slate-200 p-4 hidden lg:block">
+    <div class="text-center">
+        <div class="text-xs text-slate-500 mb-1">Next Election</div>
+        <div class="font-mono text-sm font-semibold text-primary" data-countdown="compact">15d 7h 23m 45s</div>
+    </div>
+</div>
+<!-- @END_COMPONENT: FloatingTimer -->
+
+<!-- @STATE: countdownTimers:object = {} -->
+<!-- @FUNCTIONALITY: Real-time countdown functionality with millisecond precision -->
+<script>
+(function() {
+    'use strict';
+    
+    // @STATE: Mock election data with real dates
+    const elections = [
+        {
+            id: 'nj-governor-2025',
+            name: 'New Jersey Governor Election',
+            date: new Date('2025-11-04T20:00:00'),
+            type: 'state',
+            state: 'NJ'
+        },
+        {
+            id: 'va-governor-2025',
+            name: 'Virginia Governor Election',
+            date: new Date('2025-11-04T19:00:00'),
+            type: 'state',
+            state: 'VA'
+        },
+        {
+            id: 'tx-18-special-2025',
+            name: 'Texas District 18 Special Election',
+            date: new Date('2025-11-04T20:00:00'),
+            type: 'federal',
+            state: 'TX'
+        }
+    ];
+
+    // Real-time countdown functionality
+    function updateCountdown(targetDate, elementPrefix) {
+        const now = new Date().getTime();
+        const distance = targetDate.getTime() - now;
+
+        if (distance < 0) {
+            return { days: 0, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const milliseconds = Math.floor(distance % 1000);
+
+        return { days, hours, minutes, seconds, milliseconds };
+    }
+
+    function updateAllCountdowns() {
+        elections.forEach(election => {
+            const countdown = updateCountdown(election.date, election.id);
+            
+            // Update individual countdown elements
+            const daysElements = document.querySelectorAll('[data-countdown="days"]');
+            const hoursElements = document.querySelectorAll('[data-countdown="hours"]');
+            const minutesElements = document.querySelectorAll('[data-countdown="minutes"]');
+            const secondsElements = document.querySelectorAll('[data-countdown="seconds"]');
+            const millisecondsElements = document.querySelectorAll('[data-countdown="milliseconds"]');
+
+            daysElements.forEach(el => el.textContent = countdown.days.toString().padStart(3, '0'));
+            hoursElements.forEach(el => el.textContent = countdown.hours.toString().padStart(2, '0'));
+            minutesElements.forEach(el => el.textContent = countdown.minutes.toString().padStart(2, '0'));
+            secondsElements.forEach(el => el.textContent = countdown.seconds.toString().padStart(2, '0'));
+            millisecondsElements.forEach(el => el.textContent = countdown.milliseconds.toString().padStart(3, '0'));
+
+            // Update compact countdown
+            const compactElements = document.querySelectorAll('[data-countdown="compact"]');
+            compactElements.forEach(el => {
+                el.textContent = `${countdown.days}d ${countdown.hours.toString().padStart(2, '0')}h ${countdown.minutes.toString().padStart(2, '0')}m ${countdown.seconds.toString().padStart(2, '0')}s`;
+            });
+        });
+    }
+
+    // Update every 50 milliseconds for smooth animation
+    setInterval(updateAllCountdowns, 50);
+    
+    // Initial update
+    updateAllCountdowns();
+
+    // @FUNCTIONALITY: Filter functionality
+    const filterInputs = document.querySelectorAll('input[type="checkbox"], input[type="radio"]');
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Mock filter implementation
+            console.log('Filter changed:', this.name, this.value, this.checked);
+            // In real implementation, this would filter the election cards
+        });
+    });
+
+    // @FUNCTIONALITY: Search functionality
+    const searchInput = document.querySelector('input[type="text"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            console.log('Search query:', this.value);
+            // In real implementation, this would filter elections based on search
+        });
+    }
+
+    // @FUNCTIONALITY: Favorite toggle
+    const favoriteButtons = document.querySelectorAll('[data-event*="toggleFavorite"]');
+    favoriteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.classList.remove('text-slate-400');
+                this.classList.add('text-amber-500');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.classList.remove('text-amber-500');
+                this.classList.add('text-slate-400');
+            }
+        });
+    });
+
+    // @FUNCTIONALITY: View details functionality
+    const detailButtons = document.querySelectorAll('[data-event*="viewDetails"]');
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            console.log('View details clicked');
+            // In real implementation, this would navigate to detailed election page
+        });
+    });
+
+    // @FUNCTIONALITY: Load more functionality
+    const loadMoreButton = document.querySelector('[data-event*="loadMore"]');
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener('click', function() {
+            console.log('Load more elections');
+            // In real implementation, this would load additional elections from API
+        });
+    }
+
+    // @FUNCTIONALITY: Clear filters functionality
+    const clearFiltersButton = document.querySelector('[data-event*="clearFilters"]');
+    if (clearFiltersButton) {
+        clearFiltersButton.addEventListener('click', function() {
+            // Reset all filter inputs
+            document.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                if (input.closest('.mb-6').querySelector('label').textContent.includes('Election Type')) {
+                    input.checked = true; // Keep election type filters checked
+                } else {
+                    input.checked = false;
+                }
+            });
+            document.querySelectorAll('input[type="radio"]').forEach(input => {
+                if (input.value === 'all') {
+                    input.checked = true;
+                } else {
+                    input.checked = false;
+                }
+            });
+            document.querySelector('select[multiple]').selectedIndex = -1;
+        });
+    }
+
+})();
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectionWatch - Live Election Countdown Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'roboto': ['Roboto', 'sans-serif'],
+                        'roboto-mono': ['Roboto Mono', 'monospace']
+                    },
+                    colors: {
+                        'primary': '#1976D2',
+                        'secondary': '#424242',
+                        'accent': '#FF5722',
+                        'success': '#388E3C',
+                        'warning': '#F57C00',
+                        'error': '#D32F2F'
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="bg-gray-50 font-roboto">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-vote-yea text-2xl text-primary"></i>
+                        <h1 class="text-xl font-bold text-gray-900">ElectionWatch</h1>
+                    </div>
+                    <div class="hidden sm:block text-sm text-gray-600">
+                        Live Election Countdown Tracker
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="hidden md:flex items-center space-x-6 text-sm">
+                    <div class="text-center">
+                        <div class="font-semibold text-gray-900" data-bind="totalElections">47</div>
+                        <div class="text-gray-600">Elections</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold text-primary" data-bind="activeCountdowns">23</div>
+                        <div class="text-gray-600">Active</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-semibold text-warning" data-bind="urgentElections">3</div>
+                        <div class="text-gray-600">This Week</div>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden sm:block">
+                        <input type="text" placeholder="Search elections..." 
+                               class="w-64 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               data-implementation="Implement search with autocomplete">
+                        <i class="fas fa-search absolute right-3 top-2.5 text-gray-400"></i>
+                    </div>
+                    <button class="sm:hidden p-2 text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-3 mb-8 lg:mb-0">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-24">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                        <i class="fas fa-filter mr-2 text-primary"></i>Filters
+                    </h2>
+
+                    <!-- Election Type Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Election Type</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked data-filter="federal">
+                                <span class="ml-2 text-sm text-gray-600">Federal</span>
+                                <span class="ml-auto text-xs text-gray-400" data-mock="true">12</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked data-filter="state">
+                                <span class="ml-2 text-sm text-gray-600">State</span>
+                                <span class="ml-auto text-xs text-gray-400" data-mock="true">18</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked data-filter="local">
+                                <span class="ml-2 text-sm text-gray-600">Local</span>
+                                <span class="ml-auto text-xs text-gray-400" data-mock="true">17</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" data-filter="special">
+                                <span class="ml-2 text-sm text-gray-600">Special Elections</span>
+                                <span class="ml-auto text-xs text-gray-400" data-mock="true">8</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Party Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Party</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked data-filter="democrat">
+                                <span class="ml-2 text-sm text-gray-600">Democratic</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" checked data-filter="republican">
+                                <span class="ml-2 text-sm text-gray-600">Republican</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" data-filter="independent">
+                                <span class="ml-2 text-sm text-gray-600">Independent</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" data-filter="nonpartisan">
+                                <span class="ml-2 text-sm text-gray-600">Non-partisan</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Time Range Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Time Range</h3>
+                        <select class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent" data-filter="timeRange">
+                            <option value="all">All Elections</option>
+                            <option value="week">Next 7 Days</option>
+                            <option value="month">Next 30 Days</option>
+                            <option value="quarter">Next 3 Months</option>
+                            <option value="year">Next Year</option>
+                        </select>
+                    </div>
+
+                    <!-- State Filter -->
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">State</h3>
+                        <select class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent" data-filter="state">
+                            <option value="all">All States</option>
+                            <option value="AL">Alabama</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="CA">California</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NY">New York</option>
+                            <option value="TX">Texas</option>
+                            <option value="VA">Virginia</option>
+                        </select>
+                    </div>
+
+                    <!-- Reset Filters -->
+                    <button class="w-full px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors" data-event="click:resetFilters">
+                        <i class="fas fa-undo mr-2"></i>Reset Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-9">
+                <!-- View Toggle -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-2xl font-bold text-gray-900">Election Countdowns</h2>
+                        <span class="text-sm text-gray-600" data-bind="filteredCount">Showing 23 of 47 elections</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                        <button class="px-3 py-1 text-sm rounded-md bg-white text-gray-900 shadow-sm" data-view="grid">
+                            <i class="fas fa-th-large mr-1"></i>Grid
+                        </button>
+                        <button class="px-3 py-1 text-sm rounded-md text-gray-600 hover:text-gray-900" data-view="list">
+                            <i class="fas fa-list mr-1"></i>List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Election Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="electionsGrid">
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Urgent Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-accent p-6 hover:shadow-md transition-shadow" data-election-id="nj-primary-2025">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">New Jersey Primary Elections</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Governor & General Assembly</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-accent text-white">
+                                        <i class="fas fa-clock mr-1"></i>Urgent
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">New Jersey</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-accent mb-1" data-countdown="2025-06-10" data-implementation="Real-time countdown to election date">
+                                    12d 8h 42m 15s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">June 10, 2025 • 6:00 AM EST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Leading Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Sarah Johnson (D)</span>
+                                    <span class="text-gray-600">34%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Michael Chen (R)</span>
+                                    <span class="text-gray-600">31%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Regular Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-primary p-6 hover:shadow-md transition-shadow" data-election-id="va-governor-2025">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">Virginia Gubernatorial Election</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Governor, Lt. Governor & Attorney General</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary text-white">
+                                        <i class="fas fa-star mr-1"></i>General
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">Virginia</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-primary mb-1" data-countdown="2025-11-04" data-implementation="Real-time countdown to election date">
+                                    158d 14h 22m 08s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">November 4, 2025 • 6:00 AM EST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Leading Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Jennifer Williams (D)</span>
+                                    <span class="text-gray-600">42%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Robert Anderson (R)</span>
+                                    <span class="text-gray-600">38%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Special Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-warning p-6 hover:shadow-md transition-shadow" data-election-id="tx-house-special-2025">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">Texas House District 18</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Special Election</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-warning text-white">
+                                        <i class="fas fa-bolt mr-1"></i>Special
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">Texas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-warning mb-1" data-countdown="2025-11-04" data-implementation="Real-time countdown to election date">
+                                    158d 14h 22m 08s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">November 4, 2025 • 6:00 AM EST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Leading Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Maria Rodriguez (D)</span>
+                                    <span class="text-gray-600">48%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">James Thompson (R)</span>
+                                    <span class="text-gray-600">44%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Future Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-gray-300 p-6 hover:shadow-md transition-shadow" data-election-id="ca-primary-2026">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">California Primary Elections</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Senate, House & Governor</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-500 text-white">
+                                        <i class="fas fa-calendar mr-1"></i>Primary
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">California</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-gray-600 mb-1" data-countdown="2026-06-02" data-implementation="Real-time countdown to election date">
+                                    368d 10h 15m 43s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">June 2, 2026 • 6:00 AM PST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Expected Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Filing Period Opens</span>
+                                    <span class="text-gray-600">March 2026</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Local Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-success p-6 hover:shadow-md transition-shadow" data-election-id="nyc-mayor-2025">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">New York City Mayor</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Mayoral General Election</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success text-white">
+                                        <i class="fas fa-building mr-1"></i>Local
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">New York</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-success mb-1" data-countdown="2025-11-04" data-implementation="Real-time countdown to election date">
+                                    158d 14h 22m 08s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">November 4, 2025 • 6:00 AM EST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Leading Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Eric Adams (I)</span>
+                                    <span class="text-gray-600">52%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Jessica Martinez (D)</span>
+                                    <span class="text-gray-600">34%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+
+                    <!-- @COMPONENT: ElectionCountdownCard -->
+                    <!-- Congressional Election Card -->
+                    <div class="bg-white rounded-lg shadow-sm border-l-4 border-purple-500 p-6 hover:shadow-md transition-shadow" data-election-id="az-house-special-2025">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-lg" data-bind="election.title">Arizona House District 7</h3>
+                                <p class="text-sm text-gray-600 mt-1" data-bind="election.subtitle">Special Congressional Election</p>
+                                <div class="flex items-center mt-2 space-x-4">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
+                                        <i class="fas fa-landmark mr-1"></i>Federal
+                                    </span>
+                                    <span class="text-xs text-gray-500" data-bind="election.location">Arizona</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-roboto-mono font-bold text-purple-500 mb-1" data-countdown="2025-09-23" data-implementation="Real-time countdown to election date">
+                                    116d 8h 45m 12s
+                                </div>
+                                <div class="text-xs text-gray-600">Until Election Day</div>
+                                <div class="text-xs text-gray-500 mt-1">September 23, 2025 • 6:00 AM MST</div>
+                            </div>
+                        </div>
+
+                        <!-- Candidate Preview -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-600">Leading Candidates:</span>
+                                <button class="text-primary hover:text-blue-700 text-xs" data-action="viewCandidates">View All</button>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Carlos Mendez (D)</span>
+                                    <span class="text-gray-600">45%</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm" data-mock="true">
+                                    <span class="text-gray-900">Susan Walker (R)</span>
+                                    <span class="text-gray-600">41%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-blue-700 transition-colors" data-action="viewDetails">
+                            <i class="fas fa-info-circle mr-2"></i>View Details
+                        </button>
+                    </div>
+                    <!-- @END_COMPONENT: ElectionCountdownCard -->
+                </div>
+
+                <!-- Load More Button -->
+                <div class="mt-8 text-center">
+                    <button class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" data-action="loadMore">
+                        <i class="fas fa-plus mr-2"></i>Load More Elections
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Election Detail Modal -->
+    <div id="electionModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" data-implementation="Modal for detailed election view">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900" data-bind="selectedElection.title">New Jersey Primary Elections</h3>
+                    <button class="text-gray-400 hover:text-gray-600" data-action="closeModal">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Detailed Countdown -->
+                <div class="bg-gradient-to-r from-primary to-blue-600 text-white rounded-lg p-6 mb-6">
+                    <div class="text-center">
+                        <h4 class="text-lg font-semibold mb-4">Time Until Election</h4>
+                        <div class="grid grid-cols-5 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-roboto-mono font-bold" data-countdown-days="12">12</div>
+                                <div class="text-sm opacity-90">Days</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-roboto-mono font-bold" data-countdown-hours="8">08</div>
+                                <div class="text-sm opacity-90">Hours</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-roboto-mono font-bold" data-countdown-minutes="42">42</div>
+                                <div class="text-sm opacity-90">Minutes</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-roboto-mono font-bold" data-countdown-seconds="15">15</div>
+                                <div class="text-sm opacity-90">Seconds</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-roboto-mono font-bold" data-countdown-milliseconds="834">834</div>
+                                <div class="text-xs opacity-90">MS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidate Information -->
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Candidates & Polling</h4>
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4" data-mock="true">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">SJ</div>
+                                    <div>
+                                        <h5 class="font-semibold text-gray-900">Sarah Johnson</h5>
+                                        <p class="text-sm text-gray-600">Democratic Party</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-semibold text-gray-900">34%</div>
+                                    <div class="text-sm text-gray-600">Support</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: 34%"></div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4" data-mock="true">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white font-semibold">MC</div>
+                                    <div>
+                                        <h5 class="font-semibold text-gray-900">Michael Chen</h5>
+                                        <p class="text-sm text-gray-600">Republican Party</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-semibold text-gray-900">31%</div>
+                                    <div class="text-sm text-gray-600">Support</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 31%"></div>
+                            </div>
+                        </div>
+
+                        <div class="border border-gray-200 rounded-lg p-4" data-mock="true">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">DR</div>
+                                    <div>
+                                        <h5 class="font-semibold text-gray-900">David Rodriguez</h5>
+                                        <p class="text-sm text-gray-600">Independent</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-semibold text-gray-900">18%</div>
+                                    <div class="text-sm text-gray-600">Support</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 18%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Election Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Election Information</h4>
+                        <dl class="space-y-2">
+                            <div class="flex justify-between">
+                                <dt class="text-sm text-gray-600">Date:</dt>
+                                <dd class="text-sm font-medium text-gray-900" data-bind="election.date">June 10, 2025</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-sm text-gray-600">Polls Open:</dt>
+                                <dd class="text-sm font-medium text-gray-900" data-bind="election.pollsOpen">6:00 AM EST</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-sm text-gray-600">Polls Close:</dt>
+                                <dd class="text-sm font-medium text-gray-900" data-bind="election.pollsClose">8:00 PM EST</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-sm text-gray-600">Type:</dt>
+                                <dd class="text-sm font-medium text-gray-900" data-bind="election.type">Primary Election</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-3">Offices on Ballot</h4>
+                        <ul class="space-y-1 text-sm text-gray-600">
+                            <li data-bind="election.offices[0]">• Governor</li>
+                            <li data-bind="election.offices[1]">• Lieutenant Governor</li>
+                            <li data-bind="election.offices[2]">• General Assembly (80 seats)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-3">
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" data-action="closeModal">
+                        Close
+                    </button>
+                    <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors" data-action="setReminder">
+                        <i class="fas fa-bell mr-2"></i>Set Reminder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (() => {
+            // @STATE: elections:array = [] (loaded from election data file)
+            // @STATE: filteredElections:array = []
+            // @STATE: filters:object = {type: [], party: [], timeRange: 'all', state: 'all'}
+            // @STATE: selectedElection:object = null
+
+            const electionData = [
+                {
+                    id: 'nj-primary-2025',
+                    title: 'New Jersey Primary Elections',
+                    subtitle: 'Governor & General Assembly',
+                    location: 'New Jersey',
+                    date: '2025-06-10',
+                    time: '06:00',
+                    timezone: 'EST',
+                    type: 'primary',
+                    level: 'state',
+                    urgency: 'urgent',
+                    candidates: [
+                        { name: 'Sarah Johnson', party: 'D', support: 34 },
+                        { name: 'Michael Chen', party: 'R', support: 31 },
+                        { name: 'David Rodriguez', party: 'I', support: 18 }
+                    ]
+                },
+                {
+                    id: 'va-governor-2025',
+                    title: 'Virginia Gubernatorial Election',
+                    subtitle: 'Governor, Lt. Governor & Attorney General',
+                    location: 'Virginia',
+                    date: '2025-11-04',
+                    time: '06:00',
+                    timezone: 'EST',
+                    type: 'general',
+                    level: 'state',
+                    urgency: 'normal',
+                    candidates: [
+                        { name: 'Jennifer Williams', party: 'D', support: 42 },
+                        { name: 'Robert Anderson', party: 'R', support: 38 }
+                    ]
+                }
+            ];
+
+            // @FUNCTIONALITY: Real-time countdown updates every 100ms for millisecond precision
+            function updateCountdowns() {
+                const countdownElements = document.querySelectorAll('[data-countdown]');
+                
+                countdownElements.forEach(element => {
+                    const targetDate = new Date(element.dataset.countdown + 'T06:00:00');
+                    const now = new Date();
+                    const timeDiff = targetDate - now;
+                    
+                    if (timeDiff > 0) {
+                        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                        const milliseconds = Math.floor((timeDiff % 1000) / 10); // Display in centiseconds for readability
+                        
+                        element.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+                        
+                        // Update detailed modal countdown if open
+                        const modal = document.getElementById('electionModal');
+                        if (!modal.classList.contains('hidden')) {
+                            const daysEl = document.querySelector('[data-countdown-days]');
+                            const hoursEl = document.querySelector('[data-countdown-hours]');
+                            const minutesEl = document.querySelector('[data-countdown-minutes]');
+                            const secondsEl = document.querySelector('[data-countdown-seconds]');
+                            const millisecondsEl = document.querySelector('[data-countdown-milliseconds]');
+                            
+                            if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
+                            if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+                            if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+                            if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+                            if (millisecondsEl) millisecondsEl.textContent = milliseconds.toString().padStart(2, '0');
+                        }
+                    } else {
+                        element.textContent = 'Election Day!';
+                    }
+                });
+            }
+
+            // @FUNCTIONALITY: Filter elections based on selected criteria
+            function applyFilters() {
+                // Implementation would filter electionData based on current filter state
+                console.log('Applying filters...');
+            }
+
+            // @FUNCTIONALITY: Open detailed election modal
+            function openElectionModal(electionId) {
+                const modal = document.getElementById('electionModal');
+                modal.classList.remove('hidden');
+                // Load election details into modal
+            }
+
+            // @FUNCTIONALITY: Close election modal
+            function closeElectionModal() {
+                const modal = document.getElementById('electionModal');
+                modal.classList.add('hidden');
+            }
+
+            // Event listeners
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('[data-action="viewDetails"]')) {
+                    const card = e.target.closest('[data-election-id]');
+                    if (card) {
+                        openElectionModal(card.dataset.electionId);
+                    }
+                }
+                
+                if (e.target.closest('[data-action="closeModal"]')) {
+                    closeElectionModal();
+                }
+                
+                if (e.target.id === 'electionModal') {
+                    closeElectionModal();
+                }
+            });
+
+            // Filter change listeners
+            document.addEventListener('change', (e) => {
+                if (e.target.hasAttribute('data-filter')) {
+                    applyFilters();
+                }
+            });
+
+            // Start countdown updates
+            updateCountdowns();
+            setInterval(updateCountdowns, 100); // Update every 100ms for smooth millisecond display
+
+            // Initialize with current data
+            applyFilters();
+        })();
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectionTracker - Real-Time Election Countdown Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'dem-blue': '#2563EB',
+                        'rep-red': '#DC2626',
+                        'success': '#059669',
+                        'warning': '#D97706'
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-inter">
+    <!-- @COMPONENT: Header [navigation, search, user preferences] -->
+    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-vote-yea text-2xl text-dem-blue"></i>
+                        <h1 class="text-xl font-bold text-slate-900">ElectionTracker</h1>
+                    </div>
+                    <div class="hidden md:block bg-slate-100 px-3 py-1 rounded-full">
+                        <span class="text-sm font-medium text-slate-600">Live Dashboard</span>
+                        <span class="inline-block w-2 h-2 bg-success rounded-full ml-2 animate-pulse"></span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="search" placeholder="Search elections, candidates..."
+                               class="w-64 pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-dem-blue focus:border-transparent"
+                               data-mock="true">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                    <button class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            data-event="click:toggleNotifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="sr-only">Notifications</span>
+                    </button>
+                    <button class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            data-event="click:toggleSettings">
+                        <i class="fas fa-cog"></i>
+                        <span class="sr-only">Settings</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: Header -->
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col lg:flex-row gap-6">
+            
+            <!-- @COMPONENT: FilterSidebar [election filters, time controls, party selection] -->
+            <aside class="lg:w-80 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-slate-900 mb-4">Filters & Controls</h2>
+                    
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="bg-gradient-to-r from-dem-blue to-blue-600 text-white p-3 rounded-lg">
+                            <div class="text-sm opacity-90">Next Election</div>
+                            <div class="font-bold" data-bind="nextElection.days">12 days</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-success to-emerald-600 text-white p-3 rounded-lg">
+                            <div class="text-sm opacity-90">Total Tracked</div>
+                            <div class="font-bold" data-bind="totalElections">247</div>
+                        </div>
+                    </div>
+
+                    <!-- Time Range Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Time Range</label>
+                        <select class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-dem-blue focus:border-transparent"
+                                data-event="change:filterByTimeRange" data-mock="true">
+                            <option>Next 30 Days</option>
+                            <option>Next 90 Days</option>
+                            <option>Next 6 Months</option>
+                            <option>Next Year</option>
+                            <option>All Elections</option>
+                        </select>
+                    </div>
+
+                    <!-- Election Type Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-3">Election Type</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                                <span class="ml-2 text-sm text-slate-700">Federal Elections</span>
+                                <span class="ml-auto text-xs text-slate-500" data-bind="federalCount">34</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                                <span class="ml-2 text-sm text-slate-700">State Elections</span>
+                                <span class="ml-auto text-xs text-slate-500" data-bind="stateCount">89</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                                <span class="ml-2 text-sm text-slate-700">Local Elections</span>
+                                <span class="ml-auto text-xs text-slate-500" data-bind="localCount">124</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                                <span class="ml-2 text-sm text-slate-700">Special Elections</span>
+                                <span class="ml-auto text-xs text-slate-500" data-bind="specialCount">12</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- State Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-2">States</label>
+                        <select multiple class="w-full border border-slate-300 rounded-lg px-3 py-2 h-24 focus:ring-2 focus:ring-dem-blue focus:border-transparent"
+                                data-event="change:filterByStates" data-mock="true">
+                            <option>Alabama</option>
+                            <option>Arizona</option>
+                            <option>California</option>
+                            <option>Florida</option>
+                            <option>Georgia</option>
+                            <option>New Jersey</option>
+                            <option>Texas</option>
+                            <option>Virginia</option>
+                        </select>
+                        <p class="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                    </div>
+
+                    <!-- Party Filter -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-slate-700 mb-3">Party Focus</label>
+                        <div class="space-y-2">
+                            <button class="w-full flex items-center justify-between px-3 py-2 bg-dem-blue text-white rounded-lg font-medium transition-colors"
+                                    data-event="click:toggleDemocratic">
+                                <span>Democratic</span>
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between px-3 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                    data-event="click:toggleRepublican">
+                                <span>Republican</span>
+                                <i class="fas fa-plus opacity-50"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between px-3 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                    data-event="click:toggleIndependent">
+                                <span>Independent</span>
+                                <i class="fas fa-plus opacity-50"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Timer Precision -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Timer Precision</label>
+                        <select class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-dem-blue focus:border-transparent"
+                                data-event="change:updateTimerPrecision" data-mock="true">
+                            <option>Days & Hours</option>
+                            <option>Hours & Minutes</option>
+                            <option>Minutes & Seconds</option>
+                            <option selected>Full Precision (ms)</option>
+                        </select>
+                    </div>
+                </div>
+            </aside>
+            <!-- @END_COMPONENT: FilterSidebar -->
+
+            <!-- @COMPONENT: MainDashboard [election cards, countdown displays, candidate info] -->
+            <main class="flex-1">
+                <!-- Dashboard Header -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-slate-900">Upcoming Elections</h2>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-4 py-2 bg-dem-blue text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                                    data-event="click:toggleListView">
+                                <i class="fas fa-list mr-2"></i>List View
+                            </button>
+                            <button class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                                    data-event="click:toggleCardView">
+                                <i class="fas fa-th-large mr-2"></i>Card View
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Active Filters Display -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-dem-blue text-white rounded-full text-sm font-medium">
+                            Democratic
+                            <button class="ml-2 hover:bg-blue-700 rounded-full p-1" data-event="click:removeFilter">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>
+                        <span class="px-3 py-1 bg-slate-200 text-slate-700 rounded-full text-sm font-medium">
+                            Federal Elections
+                            <button class="ml-2 hover:bg-slate-300 rounded-full p-1" data-event="click:removeFilter">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>
+                        <span class="px-3 py-1 bg-slate-200 text-slate-700 rounded-full text-sm font-medium">
+                            Next 30 Days
+                            <button class="ml-2 hover:bg-slate-300 rounded-full p-1" data-event="click:removeFilter">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- @MAP: elections.map(election => ( -->
+                <!-- Election Card: New Jersey Governor Primary -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="px-2 py-1 bg-dem-blue text-white text-xs font-medium rounded uppercase tracking-wide">Primary</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded">State</span>
+                                <span class="text-slate-500 text-sm">New Jersey</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-1">New Jersey Governor & General Assembly Primary</h3>
+                            <p class="text-slate-600">Democratic and Republican primaries for Governor and all 80 General Assembly seats</p>
+                        </div>
+                        <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                data-event="click:toggleFavorite">
+                            <i class="far fa-star"></i>
+                        </button>
+                    </div>
+
+                    <!-- Real-time Countdown -->
+                    <!-- @STATE: countdownActive:boolean = true -->
+                    <div class="bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-sm opacity-75 mb-1">Time Remaining Until June 10, 2025</div>
+                            <div class="grid grid-cols-5 gap-4 text-center" data-bind="countdown.newJerseyPrimary">
+                                <div>
+                                    <div class="text-2xl font-bold" id="days-nj">12</div>
+                                    <div class="text-xs opacity-75">DAYS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="hours-nj">08</div>
+                                    <div class="text-xs opacity-75">HOURS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="minutes-nj">45</div>
+                                    <div class="text-xs opacity-75">MINUTES</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="seconds-nj">23</div>
+                                    <div class="text-xs opacity-75">SECONDS</div>
+                                </div>
+                                <div>
+                                    <div class="text-lg font-bold" id="milliseconds-nj">847</div>
+                                    <div class="text-xs opacity-75">MS</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Information -->
+                    <div class="border-t border-slate-200 pt-4">
+                        <h4 class="font-semibold text-slate-900 mb-3">Key Candidates (Governor)</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="border border-dem-blue rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-medium text-slate-900">Democratic Primary</h5>
+                                    <span class="text-xs bg-dem-blue text-white px-2 py-1 rounded">DEM</span>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Josh Gottheimer</span>
+                                        <span class="font-medium" data-bind="candidate.polling">34%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Ras Baraka</span>
+                                        <span class="font-medium" data-bind="candidate.polling">28%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Steven Fulop</span>
+                                        <span class="font-medium" data-bind="candidate.polling">22%</span>
+                                    </div>
+                                    <div class="text-xs text-slate-500 pt-1">
+                                        Last updated: <span data-bind="polling.lastUpdated">3 hours ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border border-rep-red rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-medium text-slate-900">Republican Primary</h5>
+                                    <span class="text-xs bg-rep-red text-white px-2 py-1 rounded">GOP</span>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Bill Spadea</span>
+                                        <span class="font-medium" data-bind="candidate.polling">42%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Jon Bramnick</span>
+                                        <span class="font-medium" data-bind="candidate.polling">31%</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-bind="candidate.name">Ed Durr</span>
+                                        <span class="font-medium" data-bind="candidate.polling">18%</span>
+                                    </div>
+                                    <div class="text-xs text-slate-500 pt-1">
+                                        Last updated: <span data-bind="polling.lastUpdated">3 hours ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between">
+                            <button class="text-dem-blue hover:text-blue-700 text-sm font-medium flex items-center"
+                                    data-event="click:showDetailedPolling">
+                                <i class="fas fa-chart-line mr-1"></i>
+                                View Detailed Polling
+                            </button>
+                            <button class="text-slate-600 hover:text-slate-900 text-sm font-medium flex items-center"
+                                    data-event="click:shareElection">
+                                <i class="fas fa-share mr-1"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Election Card: Virginia Governor Race -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="px-2 py-1 bg-warning text-white text-xs font-medium rounded uppercase tracking-wide">Primary</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded">State</span>
+                                <span class="text-slate-500 text-sm">Virginia</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-1">Virginia Governor & State Legislature Primary</h3>
+                            <p class="text-slate-600">Governor, Lieutenant Governor, Attorney General, and House of Delegates races</p>
+                        </div>
+                        <button class="p-2 text-warning hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-colors"
+                                data-event="click:toggleFavorite">
+                            <i class="fas fa-star"></i>
+                        </button>
+                    </div>
+
+                    <!-- Real-time Countdown -->
+                    <div class="bg-gradient-to-r from-warning to-orange-600 text-white rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-sm opacity-75 mb-1">Time Remaining Until June 10, 2025</div>
+                            <div class="grid grid-cols-5 gap-4 text-center" data-bind="countdown.virginiaPrimary">
+                                <div>
+                                    <div class="text-2xl font-bold" id="days-va">12</div>
+                                    <div class="text-xs opacity-75">DAYS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="hours-va">08</div>
+                                    <div class="text-xs opacity-75">HOURS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="minutes-va">45</div>
+                                    <div class="text-xs opacity-75">MINUTES</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="seconds-va">23</div>
+                                    <div class="text-xs opacity-75">SECONDS</div>
+                                </div>
+                                <div>
+                                    <div class="text-lg font-bold" id="milliseconds-va">847</div>
+                                    <div class="text-xs opacity-75">MS</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Information -->
+                    <div class="border-t border-slate-200 pt-4">
+                        <h4 class="font-semibold text-slate-900 mb-3">Governor Race Outlook</h4>
+                        <div class="bg-slate-50 rounded-lg p-4">
+                            <div class="grid md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <h5 class="font-medium text-dem-blue mb-2">Democratic Field</h5>
+                                    <ul class="space-y-1 text-slate-700">
+                                        <li data-bind="candidate.name">• Abigail Spanberger</li>
+                                        <li data-bind="candidate.name">• Eugene Vindman</li>
+                                        <li data-bind="candidate.name">• Jay Jones</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-medium text-rep-red mb-2">Republican Field</h5>
+                                    <ul class="space-y-1 text-slate-700">
+                                        <li data-bind="candidate.name">• Winsome Sears</li>
+                                        <li data-bind="candidate.name">• Jason Miyares</li>
+                                        <li data-bind="candidate.name">• John McGuire</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-500 mt-3">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Polling data will be updated as candidates formally announce
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Special Election Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="px-2 py-1 bg-rep-red text-white text-xs font-medium rounded uppercase tracking-wide">Special</span>
+                                <span class="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded">Federal</span>
+                                <span class="text-slate-500 text-sm">Arizona District 7</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-1">Arizona District 7 Special Election</h3>
+                            <p class="text-slate-600">Special general election to replace the late Rep. Raúl Grijalva</p>
+                        </div>
+                        <button class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                                data-event="click:toggleFavorite">
+                            <i class="far fa-star"></i>
+                        </button>
+                    </div>
+
+                    <!-- Real-time Countdown -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-lg p-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-sm opacity-75 mb-1">Time Remaining Until September 23, 2025</div>
+                            <div class="grid grid-cols-4 gap-4 text-center" data-bind="countdown.arizonaSpecial">
+                                <div>
+                                    <div class="text-2xl font-bold" id="days-az">117</div>
+                                    <div class="text-xs opacity-75">DAYS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="hours-az">04</div>
+                                    <div class="text-xs opacity-75">HOURS</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="minutes-az">32</div>
+                                    <div class="text-xs opacity-75">MINUTES</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" id="seconds-az">18</div>
+                                    <div class="text-xs opacity-75">SECONDS</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Election Information -->
+                    <div class="border-t border-slate-200 pt-4">
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <h5 class="font-medium text-slate-900 mb-2">Election Details</h5>
+                                <ul class="space-y-1 text-slate-600">
+                                    <li>• Primary: July 15, 2025</li>
+                                    <li>• General: Sept 23, 2025</li>
+                                    <li>• Safe Democratic district</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-slate-900 mb-2">District Info</h5>
+                                <ul class="space-y-1 text-slate-600">
+                                    <li>• D+16 Partisan lean</li>
+                                    <li>• 67% Hispanic population</li>
+                                    <li>• Tucson & border areas</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-slate-900 mb-2">Timeline</h5>
+                                <ul class="space-y-1 text-slate-600">
+                                    <li>• Filing deadline: June 1</li>
+                                    <li>• Candidate forums TBD</li>
+                                    <li>• Early voting starts: Sept 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+
+                <!-- Load More -->
+                <div class="text-center py-8">
+                    <button class="px-6 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                            data-event="click:loadMoreElections">
+                        <i class="fas fa-plus mr-2"></i>
+                        Load More Elections (234 remaining)
+                    </button>
+                </div>
+            </main>
+            <!-- @END_COMPONENT: MainDashboard -->
+        </div>
+    </div>
+
+    <!-- @COMPONENT: SettingsModal [timer preferences, notification settings] -->
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-slate-900">Settings</h3>
+                <button class="text-slate-400 hover:text-slate-600" data-event="click:closeSettings">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Notification Preferences</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-700">1 day before election</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-700">1 hour before polls close</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="rounded border-slate-300 text-dem-blue focus:ring-dem-blue" data-mock="true">
+                            <span class="ml-2 text-sm text-slate-700">When polling data updates</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Default View</label>
+                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-dem-blue focus:border-transparent" data-mock="true">
+                        <option>Card View</option>
+                        <option>List View</option>
+                        <option>Calendar View</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button class="px-4 py-2 text-slate-600 hover:text-slate-900" data-event="click:closeSettings">Cancel</button>
+                    <button class="px-4 py-2 bg-dem-blue text-white rounded-lg font-medium hover:bg-blue-700 transition-colors" data-event="click:saveSettings">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SettingsModal -->
+
+    <!-- @FUNCTIONALITY: Real-time countdown timers that update every 100ms for precise millisecond display -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // Election data with target dates
+            const elections = {
+                newJerseyPrimary: new Date('2025-06-10T20:00:00'),
+                virginiaPrimary: new Date('2025-06-10T19:00:00'),
+                arizonaSpecial: new Date('2025-09-23T19:00:00')
+            };
+
+            // Timer precision setting
+            let timerPrecision = 'full'; // 'days', 'hours', 'minutes', 'full'
+            
+            function updateCountdown(electionKey, targetDate) {
+                const now = new Date().getTime();
+                const timeLeft = targetDate.getTime() - now;
+                
+                if (timeLeft < 0) {
+                    // Election has passed
+                    return {
+                        days: 0,
+                        hours: 0,
+                        minutes: 0,
+                        seconds: 0,
+                        milliseconds: 0,
+                        expired: true
+                    };
+                }
+                
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                const milliseconds = Math.floor(timeLeft % 1000);
+                
+                return {
+                    days: days,
+                    hours: hours,
+                    minutes: minutes,
+                    seconds: seconds,
+                    milliseconds: milliseconds,
+                    expired: false
+                };
+            }
+            
+            function formatTime(value, digits = 2) {
+                return value.toString().padStart(digits, '0');
+            }
+            
+            function updateTimerDisplay(prefix, countdown) {
+                const daysEl = document.getElementById(`days-${prefix}`);
+                const hoursEl = document.getElementById(`hours-${prefix}`);
+                const minutesEl = document.getElementById(`minutes-${prefix}`);
+                const secondsEl = document.getElementById(`seconds-${prefix}`);
+                const millisecondsEl = document.getElementById(`milliseconds-${prefix}`);
+                
+                if (daysEl) daysEl.textContent = formatTime(countdown.days);
+                if (hoursEl) hoursEl.textContent = formatTime(countdown.hours);
+                if (minutesEl) minutesEl.textContent = formatTime(countdown.minutes);
+                if (secondsEl) secondsEl.textContent = formatTime(countdown.seconds);
+                if (millisecondsEl) millisecondsEl.textContent = formatTime(countdown.milliseconds, 3);
+                
+                // Add visual urgency for elections within 24 hours
+                if (countdown.days === 0 && countdown.hours < 24) {
+                    const container = daysEl?.closest('.grid');
+                    if (container) {
+                        container.classList.add('animate-pulse');
+                    }
+                }
+            }
+            
+            function updateAllCountdowns() {
+                // New Jersey Primary
+                const njCountdown = updateCountdown('newJerseyPrimary', elections.newJerseyPrimary);
+                updateTimerDisplay('nj', njCountdown);
+                
+                // Virginia Primary
+                const vaCountdown = updateCountdown('virginiaPrimary', elections.virginiaPrimary);
+                updateTimerDisplay('va', vaCountdown);
+                
+                // Arizona Special
+                const azCountdown = updateCountdown('arizonaSpecial', elections.arizonaSpecial);
+                updateTimerDisplay('az', azCountdown);
+            }
+            
+            // Start the countdown timers
+            updateAllCountdowns();
+            
+            // Update every 100ms for smooth millisecond display
+            setInterval(updateAllCountdowns, 100);
+            
+            // Filter functionality
+            window.filterElections = function(criteria) {
+                console.log('Filtering elections by:', criteria);
+                // Implementation would filter visible election cards
+            };
+            
+            // Settings modal functionality
+            window.toggleSettings = function() {
+                const modal = document.getElementById('settingsModal');
+                modal.classList.toggle('hidden');
+            };
+            
+            window.closeSettings = function() {
+                const modal = document.getElementById('settingsModal');
+                modal.classList.add('hidden');
+            };
+            
+            // Favorite functionality
+            window.toggleFavorite = function(event) {
+                const icon = event.target.closest('button').querySelector('i');
+                icon.classList.toggle('far');
+                icon.classList.toggle('fas');
+                icon.classList.toggle('text-warning');
+            };
+            
+            // Load more functionality
+            window.loadMoreElections = function() {
+                console.log('Loading more elections...');
+                // Implementation would fetch and display additional elections
+            };
+            
+            // Update timer precision
+            window.updateTimerPrecision = function(event) {
+                timerPrecision = event.target.value;
+                console.log('Timer precision updated to:', timerPrecision);
+                // Implementation would adjust timer display based on precision
+            };
+            
+        })();
+    </script>
+</body>
+</html>
