@@ -169,34 +169,35 @@ export function CongressData() {
     }) || [];
 
     return (
-    <ScrollArea className="h-96">
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredMembers?.map((member: any, i: number) => (
-            <Card key={i} className="p-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-sm">{member.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {typeof member.party === 'string' ? member.party : member.party?.name || 'N/A'} - {typeof member.state === 'string' ? member.state : member.state?.name || 'N/A'} {member.district && `District ${member.district}`}
-                  </p>
+      <ScrollArea className="h-96">
+        {loading ? (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredMembers?.map((member: any, i: number) => (
+              <Card key={i} className="p-3">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold text-sm">{member.name}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {typeof member.party === 'string' ? member.party : member.party?.name || 'N/A'} - {typeof member.state === 'string' ? member.state : member.state?.name || 'N/A'} {member.district && `District ${member.district}`}
+                    </p>
+                  </div>
+                  <Badge variant={member.party === 'D' ? 'default' : member.party === 'R' ? 'destructive' : 'secondary'}>
+                    {member.party}
+                  </Badge>
                 </div>
-                <Badge variant={member.party === 'D' ? 'default' : member.party === 'R' ? 'destructive' : 'secondary'}>
-                  {member.party}
-                </Badge>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-    </ScrollArea>
-  );
+              </Card>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+    );
+  };
 
   return (
     <div className="space-y-6">
