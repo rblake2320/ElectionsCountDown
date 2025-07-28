@@ -38,7 +38,7 @@ export class CensusService {
       }
 
       const data = await response.json();
-      
+
       return this.parseDistrictData(data);
     } catch (error) {
       console.error('Error fetching congressional districts:', error);
@@ -66,7 +66,7 @@ export class CensusService {
 
   async getElectionDemographics(state: string, district?: string): Promise<any> {
     try {
-      const geo = district 
+      const geo = district
         ? `congressional%20district:${district}&in=state:${state}`
         : `state:${state}`;
 
@@ -107,8 +107,8 @@ export class CensusService {
           black: parseInt(district.B02001_003E || '0'),
           hispanic: parseInt(district.B03003_003E || '0'),
           asian: parseInt(district.B02001_005E || '0'),
-          other: 0
-        }
+          other: 0,
+        },
       };
     });
   }
@@ -146,7 +146,7 @@ export class CensusService {
       hispanic: parseInt(demographics.B03003_003E || '0'),
       asian: parseInt(demographics.B02001_005E || '0'),
       homeownership: parseInt(demographics.B25003_002E || '0'),
-      collegeEducated: parseInt(demographics.B15003_022E || '0')
+      collegeEducated: parseInt(demographics.B15003_022E || '0'),
     };
   }
 }

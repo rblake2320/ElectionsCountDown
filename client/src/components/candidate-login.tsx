@@ -69,22 +69,22 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
         body: JSON.stringify(data),
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success) {
         localStorage.setItem('candidate_token', data.token);
         localStorage.setItem('candidate_data', JSON.stringify(data.candidate));
         onLogin({ token: data.token, candidate: data.candidate });
         toast({
-          title: "Login Successful",
+          title: 'Login Successful',
           description: `Welcome back to ${data.candidate.campaignName}!`,
         });
       }
     },
     onError: (error: any) => {
       toast({
-        title: "Login Failed",
-        description: error.message || "Invalid email or password",
-        variant: "destructive",
+        title: 'Login Failed',
+        description: error.message || 'Invalid email or password',
+        variant: 'destructive',
       });
     },
   });
@@ -98,22 +98,22 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
         body: JSON.stringify(data),
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.success) {
         localStorage.setItem('candidate_token', data.token);
         localStorage.setItem('candidate_data', JSON.stringify(data.candidate));
         onLogin({ token: data.token, candidate: data.candidate });
         toast({
-          title: "Account Created",
+          title: 'Account Created',
           description: `Welcome to the campaign portal!`,
         });
       }
     },
     onError: (error: any) => {
       toast({
-        title: "Signup Failed",
-        description: error.message || "Failed to create account",
-        variant: "destructive",
+        title: 'Signup Failed',
+        description: error.message || 'Failed to create account',
+        variant: 'destructive',
       });
     },
   });
@@ -131,12 +131,8 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Shield className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Campaign Portal
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Secure access for campaign teams
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Campaign Portal</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Secure access for campaign teams</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -156,9 +152,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Sign In to Your Campaign</CardTitle>
-                <CardDescription>
-                  Access your candidate portal dashboard
-                </CardDescription>
+                <CardDescription>Access your candidate portal dashboard</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
@@ -191,11 +185,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={loginMutation.isPending}
-                  >
+                  <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                     {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
                   </Button>
                 </form>
@@ -208,9 +198,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Create Campaign Account</CardTitle>
-                <CardDescription>
-                  Set up your campaign portal access
-                </CardDescription>
+                <CardDescription>Set up your campaign portal access</CardDescription>
               </CardHeader>
               <CardContent>
                 <Alert className="mb-4">
@@ -290,11 +278,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={signupMutation.isPending}
-                  >
+                  <Button type="submit" className="w-full" disabled={signupMutation.isPending}>
                     {signupMutation.isPending ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </form>
@@ -304,9 +288,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
         </Tabs>
 
         <div className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            Need help? Contact support for assistance with account setup.
-          </p>
+          <p>Need help? Contact support for assistance with account setup.</p>
         </div>
       </div>
     </div>

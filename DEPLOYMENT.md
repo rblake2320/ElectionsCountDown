@@ -7,6 +7,7 @@ This guide covers deployment options for the ElectionTracker platform.
 The platform is optimized for Replit's autoscale deployment system.
 
 ### Prerequisites
+
 - Replit account
 - Database configured (Neon PostgreSQL recommended)
 - Required API keys set as secrets
@@ -14,6 +15,7 @@ The platform is optimized for Replit's autoscale deployment system.
 ### Deployment Steps
 
 1. **Environment Setup**
+
    ```bash
    # Replit automatically handles these
    npm install
@@ -21,6 +23,7 @@ The platform is optimized for Replit's autoscale deployment system.
    ```
 
 2. **Database Configuration**
+
    ```bash
    # Run migrations
    npm run db:push
@@ -45,6 +48,7 @@ The platform is optimized for Replit's autoscale deployment system.
 ### Replit Configuration
 
 The project includes:
+
 - `.replit` configuration file
 - Automatic dependency management
 - Built-in database integration
@@ -55,6 +59,7 @@ The project includes:
 ## Manual Deployment
 
 ### System Requirements
+
 - Node.js 20+
 - PostgreSQL 14+
 - 2GB+ RAM
@@ -63,28 +68,33 @@ The project includes:
 ### Installation
 
 1. **Clone Repository**
+
    ```bash
    git clone https://github.com/rblake2320/ElectionsCountDown.git
    cd ElectionsCountDown
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Configuration**
+
    ```bash
    cp .env.example .env
    # Edit .env with your values
    ```
 
 4. **Database Setup**
+
    ```bash
    npm run db:push
    ```
 
 5. **Build Application**
+
    ```bash
    npm run build
    ```
@@ -118,13 +128,13 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - NODE_ENV=production
     depends_on:
       - postgres
-  
+
   postgres:
     image: postgres:14
     environment:
@@ -141,6 +151,7 @@ volumes:
 ### Cloud Platform Deployment
 
 #### Vercel
+
 ```json
 {
   "version": 2,
@@ -168,6 +179,7 @@ volumes:
 ```
 
 #### Heroku
+
 ```json
 {
   "name": "electiontracker",
@@ -186,6 +198,7 @@ volumes:
 ```
 
 #### Railway
+
 ```yaml
 # railway.toml
 [build]
@@ -204,12 +217,14 @@ volumes:
 ## Database Deployment
 
 ### Neon (Recommended)
+
 - Serverless PostgreSQL
 - Automatic scaling
 - Built-in connection pooling
 - Global edge network
 
 ### Self-hosted PostgreSQL
+
 ```sql
 -- Create database
 CREATE DATABASE electiontracker;
@@ -224,6 +239,7 @@ GRANT ALL PRIVILEGES ON DATABASE electiontracker TO electiontracker_user;
 ## Performance Optimization
 
 ### Production Checklist
+
 - [ ] Enable gzip compression
 - [ ] Configure caching headers
 - [ ] Set up CDN for static assets
@@ -253,10 +269,10 @@ curl https://your-domain.com/api/sync/status
 server {
     listen 443 ssl http2;
     server_name your-domain.com;
-    
+
     ssl_certificate /path/to/certificate.crt;
     ssl_certificate_key /path/to/private.key;
-    
+
     location / {
         proxy_pass http://localhost:5000;
         proxy_set_header Host $host;
@@ -264,7 +280,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
@@ -277,6 +293,7 @@ server {
 ## Backup and Recovery
 
 ### Database Backup
+
 ```bash
 # Daily backup script
 pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
@@ -286,6 +303,7 @@ psql $DATABASE_URL < backup_20250123.sql
 ```
 
 ### Application Backup
+
 ```bash
 # Backup configuration and data
 tar -czf electiontracker_backup_$(date +%Y%m%d).tar.gz \
@@ -297,12 +315,14 @@ tar -czf electiontracker_backup_$(date +%Y%m%d).tar.gz \
 ## Scaling Considerations
 
 ### Horizontal Scaling
+
 - Load balancer configuration
 - Session management
 - Database connection pooling
 - Cache distribution
 
 ### Vertical Scaling
+
 - CPU and memory optimization
 - Database performance tuning
 - Query optimization
@@ -311,12 +331,14 @@ tar -czf electiontracker_backup_$(date +%Y%m%d).tar.gz \
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Database Connection**: Check connection string and network access
 2. **API Rate Limits**: Implement proper rate limiting and caching
 3. **Memory Usage**: Monitor and optimize database queries
 4. **SSL/TLS**: Ensure proper certificate configuration
 
 ### Debug Mode
+
 ```bash
 # Enable debug logging
 NODE_ENV=development npm start
@@ -331,6 +353,7 @@ LOG_LEVEL=debug npm start
 ## Support
 
 For deployment issues:
+
 1. Check the troubleshooting section
 2. Review application logs
 3. Verify environment configuration

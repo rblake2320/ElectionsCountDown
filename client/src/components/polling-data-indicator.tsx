@@ -1,5 +1,5 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
 interface PollingDataIndicatorProps {
   candidate: {
@@ -17,7 +17,7 @@ export function PollingDataIndicator({ candidate }: PollingDataIndicatorProps) {
         status: 'static',
         color: 'text-yellow-600 dark:text-yellow-400',
         icon: AlertTriangle,
-        message: 'Static database value - not from live polling sources'
+        message: 'Static database value - not from live polling sources',
       };
     }
 
@@ -30,7 +30,7 @@ export function PollingDataIndicator({ candidate }: PollingDataIndicatorProps) {
         status: 'fresh',
         color: 'text-green-600 dark:text-green-400',
         icon: CheckCircle,
-        message: `Fresh polling data from ${candidate.pollingSource} (${daysSince} days ago)`
+        message: `Fresh polling data from ${candidate.pollingSource} (${daysSince} days ago)`,
       };
     }
 
@@ -39,7 +39,7 @@ export function PollingDataIndicator({ candidate }: PollingDataIndicatorProps) {
         status: 'recent',
         color: 'text-blue-600 dark:text-blue-400',
         icon: Clock,
-        message: `Recent polling data from ${candidate.pollingSource} (${daysSince} days ago)`
+        message: `Recent polling data from ${candidate.pollingSource} (${daysSince} days ago)`,
       };
     }
 
@@ -47,7 +47,7 @@ export function PollingDataIndicator({ candidate }: PollingDataIndicatorProps) {
       status: 'outdated',
       color: 'text-orange-600 dark:text-orange-400',
       icon: AlertTriangle,
-      message: `Outdated polling data from ${candidate.pollingSource} (${daysSince} days ago)`
+      message: `Outdated polling data from ${candidate.pollingSource} (${daysSince} days ago)`,
     };
   };
 
@@ -73,7 +73,12 @@ export function PollingDataIndicator({ candidate }: PollingDataIndicatorProps) {
             <p className="text-sm">{freshness.message}</p>
             {candidate.pollingTrend && (
               <p className="text-sm mt-1">
-                Trend: {candidate.pollingTrend === 'up' ? '↗️' : candidate.pollingTrend === 'down' ? '↘️' : '➡️'}
+                Trend:{' '}
+                {candidate.pollingTrend === 'up'
+                  ? '↗️'
+                  : candidate.pollingTrend === 'down'
+                    ? '↘️'
+                    : '➡️'}
               </p>
             )}
           </div>

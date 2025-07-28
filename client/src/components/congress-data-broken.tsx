@@ -1,31 +1,37 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export function CongressData() {
-  const [selectedCongress, setSelectedCongress] = useState("119");
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedChamber, setSelectedChamber] = useState("house");
-  const [selectedCommitteeCode, setSelectedCommitteeCode] = useState("");
-  
+  const [selectedCongress, setSelectedCongress] = useState('119');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedChamber, setSelectedChamber] = useState('house');
+  const [selectedCommitteeCode, setSelectedCommitteeCode] = useState('');
+
   // Filtering and search states
-  const [memberSearch, setMemberSearch] = useState("");
-  const [memberPartyFilter, setMemberPartyFilter] = useState("");
-  const [memberStateFilter, setMemberStateFilter] = useState("");
-  const [memberChamberFilter, setMemberChamberFilter] = useState("");
-  
-  const [billSearch, setBillSearch] = useState("");
-  const [billStatusFilter, setBillStatusFilter] = useState("");
-  
-  const [committeeSearch, setCommitteeSearch] = useState("");
-  const [committeeChamberFilter, setCommitteeChamberFilter] = useState("");
+  const [memberSearch, setMemberSearch] = useState('');
+  const [memberPartyFilter, setMemberPartyFilter] = useState('');
+  const [memberStateFilter, setMemberStateFilter] = useState('');
+  const [memberChamberFilter, setMemberChamberFilter] = useState('');
+
+  const [billSearch, setBillSearch] = useState('');
+  const [billStatusFilter, setBillStatusFilter] = useState('');
+
+  const [committeeSearch, setCommitteeSearch] = useState('');
+  const [committeeChamberFilter, setCommitteeChamberFilter] = useState('');
 
   // Bills API
   const { data: bills, isLoading: billsLoading } = useQuery({
@@ -33,7 +39,7 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/bills');
       return response.json();
-    }
+    },
   });
 
   // Bills by Congress API
@@ -43,7 +49,7 @@ export function CongressData() {
       const response = await fetch(`/api/bills/${selectedCongress}`);
       return response.json();
     },
-    enabled: !!selectedCongress
+    enabled: !!selectedCongress,
   });
 
   // Members API
@@ -52,7 +58,7 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/members');
       return response.json();
-    }
+    },
   });
 
   // Members by State API
@@ -62,7 +68,7 @@ export function CongressData() {
       const response = await fetch(`/api/members/${selectedState}`);
       return response.json();
     },
-    enabled: !!selectedState
+    enabled: !!selectedState,
   });
 
   // Committees API
@@ -71,17 +77,19 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/committees');
       return response.json();
-    }
+    },
   });
 
   // Committee Members API
   const { data: committeeMembers, isLoading: committeeMembersLoading } = useQuery({
     queryKey: ['/api/committees', selectedChamber, selectedCommitteeCode, 'members'],
     queryFn: async () => {
-      const response = await fetch(`/api/committees/${selectedChamber}/${selectedCommitteeCode}/members`);
+      const response = await fetch(
+        `/api/committees/${selectedChamber}/${selectedCommitteeCode}/members`
+      );
       return response.json();
     },
-    enabled: !!selectedChamber && !!selectedCommitteeCode
+    enabled: !!selectedChamber && !!selectedCommitteeCode,
   });
 
   // Congressional Records API
@@ -90,7 +98,7 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/congressional-records');
       return response.json();
-    }
+    },
   });
 
   // Senate Communications API
@@ -99,7 +107,7 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/senate-communications');
       return response.json();
-    }
+    },
   });
 
   // Nominations API
@@ -108,7 +116,7 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/nominations');
       return response.json();
-    }
+    },
   });
 
   // House Votes API
@@ -117,10 +125,10 @@ export function CongressData() {
     queryFn: async () => {
       const response = await fetch('/api/house-votes');
       return response.json();
-    }
+    },
   });
 
-  const BillsList = ({ bills, loading }: { bills: any[], loading: boolean }) => (
+  const BillsList = ({ bills, loading }: { bills: any[]; loading: boolean }) => (
     <ScrollArea className="h-96">
       {loading ? (
         <div className="space-y-3">
@@ -134,10 +142,15 @@ export function CongressData() {
             <Card key={i} className="p-3">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h4 className="font-semibold text-sm">{bill.type} {bill.number}</h4>
+                  <h4 className="font-semibold text-sm">
+                    {bill.type} {bill.number}
+                  </h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">{bill.title}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Latest: {typeof bill.latestAction === 'string' ? bill.latestAction : bill.latestAction?.text || 'No recent action'}
+                    Latest:{' '}
+                    {typeof bill.latestAction === 'string'
+                      ? bill.latestAction
+                      : bill.latestAction?.text || 'No recent action'}
                   </p>
                 </div>
                 <Badge variant="outline">Congress {bill.congress}</Badge>
@@ -149,54 +162,74 @@ export function CongressData() {
     </ScrollArea>
   );
 
-  const MembersList = ({ members, loading }: { members: any[], loading: boolean }) => {
+  const MembersList = ({ members, loading }: { members: any[]; loading: boolean }) => {
     // Filter members based on search and filter criteria
-    const filteredMembers = members?.filter(member => {
-      const matchesSearch = !memberSearch || 
-        member.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
-        member.bioguideId?.toLowerCase().includes(memberSearch.toLowerCase());
-      
-      const matchesParty = !memberPartyFilter || 
-        member.party?.toLowerCase().includes(memberPartyFilter.toLowerCase());
-      
-      const matchesState = !memberStateFilter || 
-        member.state?.toLowerCase() === memberStateFilter.toLowerCase();
-      
-      const matchesChamber = !memberChamberFilter || 
-        member.chamber?.toLowerCase().includes(memberChamberFilter.toLowerCase());
-      
-      return matchesSearch && matchesParty && matchesState && matchesChamber;
-    }) || [];
+    const filteredMembers =
+      members?.filter(member => {
+        const matchesSearch =
+          !memberSearch ||
+          member.name?.toLowerCase().includes(memberSearch.toLowerCase()) ||
+          member.bioguideId?.toLowerCase().includes(memberSearch.toLowerCase());
+
+        const matchesParty =
+          !memberPartyFilter ||
+          member.party?.toLowerCase().includes(memberPartyFilter.toLowerCase());
+
+        const matchesState =
+          !memberStateFilter || member.state?.toLowerCase() === memberStateFilter.toLowerCase();
+
+        const matchesChamber =
+          !memberChamberFilter ||
+          member.chamber?.toLowerCase().includes(memberChamberFilter.toLowerCase());
+
+        return matchesSearch && matchesParty && matchesState && matchesChamber;
+      }) || [];
 
     return (
-    <ScrollArea className="h-96">
-      {loading ? (
-        <div className="space-y-3">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredMembers?.map((member: any, i: number) => (
-            <Card key={i} className="p-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-sm">{member.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    {typeof member.party === 'string' ? member.party : member.party?.name || 'N/A'} - {typeof member.state === 'string' ? member.state : member.state?.name || 'N/A'} {member.district && `District ${member.district}`}
-                  </p>
+      <ScrollArea className="h-96">
+        {loading ? (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredMembers?.map((member: any, i: number) => (
+              <Card key={i} className="p-3">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="font-semibold text-sm">{member.name}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {typeof member.party === 'string'
+                        ? member.party
+                        : member.party?.name || 'N/A'}{' '}
+                      -{' '}
+                      {typeof member.state === 'string'
+                        ? member.state
+                        : member.state?.name || 'N/A'}{' '}
+                      {member.district && `District ${member.district}`}
+                    </p>
+                  </div>
+                  <Badge
+                    variant={
+                      member.party === 'D'
+                        ? 'default'
+                        : member.party === 'R'
+                          ? 'destructive'
+                          : 'secondary'
+                    }
+                  >
+                    {member.party}
+                  </Badge>
                 </div>
-                <Badge variant={member.party === 'D' ? 'default' : member.party === 'R' ? 'destructive' : 'secondary'}>
-                  {member.party}
-                </Badge>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-    </ScrollArea>
-  );
+              </Card>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -234,14 +267,10 @@ export function CongressData() {
                   <Input
                     placeholder="Any Congress number (e.g., 119, 118, 110...)"
                     value={selectedCongress}
-                    onChange={(e) => setSelectedCongress(e.target.value)}
+                    onChange={e => setSelectedCongress(e.target.value)}
                     className="w-64"
                   />
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setSelectedCongress("119")}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setSelectedCongress('119')}>
                     Current (119th)
                   </Button>
                 </div>
@@ -258,8 +287,10 @@ export function CongressData() {
             <Card>
               <CardHeader>
                 <CardTitle>All Members</CardTitle>
-                <CardDescription>House and Senate members ({members?.length || 0} total)</CardDescription>
-                <Button 
+                <CardDescription>
+                  House and Senate members ({members?.length || 0} total)
+                </CardDescription>
+                <Button
                   onClick={async () => {
                     try {
                       const response = await fetch('/api/congress/sync-all', { method: 'POST' });
@@ -291,7 +322,7 @@ export function CongressData() {
                   <Input
                     placeholder="State code (e.g., CA, NY)"
                     value={selectedState}
-                    onChange={(e) => setSelectedState(e.target.value.toUpperCase())}
+                    onChange={e => setSelectedState(e.target.value.toUpperCase())}
                     className="w-32"
                   />
                 </div>
@@ -325,7 +356,9 @@ export function CongressData() {
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{committee.name}</h4>
-                              <p className="text-xs text-muted-foreground">{committee.systemCode}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {committee.systemCode}
+                              </p>
                             </div>
                             <Badge variant="outline">{committee.chamber}</Badge>
                           </div>
@@ -344,7 +377,7 @@ export function CongressData() {
                 <div className="flex gap-2">
                   <select
                     value={selectedChamber}
-                    onChange={(e) => setSelectedChamber(e.target.value)}
+                    onChange={e => setSelectedChamber(e.target.value)}
                     className="px-3 py-2 border rounded-md text-sm"
                   >
                     <option value="house">House</option>
@@ -353,7 +386,7 @@ export function CongressData() {
                   <Input
                     placeholder="Committee code"
                     value={selectedCommitteeCode}
-                    onChange={(e) => setSelectedCommitteeCode(e.target.value)}
+                    onChange={e => setSelectedCommitteeCode(e.target.value)}
                     className="w-32"
                   />
                 </div>
@@ -384,7 +417,9 @@ export function CongressData() {
                     {congressionalRecords?.slice(0, 20).map((record: any, i: number) => (
                       <Card key={i} className="p-3">
                         <h4 className="font-semibold text-sm">{record.title}</h4>
-                        <p className="text-sm text-muted-foreground">{record.chamber} - {record.date}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {record.chamber} - {record.date}
+                        </p>
                       </Card>
                     ))}
                   </div>

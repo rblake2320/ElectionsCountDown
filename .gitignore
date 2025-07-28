@@ -113,3 +113,10 @@ test-results/
 
 # Documentation builds
 docs/build/
+
+# ESLint and Prettier
+.eslintcache
+.prettierignore
+
+# Local development
+.local

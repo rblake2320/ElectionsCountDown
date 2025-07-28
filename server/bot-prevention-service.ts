@@ -1,7 +1,7 @@
 import { db } from './db';
-import { 
-  userVerification, 
-  botDetectionLogs, 
+import {
+  userVerification,
+  botDetectionLogs,
   userBehaviorMetrics,
   verificationChallenges,
   users,
@@ -9,7 +9,7 @@ import {
   type InsertUserVerification,
   type InsertBotDetectionLog,
   type InsertUserBehaviorMetrics,
-  type InsertVerificationChallenge
+  type InsertVerificationChallenge,
 } from '@shared/schema';
 import { eq, and, gte, count } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -32,9 +32,12 @@ interface RiskAssessment {
 }
 
 export class BotPreventionService {
-
   // Layer 1: Registration verification
-  async validateRegistration(email: string, phone: string, ipAddress: string): Promise<RiskAssessment> {
+  async validateRegistration(
+    email: string,
+    phone: string,
+    ipAddress: string
+  ): Promise<RiskAssessment> {
     const risks = [];
     let riskScore = 0;
 
@@ -59,14 +62,19 @@ export class BotPreventionService {
 
     return {
       riskScore: Math.min(riskScore, 1.0),
-      verificationLevel: riskScore < 0.3 ? VERIFICATION_LEVELS.UNVERIFIED : VERIFICATION_LEVELS.UNVERIFIED,
+      verificationLevel:
+        riskScore < 0.3 ? VERIFICATION_LEVELS.UNVERIFIED : VERIFICATION_LEVELS.UNVERIFIED,
       actionRecommended: riskScore > 0.5 ? 'require_additional_verification' : 'proceed',
-      reasons: risks
+      reasons: risks,
     };
   }
 
   // Layer 2: Behavior analysis
-  async analyzeBehavior(userId: number, sessionId: string, behaviorData: any): Promise<BehaviorAnalysis> {
+  async analyzeBehavior(
+    userId: number,
+    sessionId: string,
+    behaviorData: any
+  ): Promise<BehaviorAnalysis> {
     const suspiciousFlags = [];
     let isHumanLike = true;
 
@@ -88,7 +96,8 @@ export class BotPreventionService {
     const clickPatterns = behaviorData.clickPatterns || [];
     if (clickPatterns.length > 0) {
       const avgTimeBetweenClicks = this.calculateAverageTimeBetweenClicks(clickPatterns);
-      if (avgTimeBetweenClicks < 100) { // Less than 100ms between clicks
+      if (avgTimeBetweenClicks < 100) {
+        // Less than 100ms between clicks
         suspiciousFlags.push('Superhuman click speed');
         isHumanLike = false;
       }
@@ -103,14 +112,16 @@ export class BotPreventionService {
 
     // Form fill speed analysis
     const formFillSpeed = behaviorData.formFillSpeed || 0;
-    if (formFillSpeed > 300) { // More than 300 WPM
+    if (formFillSpeed > 300) {
+      // More than 300 WPM
       suspiciousFlags.push('Superhuman typing speed');
       isHumanLike = false;
     }
 
     // Session duration variance
     const sessionDuration = behaviorData.sessionDuration || 0;
-    if (sessionDuration < 5) { // Less than 5 seconds
+    if (sessionDuration < 5) {
+      // Less than 5 seconds
       suspiciousFlags.push('Extremely short session');
       isHumanLike = false;
     }
@@ -125,7 +136,7 @@ export class BotPreventionService {
       formFillSpeed,
       sessionDuration,
       isHumanLike,
-      pageViews: behaviorData.pageViews || 1
+      pageViews: behaviorData.pageViews || 1,
     });
 
     return {
@@ -135,7 +146,7 @@ export class BotPreventionService {
       formFillSpeed,
       sessionDuration,
       isHumanLike,
-      suspiciousFlags
+      suspiciousFlags,
     };
   }
 
@@ -167,7 +178,7 @@ export class BotPreventionService {
       riskScore: Math.min(riskScore, 1.0),
       verificationLevel: VERIFICATION_LEVELS.UNVERIFIED,
       actionRecommended: riskScore > 0.6 ? 'block_suspicious' : 'monitor',
-      reasons: risks
+      reasons: risks,
     };
   }
 
@@ -178,7 +189,7 @@ export class BotPreventionService {
 
     // Check for unusual activity patterns
     const recentActivity = await this.getRecentUserActivity(userId);
-    
+
     // Geographic impossibilities
     const locationJumps = this.detectGeographicAnomalies(recentActivity);
     if (locationJumps.length > 0) {
@@ -204,12 +215,16 @@ export class BotPreventionService {
       riskScore: Math.min(riskScore, 1.0),
       verificationLevel: VERIFICATION_LEVELS.BEHAVIOR_VERIFIED,
       actionRecommended: riskScore > 0.7 ? 'require_reverification' : 'continue_monitoring',
-      reasons: risks
+      reasons: risks,
     };
   }
 
   // User verification management
-  async updateUserVerification(userId: number, verificationType: string, verified: boolean): Promise<void> {
+  async updateUserVerification(
+    userId: number,
+    verificationType: string,
+    verified: boolean
+  ): Promise<void> {
     const [existingVerification] = await db
       .select()
       .from(userVerification)
@@ -217,7 +232,7 @@ export class BotPreventionService {
 
     const updates: Partial<InsertUserVerification> = {
       lastVerified: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // Update verification fields based on type
@@ -248,14 +263,11 @@ export class BotPreventionService {
     }
 
     if (existingVerification) {
-      await db
-        .update(userVerification)
-        .set(updates)
-        .where(eq(userVerification.userId, userId));
+      await db.update(userVerification).set(updates).where(eq(userVerification.userId, userId));
     } else {
       await db.insert(userVerification).values({
         userId,
-        ...updates
+        ...updates,
       } as InsertUserVerification);
     }
   }
@@ -273,19 +285,25 @@ export class BotPreventionService {
         emailVerified: false,
         phoneVerified: false,
         riskScore: '0.00',
-        isVerifiedForAnalytics: false
+        isVerifiedForAnalytics: false,
       };
     }
 
     return {
       ...verification,
-      isVerifiedForAnalytics: verification.verificationLevel >= VERIFICATION_LEVELS.PHONE_VERIFIED
+      isVerifiedForAnalytics: verification.verificationLevel >= VERIFICATION_LEVELS.PHONE_VERIFIED,
     };
   }
 
   // Log bot detection events
-  async logDetection(userId: number | null, sessionId: string, detectionType: string, 
-                    confidenceScore: number, actionTaken: string, behaviorData?: any): Promise<void> {
+  async logDetection(
+    userId: number | null,
+    sessionId: string,
+    detectionType: string,
+    confidenceScore: number,
+    actionTaken: string,
+    behaviorData?: any
+  ): Promise<void> {
     await db.insert(botDetectionLogs).values({
       userId,
       sessionId,
@@ -294,7 +312,7 @@ export class BotPreventionService {
       actionTaken,
       behaviorData,
       ipAddress: behaviorData?.ipAddress || null,
-      userAgent: behaviorData?.userAgent || null
+      userAgent: behaviorData?.userAgent || null,
     });
   }
 
@@ -304,36 +322,47 @@ export class BotPreventionService {
     const verifiedUsers = await db
       .select({
         userId: userVerification.userId,
-        verificationLevel: userVerification.verificationLevel
+        verificationLevel: userVerification.verificationLevel,
       })
       .from(userVerification)
       .where(gte(userVerification.verificationLevel, VERIFICATION_LEVELS.PHONE_VERIFIED));
 
     const verifiedUserIds = verifiedUsers.map(u => u.userId);
-    
+
     // Calculate metrics only from verified users
     const totalInterest = verifiedUserIds.length;
-    const verifiedHumans = verifiedUsers.filter(u => u.verificationLevel >= VERIFICATION_LEVELS.PHONE_VERIFIED).length;
+    const verifiedHumans = verifiedUsers.filter(
+      u => u.verificationLevel >= VERIFICATION_LEVELS.PHONE_VERIFIED
+    ).length;
     const botFiltered = totalInterest - verifiedHumans;
 
     return {
       total_interest: totalInterest + Math.floor(Math.random() * 1000), // Include some unverified for totals
       verified_humans: verifiedHumans,
       bot_filtered: botFiltered,
-      confidence_level: verifiedHumans / (totalInterest || 1) > 0.95 ? "Very High" : "High",
+      confidence_level: verifiedHumans / (totalInterest || 1) > 0.95 ? 'Very High' : 'High',
       verification_breakdown: {
-        level_2_phone: verifiedUsers.filter(u => u.verificationLevel === VERIFICATION_LEVELS.PHONE_VERIFIED).length,
-        level_3_behavior: verifiedUsers.filter(u => u.verificationLevel === VERIFICATION_LEVELS.BEHAVIOR_VERIFIED).length,
-        level_4_id: verifiedUsers.filter(u => u.verificationLevel === VERIFICATION_LEVELS.ID_VERIFIED).length
-      }
+        level_2_phone: verifiedUsers.filter(
+          u => u.verificationLevel === VERIFICATION_LEVELS.PHONE_VERIFIED
+        ).length,
+        level_3_behavior: verifiedUsers.filter(
+          u => u.verificationLevel === VERIFICATION_LEVELS.BEHAVIOR_VERIFIED
+        ).length,
+        level_4_id: verifiedUsers.filter(
+          u => u.verificationLevel === VERIFICATION_LEVELS.ID_VERIFIED
+        ).length,
+      },
     };
   }
 
   // Private helper methods
   private isDisposableEmail(email: string): boolean {
     const disposableDomains = [
-      '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 
-      'tempmail.org', 'throwaway.email'
+      '10minutemail.com',
+      'guerrillamail.com',
+      'mailinator.com',
+      'tempmail.org',
+      'throwaway.email',
     ];
     const domain = email.split('@')[1]?.toLowerCase();
     return disposableDomains.includes(domain);
@@ -356,46 +385,54 @@ export class BotPreventionService {
 
   private detectLinearMovements(movements: any[]): number {
     if (movements.length < 5) return 0;
-    
+
     let linearCount = 0;
     for (let i = 2; i < movements.length; i++) {
-      const prev = movements[i-2];
-      const curr = movements[i-1];
+      const prev = movements[i - 2];
+      const curr = movements[i - 1];
       const next = movements[i];
-      
+
       // Check if movement is perfectly linear
       const slope1 = (curr.y - prev.y) / (curr.x - prev.x);
       const slope2 = (next.y - curr.y) / (next.x - curr.x);
-      
+
       if (Math.abs(slope1 - slope2) < 0.1) {
         linearCount++;
       }
     }
-    
+
     return linearCount / (movements.length - 2);
   }
 
   private calculateAverageTimeBetweenClicks(clicks: any[]): number {
     if (clicks.length < 2) return 1000;
-    
+
     let totalTime = 0;
     for (let i = 1; i < clicks.length; i++) {
-      totalTime += clicks[i].timestamp - clicks[i-1].timestamp;
+      totalTime += clicks[i].timestamp - clicks[i - 1].timestamp;
     }
-    
+
     return totalTime / (clicks.length - 1);
   }
 
   private isHeadlessBrowser(userAgent: string): boolean {
     const headlessSignatures = [
-      'HeadlessChrome', 'PhantomJS', 'SlimerJS', 'HtmlUnit', 'Chrome-Lighthouse'
+      'HeadlessChrome',
+      'PhantomJS',
+      'SlimerJS',
+      'HtmlUnit',
+      'Chrome-Lighthouse',
     ];
     return headlessSignatures.some(sig => userAgent.includes(sig));
   }
 
   private hasAutomationSignatures(userAgent: string): boolean {
     const automationSignatures = [
-      'Selenium', 'WebDriver', 'ChromeDriver', 'Puppeteer', 'Playwright'
+      'Selenium',
+      'WebDriver',
+      'ChromeDriver',
+      'Puppeteer',
+      'Playwright',
     ];
     return automationSignatures.some(sig => userAgent.includes(sig));
   }
@@ -406,7 +443,7 @@ export class BotPreventionService {
       .select({ count: count() })
       .from(userVerification)
       .where(eq(userVerification.deviceFingerprint, fingerprint));
-    
+
     return usageCount[0]?.count > 5 ? 0.7 : 0.1;
   }
 

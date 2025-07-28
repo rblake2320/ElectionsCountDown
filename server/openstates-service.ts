@@ -8,12 +8,14 @@ const OpenStatesPersonSchema = z.object({
     name: z.string(),
     classification: z.string(),
   }),
-  current_role: z.object({
-    title: z.string(),
-    org_classification: z.string(),
-    district: z.string().optional(),
-    division_id: z.string(),
-  }).optional(),
+  current_role: z
+    .object({
+      title: z.string(),
+      org_classification: z.string(),
+      district: z.string().optional(),
+      division_id: z.string(),
+    })
+    .optional(),
   given_name: z.string().optional(),
   family_name: z.string().optional(),
   image: z.string().optional(),
@@ -41,11 +43,11 @@ export class OpenStatesService {
   private async rateLimitedRequest(url: string): Promise<Response> {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
-    
+
     if (timeSinceLastRequest < this.rateLimitDelay) {
       await new Promise(resolve => setTimeout(resolve, this.rateLimitDelay - timeSinceLastRequest));
     }
-    
+
     this.lastRequestTime = Date.now();
     return fetch(url);
   }
@@ -56,12 +58,12 @@ export class OpenStatesService {
     try {
       const url = `${this.baseUrl}/people?apikey=${this.apiKey}&jurisdiction=us&per_page=${limit}`;
       const response = await this.rateLimitedRequest(url);
-      
+
       if (!response.ok) {
         throw new Error(`OpenStates API error: ${response.status}`);
       }
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
       return data.results?.map((person: any) => OpenStatesPersonSchema.parse(person)) || [];
     } catch (error) {
       console.error('Error fetching current Congress members:', error);
@@ -75,12 +77,12 @@ export class OpenStatesService {
     try {
       const url = `${this.baseUrl}/people?apikey=${this.apiKey}&jurisdiction=us&current_role__division_id__contains=${state.toLowerCase()}&per_page=50`;
       const response = await this.rateLimitedRequest(url);
-      
+
       if (!response.ok) {
         throw new Error(`OpenStates API error: ${response.status}`);
       }
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
       return data.results?.map((person: any) => OpenStatesPersonSchema.parse(person)) || [];
     } catch (error) {
       console.error(`Error fetching members for state ${state}:`, error);
@@ -94,13 +96,13 @@ export class OpenStatesService {
     try {
       const url = `${this.baseUrl}/people/${personId}?apikey=${this.apiKey}`;
       const response = await this.rateLimitedRequest(url);
-      
+
       if (!response.ok) {
         if (response.status === 404) return null;
         throw new Error(`OpenStates API error: ${response.status}`);
       }
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
       return OpenStatesPersonSchema.parse(data);
     } catch (error) {
       console.error(`Error fetching member ${personId}:`, error);
@@ -114,12 +116,12 @@ export class OpenStatesService {
     try {
       const url = `${this.baseUrl}/people?apikey=${this.apiKey}&jurisdiction=us&name=${encodeURIComponent(name)}&per_page=10`;
       const response = await this.rateLimitedRequest(url);
-      
+
       if (!response.ok) {
         throw new Error(`OpenStates API error: ${response.status}`);
       }
 
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
       return data.results?.map((person: any) => OpenStatesPersonSchema.parse(person)) || [];
     } catch (error) {
       console.error(`Error searching members by name ${name}:`, error);
@@ -132,7 +134,7 @@ export class OpenStatesService {
     return {
       dailyLimit: 500,
       remaining: 500, // Would need to track this in practice
-      resetTime: 'Daily reset at midnight UTC'
+      resetTime: 'Daily reset at midnight UTC',
     };
   }
 }

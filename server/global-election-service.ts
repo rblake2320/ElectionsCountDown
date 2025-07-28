@@ -47,33 +47,35 @@ export class GlobalElectionService {
   async fetchIDEAElections(country?: string): Promise<GlobalElectionData[]> {
     try {
       const url = `https://www.idea.int/data-tools/data/electoral-management/api/elections${country ? `?country=${country}` : ''}`;
-      
+
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${this.ideaApiKey}`,
-          'Accept': 'application/json'
-        }
+          Authorization: `Bearer ${this.ideaApiKey}`,
+          Accept: 'application/json',
+        },
       });
 
       if (!response.ok) {
         throw new Error(`IDEA API error: ${response.status}`);
       }
 
-      const data: IDEAData = await response.json() as IDEAData;
-      
-      return data.elections?.map(election => ({
-        country: election.country,
-        countryCode: election.countryCode,
-        electionType: election.electionType,
-        date: election.date,
-        title: election.title,
-        status: this.determineElectionStatus(election.date),
-        participatingParties: election.participatingParties || [],
-        voterTurnout: election.voterTurnout,
-        results: election.results,
-        source: 'International IDEA',
-        lastUpdated: new Date()
-      })) || [];
+      const data: IDEAData = (await response.json()) as IDEAData;
+
+      return (
+        data.elections?.map(election => ({
+          country: election.country,
+          countryCode: election.countryCode,
+          electionType: election.electionType,
+          date: election.date,
+          title: election.title,
+          status: this.determineElectionStatus(election.date),
+          participatingParties: election.participatingParties || [],
+          voterTurnout: election.voterTurnout,
+          results: election.results,
+          source: 'International IDEA',
+          lastUpdated: new Date(),
+        })) || []
+      );
     } catch (error) {
       console.error('IDEA API fetch failed:', error);
       return [];
@@ -85,15 +87,15 @@ export class GlobalElectionService {
     try {
       const response = await fetch(`${this.aceNetworkEndpoint}/electoral-systems`, {
         headers: {
-          'Accept': 'application/json'
-        }
+          Accept: 'application/json',
+        },
       });
 
       if (!response.ok) {
         throw new Error(`ACE Network API error: ${response.status}`);
       }
 
-      return await response.json() as any[];
+      return (await response.json()) as any[];
     } catch (error) {
       console.error('ACE Network fetch failed:', error);
       return [];
@@ -105,10 +107,10 @@ export class GlobalElectionService {
     try {
       const baseUrl = 'https://v3.openstates.org/events';
       const params = new URLSearchParams({
-        'include': 'participants,agenda',
-        'per_page': '100'
+        include: 'participants,agenda',
+        per_page: '100',
       });
-      
+
       if (state) {
         params.append('jurisdiction', state.toLowerCase());
       }
@@ -116,29 +118,31 @@ export class GlobalElectionService {
       const response = await fetch(`${baseUrl}?${params}`, {
         headers: {
           'X-API-KEY': this.openStatesKey,
-          'Accept': 'application/json'
-        }
+          Accept: 'application/json',
+        },
       });
 
       if (!response.ok) {
         throw new Error(`Open States API error: ${response.status}`);
       }
 
-      const data = await response.json() as any;
-      
-      return data.results?.map((event: any) => ({
-        id: event.id,
-        type: event.classification?.[0] || 'session',
-        state: event.jurisdiction?.name || state || 'unknown',
-        date: event.start_date,
-        data: {
-          name: event.name,
-          description: event.description,
-          location: event.location,
-          participants: event.participants,
-          agenda: event.agenda
-        }
-      })) || [];
+      const data = (await response.json()) as any;
+
+      return (
+        data.results?.map((event: any) => ({
+          id: event.id,
+          type: event.classification?.[0] || 'session',
+          state: event.jurisdiction?.name || state || 'unknown',
+          date: event.start_date,
+          data: {
+            name: event.name,
+            description: event.description,
+            location: event.location,
+            participants: event.participants,
+            agenda: event.agenda,
+          },
+        })) || []
+      );
     } catch (error) {
       console.error('Open States API fetch failed:', error);
       return [];
@@ -153,21 +157,21 @@ export class GlobalElectionService {
       const params = new URLSearchParams({
         'filters[state]': state,
         'filters[year]': year,
-        'limit': '100'
+        limit: '100',
       });
 
       const response = await fetch(`${url}?${params}`, {
         headers: {
-          'Authorization': `Bearer ${this.ballotpediaKey}`,
-          'Accept': 'application/json'
-        }
+          Authorization: `Bearer ${this.ballotpediaKey}`,
+          Accept: 'application/json',
+        },
       });
 
       if (!response.ok) {
         throw new Error(`Ballotpedia API error: ${response.status}`);
       }
 
-      return await response.json() as any[];
+      return (await response.json()) as any[];
     } catch (error) {
       console.error('Ballotpedia API fetch failed:', error);
       return [];
@@ -179,13 +183,13 @@ export class GlobalElectionService {
     try {
       const url = `https://api.votesmart.org/Rating.getCandidateRating`;
       const params = new URLSearchParams({
-        'key': process.env.VOTESMART_API_KEY || '',
-        'candidateId': candidateId,
-        'o': 'JSON'
+        key: process.env.VOTESMART_API_KEY || '',
+        candidateId: candidateId,
+        o: 'JSON',
       });
 
       const response = await fetch(`${url}?${params}`);
-      
+
       if (!response.ok) {
         throw new Error(`VoteSmart API error: ${response.status}`);
       }
@@ -204,13 +208,13 @@ export class GlobalElectionService {
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.DEMOCRACY_WORKS_KEY}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${process.env.DEMOCRACY_WORKS_KEY}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           address: address,
-          election_date: new Date().toISOString().split('T')[0]
-        })
+          election_date: new Date().toISOString().split('T')[0],
+        }),
       });
 
       if (!response.ok) {
@@ -230,11 +234,11 @@ export class GlobalElectionService {
 
     // Monitor major democracies
     const countries = ['USA', 'CAN', 'GBR', 'DEU', 'FRA', 'AUS', 'JPN', 'IND'];
-    
+
     for (const country of countries) {
       try {
         const elections = await this.fetchIDEAElections(country);
-        
+
         for (const election of elections) {
           // Validate election data
           const validation = await aiValidationService.validateElectionDate(
@@ -245,12 +249,15 @@ export class GlobalElectionService {
 
           if (validation.verified) {
             // Process as election event
-            await eventProcessingService.ingestEvent({
-              type: 'result_update',
-              electionId: this.generateElectionId(election),
-              data: election,
-              timestamp: new Date()
-            }, 'global_monitor');
+            await eventProcessingService.ingestEvent(
+              {
+                type: 'result_update',
+                electionId: this.generateElectionId(election),
+                data: election,
+                timestamp: new Date(),
+              },
+              'global_monitor'
+            );
           }
         }
       } catch (error) {
@@ -264,23 +271,26 @@ export class GlobalElectionService {
     console.log('Monitoring legislative activity...');
 
     const states = ['ca', 'tx', 'ny', 'fl', 'pa', 'il', 'oh', 'ga', 'nc', 'mi'];
-    
+
     for (const state of states) {
       try {
         const events = await this.fetchOpenStatesEvents(state);
-        
+
         for (const event of events) {
           // Process legislative events that might affect elections
           if (this.isElectionRelevant(event)) {
-            await eventProcessingService.ingestEvent({
-              type: 'candidate_change',
-              electionId: this.findRelatedElection(event),
-              data: {
-                legislativeEvent: event,
-                impact: 'potential_candidate_change'
+            await eventProcessingService.ingestEvent(
+              {
+                type: 'candidate_change',
+                electionId: this.findRelatedElection(event),
+                data: {
+                  legislativeEvent: event,
+                  impact: 'potential_candidate_change',
+                },
+                timestamp: new Date(event.date),
               },
-              timestamp: new Date(event.date)
-            }, 'legislative_monitor');
+              'legislative_monitor'
+            );
           }
         }
       } catch (error) {
@@ -295,26 +305,26 @@ export class GlobalElectionService {
       // Combine multiple sources for comprehensive ballot information
       const [democracyWorks, ballotpedia] = await Promise.allSettled([
         this.fetchBallotInfo(address),
-        this.getBallotpediaInfoByAddress(address)
+        this.getBallotpediaInfoByAddress(address),
       ]);
 
       const combined = {
         address,
         timestamp: new Date(),
-        sources: []
+        sources: [],
       };
 
       if (democracyWorks.status === 'fulfilled' && democracyWorks.value) {
         combined.sources.push({
           provider: 'Democracy Works',
-          data: democracyWorks.value
+          data: democracyWorks.value,
         });
       }
 
       if (ballotpedia.status === 'fulfilled' && ballotpedia.value) {
         combined.sources.push({
           provider: 'Ballotpedia',
-          data: ballotpedia.value
+          data: ballotpedia.value,
         });
       }
 
@@ -353,15 +363,18 @@ export class GlobalElectionService {
 
       if (evidenceValidation.confidence > 0.6) {
         // Submit to event processing
-        await eventProcessingService.ingestEvent({
-          type: 'result_update',
-          electionId: report.electionId,
-          data: {
-            crowdsourcedReport: report,
-            validationScore: evidenceValidation.confidence
+        await eventProcessingService.ingestEvent(
+          {
+            type: 'result_update',
+            electionId: report.electionId,
+            data: {
+              crowdsourcedReport: report,
+              validationScore: evidenceValidation.confidence,
+            },
+            timestamp: new Date(),
           },
-          timestamp: new Date()
-        }, 'crowdsource');
+          'crowdsource'
+        );
 
         return true;
       }
@@ -394,7 +407,7 @@ export class GlobalElectionService {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash;
@@ -402,10 +415,17 @@ export class GlobalElectionService {
 
   private isElectionRelevant(event: OpenStatesEvent): boolean {
     const relevantKeywords = [
-      'election', 'voting', 'ballot', 'candidate', 'campaign',
-      'redistricting', 'polling', 'voter', 'registration'
+      'election',
+      'voting',
+      'ballot',
+      'candidate',
+      'campaign',
+      'redistricting',
+      'polling',
+      'voter',
+      'registration',
     ];
-    
+
     const eventText = `${event.data.name} ${event.data.description}`.toLowerCase();
     return relevantKeywords.some(keyword => eventText.includes(keyword));
   }
@@ -422,7 +442,10 @@ export class GlobalElectionService {
     return null;
   }
 
-  private async validateReporterLocation(reportedLocation: string, ipAddress: string): Promise<boolean> {
+  private async validateReporterLocation(
+    reportedLocation: string,
+    ipAddress: string
+  ): Promise<boolean> {
     // Validate that reporter is actually in the location they claim
     // This would use GeoIP services to verify
     return true; // Simplified for now
@@ -441,7 +464,7 @@ export class GlobalElectionService {
       openStatesConnected: !!this.openStatesKey,
       aceNetworkConnected: !!this.aceNetworkEndpoint,
       ballotpediaConnected: !!this.ballotpediaKey,
-      lastMonitoringRun: new Date()
+      lastMonitoringRun: new Date(),
     };
   }
 }

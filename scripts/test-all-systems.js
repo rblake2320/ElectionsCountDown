@@ -1,11 +1,11 @@
 const testResults = {
   passed: [],
   failed: [],
-  warnings: []
+  warnings: [],
 };
 
 async function runAllTests() {
-  console.log("🔍 COMPREHENSIVE PLATFORM TEST STARTING...\n");
+  console.log('🔍 COMPREHENSIVE PLATFORM TEST STARTING...\n');
 
   // 1. DATABASE CONNECTION TEST
   await testDatabase();
@@ -33,7 +33,7 @@ async function runAllTests() {
 }
 
 async function testDatabase() {
-  console.log("📊 Testing Database...");
+  console.log('📊 Testing Database...');
 
   try {
     // Test basic elections endpoint
@@ -51,21 +51,21 @@ async function testDatabase() {
 }
 
 async function testAuthentication() {
-  console.log("🔐 Testing Authentication...");
+  console.log('🔐 Testing Authentication...');
 
   const testUser = {
     email: `test${Date.now()}@test.com`,
-    password: 'TestPass123!'
+    password: 'TestPass123!',
   };
 
   try {
     // Test signup
     const signup = await fetch('http://localhost:5000/api/auth/signup', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(testUser)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testUser),
     });
-    
+
     let token = null;
     if (signup.ok) {
       const signupData = await signup.json();
@@ -74,11 +74,11 @@ async function testAuthentication() {
       // User might already exist, try signin
       const signin = await fetch('http://localhost:5000/api/auth/signin', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: 'test@example.com',
-          password: 'testpass123'
-        })
+          password: 'testpass123',
+        }),
       });
       if (signin.ok) {
         const signinData = await signin.json();
@@ -90,7 +90,7 @@ async function testAuthentication() {
 
     // Test protected route
     const watchlist = await fetch('http://localhost:5000/api/user/watchlist', {
-      headers: {'Authorization': `Bearer ${token}`}
+      headers: { Authorization: `Bearer ${token}` },
     });
     if (!watchlist.ok) throw new Error('Protected route failed');
 
@@ -101,13 +101,13 @@ async function testAuthentication() {
 }
 
 async function testElectionData() {
-  console.log("🗳️ Testing Election Data...");
+  console.log('🗳️ Testing Election Data...');
 
   try {
     // Test all elections
     const elections = await fetch('http://localhost:5000/api/elections');
     const data = await elections.json();
-    
+
     if (!data || data.length === 0) {
       throw new Error('No elections found');
     }
@@ -122,7 +122,7 @@ async function testElectionData() {
     // Test candidates
     const candidates = await fetch('http://localhost:5000/api/elections/21/candidates');
     const candData = await candidates.json();
-    
+
     if (!candData || candData.length === 0) {
       testResults.warnings.push('No candidates found for election 21');
     } else {
@@ -136,13 +136,15 @@ async function testElectionData() {
 }
 
 async function testAPIs() {
-  console.log("🌐 Testing External APIs...");
+  console.log('🌐 Testing External APIs...');
 
   // Test Google Civic
   try {
-    const civic = await fetch('http://localhost:5000/api/voter-info?address=100+Main+Street+Trenton+NJ');
+    const civic = await fetch(
+      'http://localhost:5000/api/voter-info?address=100+Main+Street+Trenton+NJ'
+    );
     if (!civic.ok) throw new Error('Google Civic API integration failed');
-    
+
     const civicData = await civic.json();
     if (civicData.error === 'NO_VOTER_INFO_AVAILABLE') {
       testResults.passed.push('Google Civic API: Connected (no data for test address)');
@@ -157,13 +159,13 @@ async function testAPIs() {
   try {
     const analytics = await fetch('http://localhost:5000/api/analytics/interaction', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: 1,
         interactionType: 'test',
         electionId: 21,
-        sessionId: 'test-session'
-      })
+        sessionId: 'test-session',
+      }),
     });
     if (!analytics.ok) throw new Error('Analytics API failed');
     testResults.passed.push('Analytics API: Recording interactions');
@@ -175,12 +177,12 @@ async function testAPIs() {
   try {
     const botPrev = await fetch('http://localhost:5000/api/bot-prevention/validate', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: 'test@example.com',
         phone: '555-123-4567',
-        ipAddress: '192.168.1.1'
-      })
+        ipAddress: '192.168.1.1',
+      }),
     });
     if (botPrev.ok) {
       testResults.passed.push('Bot Prevention: Validation endpoint active');
@@ -191,7 +193,7 @@ async function testAPIs() {
 }
 
 async function testSecurity() {
-  console.log("🛡️ Testing Security...");
+  console.log('🛡️ Testing Security...');
 
   try {
     // Test SQL injection attempt
@@ -203,21 +205,20 @@ async function testSecurity() {
 
     // Test invalid authentication
     const invalidAuth = await fetch('http://localhost:5000/api/user/watchlist', {
-      headers: {'Authorization': 'Bearer invalid-token-12345'}
+      headers: { Authorization: 'Bearer invalid-token-12345' },
     });
     if (invalidAuth.status === 401 || invalidAuth.status === 403) {
       testResults.passed.push('Security: Authentication validation working');
     } else {
       testResults.failed.push(`Security: Invalid token accepted (status: ${invalidAuth.status})`);
     }
-
   } catch (error) {
     testResults.failed.push(`Security: ${error.message}`);
   }
 }
 
 async function testPerformance() {
-  console.log("⚡ Testing Performance...");
+  console.log('⚡ Testing Performance...');
 
   try {
     // Test response times
@@ -238,14 +239,13 @@ async function testPerformance() {
     } else {
       testResults.passed.push(`Performance: Avg response ${avgTime.toFixed(0)}ms`);
     }
-
   } catch (error) {
     testResults.failed.push(`Performance: ${error.message}`);
   }
 }
 
 async function testErrorHandling() {
-  console.log("❌ Testing Error Handling...");
+  console.log('❌ Testing Error Handling...');
 
   try {
     // Test 404
@@ -263,27 +263,26 @@ async function testErrorHandling() {
     // Test malformed JSON
     const malformed = await fetch('http://localhost:5000/api/auth/signin', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: '{invalid json'
+      headers: { 'Content-Type': 'application/json' },
+      body: '{invalid json',
     });
     if (!malformed.ok) {
       testResults.passed.push('Error Handling: Malformed JSON rejected');
     }
-
   } catch (error) {
     testResults.failed.push(`Error Handling: ${error.message}`);
   }
 }
 
 function generateReport() {
-  console.log("\n📋 FINAL TEST REPORT\n");
-  console.log("✅ PASSED:", testResults.passed.length);
+  console.log('\n📋 FINAL TEST REPORT\n');
+  console.log('✅ PASSED:', testResults.passed.length);
   testResults.passed.forEach(test => console.log(`  ✓ ${test}`));
 
-  console.log("\n❌ FAILED:", testResults.failed.length);
+  console.log('\n❌ FAILED:', testResults.failed.length);
   testResults.failed.forEach(test => console.log(`  ✗ ${test}`));
 
-  console.log("\n⚠️  WARNINGS:", testResults.warnings.length);
+  console.log('\n⚠️  WARNINGS:', testResults.warnings.length);
   testResults.warnings.forEach(test => console.log(`  ⚠ ${test}`));
 
   const total = testResults.passed.length + testResults.failed.length;
@@ -292,11 +291,11 @@ function generateReport() {
   console.log(`\n🎯 OVERALL SCORE: ${score.toFixed(1)}%`);
 
   if (testResults.failed.length > 0) {
-    console.log("\n🚨 CRITICAL: Fix failed tests before launch!");
+    console.log('\n🚨 CRITICAL: Fix failed tests before launch!');
   } else if (testResults.warnings.length > 0) {
-    console.log("\n⚡ READY: Can launch, but address warnings soon");
+    console.log('\n⚡ READY: Can launch, but address warnings soon');
   } else {
-    console.log("\n🚀 PERFECT: Ready for production!");
+    console.log('\n🚀 PERFECT: Ready for production!');
   }
 }
 

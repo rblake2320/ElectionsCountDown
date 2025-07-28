@@ -10,13 +10,13 @@ const db = drizzle({ client: pool });
 async function resetAndPopulateDatabase() {
   try {
     console.log('Clearing existing election data...');
-    
+
     // Clear existing data
     await db.execute(`DELETE FROM candidates WHERE election_id IN (SELECT id FROM elections)`);
     await db.execute(`DELETE FROM elections`);
-    
+
     console.log('Adding comprehensive 2025-2026 election data...');
-    
+
     // Insert comprehensive election data
     const electionsQuery = `
       INSERT INTO elections (title, description, date, type, level, state, district, is_active) VALUES
@@ -55,11 +55,11 @@ async function resetAndPopulateDatabase() {
       ('2025 Denver Mayoral Election', 'Citywide election for Mayor of Denver. Focus on affordable housing, transportation, and economic development.', '2025-11-05', 'General', 'Local', 'CO', 'Denver', true),
       ('2025 Atlanta Mayoral Election', 'Citywide election for Mayor of Atlanta. Key issues include public safety, transit expansion, and affordable housing.', '2025-11-04', 'General', 'Local', 'GA', 'Atlanta', true)
     `;
-    
+
     await db.execute(electionsQuery);
-    
+
     console.log('Adding candidate data for key elections...');
-    
+
     // Add candidate data for major elections
     const candidatesQuery = `
       INSERT INTO candidates (name, party, election_id, polling_support, is_incumbent, background) 
@@ -94,11 +94,10 @@ async function resetAndPopulateDatabase() {
       ) AS candidate_data(name, party, title, polling_support, is_incumbent, background)
       ON e.title = candidate_data.title
     `;
-    
+
     await db.execute(candidatesQuery);
-    
+
     console.log('Database successfully reset and populated with comprehensive election data');
-    
   } catch (error) {
     console.error('Error resetting database:', error);
   } finally {

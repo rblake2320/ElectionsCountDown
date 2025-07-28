@@ -1,25 +1,30 @@
 # GitHub Repository Setup Guide
 
 ## Repository Information
+
 - **GitHub URL**: https://github.com/rblake2320/ElectionsCountDown.git
 - **Current Status**: Local repository configured with all project files committed
 
 ## Current Repository Status
+
 The project is already configured as a Git repository with all files committed locally. Here's what you need to do to push to GitHub:
 
 ## Steps to Push to GitHub
 
 ### 1. Verify Remote Repository
+
 ```bash
 git remote -v
 ```
 
 ### 2. Add GitHub Repository as Remote (if not already added)
+
 ```bash
 git remote add origin https://github.com/rblake2320/ElectionsCountDown.git
 ```
 
 ### 3. Push All Files to GitHub
+
 ```bash
 git push -u origin main
 ```
@@ -27,6 +32,7 @@ git push -u origin main
 ## Project Structure Overview
 
 ### Core Application Files
+
 - `package.json` - Node.js dependencies and scripts
 - `tsconfig.json` - TypeScript configuration
 - `vite.config.ts` - Vite build configuration
@@ -34,12 +40,14 @@ git push -u origin main
 - `drizzle.config.ts` - Database ORM configuration
 
 ### Frontend (React/TypeScript)
+
 - `client/` - Complete React frontend with modern UI
   - `src/pages/` - Application pages including candidate portal
   - `src/components/` - Reusable UI components
   - `src/lib/` - Utility functions and configurations
 
 ### Backend (Node.js/Express)
+
 - `server/` - Express.js backend with comprehensive APIs
   - `routes.ts` - Main API routes
   - `routes-candidate-portal.ts` - Candidate portal specific routes
@@ -47,10 +55,12 @@ git push -u origin main
   - `db.ts` - Database connection configuration
 
 ### Database Schema
+
 - `shared/schema.ts` - Complete database schema with all tables
 - Migration files for setting up the database structure
 
 ### Key Features Included
+
 1. **Election Tracking System** - Comprehensive election data management
 2. **Candidate Portal** - Secure candidate authentication and profile management
 3. **RAG System** - Prioritizes candidate-supplied data over AI research
@@ -59,6 +69,7 @@ git push -u origin main
 6. **API Integrations** - Multiple government and third-party APIs
 
 ## Environment Variables Required
+
 ```
 DATABASE_URL=your_postgresql_url
 GOOGLE_CIVIC_API_KEY=your_google_civic_key
@@ -71,18 +82,22 @@ FIRECRAWL_API_KEY=your_firecrawl_key
 ```
 
 ## Deployment Ready
+
 The project is configured for:
+
 - **Development**: `npm run dev`
 - **Production**: `npm run build && npm start`
 - **Database**: `npm run db:push` for schema updates
 
 ## GitHub Features to Enable
+
 1. **GitHub Pages** (if desired for documentation)
 2. **GitHub Actions** for CI/CD
 3. **Dependabot** for dependency updates
 4. **Issues and Projects** for project management
 
 ## Next Steps After Push
+
 1. Configure GitHub repository settings
 2. Set up environment variables in GitHub Secrets (for Actions)
 3. Enable branch protection rules

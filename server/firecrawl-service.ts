@@ -53,7 +53,7 @@ export class FirecrawlService {
       const response = await fetch(`${this.baseUrl}/scrape`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -62,7 +62,7 @@ export class FirecrawlService {
           includeTags: ['title', 'meta', 'h1', 'h2', 'h3', 'p', 'li', 'table'],
           excludeTags: ['script', 'style', 'nav', 'footer', 'advertisement'],
           waitFor: 2000,
-          timeout: 30000
+          timeout: 30000,
         }),
       });
 
@@ -86,10 +86,9 @@ export class FirecrawlService {
         metadata: {
           language: data.data.metadata.language,
           sourceURL: data.data.metadata.sourceURL,
-          ...data.data.metadata
-        }
+          ...data.data.metadata,
+        },
       };
-
     } catch (error) {
       console.error(`Error scraping ${url}:`, error);
       return null;
@@ -100,13 +99,12 @@ export class FirecrawlService {
    * Scrape multiple URLs in parallel
    */
   async scrapeMultiple(urls: string[]): Promise<ScrapedElectionData[]> {
-    const results = await Promise.allSettled(
-      urls.map(url => this.scrapeUrl(url))
-    );
+    const results = await Promise.allSettled(urls.map(url => this.scrapeUrl(url)));
 
     return results
-      .filter((result): result is PromiseFulfilledResult<ScrapedElectionData> => 
-        result.status === 'fulfilled' && result.value !== null
+      .filter(
+        (result): result is PromiseFulfilledResult<ScrapedElectionData> =>
+          result.status === 'fulfilled' && result.value !== null
       )
       .map(result => result.value);
   }
@@ -122,16 +120,20 @@ export class FirecrawlService {
   /**
    * Scrape candidate information from official sources
    */
-  async scrapeCandidateInfo(candidateName: string, office: string, state: string): Promise<CandidateInfo | null> {
+  async scrapeCandidateInfo(
+    candidateName: string,
+    office: string,
+    state: string
+  ): Promise<CandidateInfo | null> {
     try {
       // Search for official candidate pages
       const searchUrls = [
         `https://ballotpedia.org/wiki/index.php?search=${encodeURIComponent(candidateName)}+${encodeURIComponent(state)}`,
-        `https://www.vote411.org/search?name=${encodeURIComponent(candidateName)}&state=${encodeURIComponent(state)}`
+        `https://www.vote411.org/search?name=${encodeURIComponent(candidateName)}&state=${encodeURIComponent(state)}`,
       ];
 
       const scrapedData = await this.scrapeMultiple(searchUrls);
-      
+
       if (scrapedData.length === 0) {
         return null;
       }
@@ -139,7 +141,6 @@ export class FirecrawlService {
       // Extract candidate information from scraped content
       const candidateData = scrapedData[0];
       return this.extractCandidateInfo(candidateData.content, candidateName);
-
     } catch (error) {
       console.error(`Error scraping candidate info for ${candidateName}:`, error);
       return null;
@@ -153,7 +154,7 @@ export class FirecrawlService {
     const resultsUrls = [
       `https://${state.toLowerCase()}.gov/elections/results/${electionDate}`,
       `https://ballotpedia.org/${state}_elections,_${new Date(electionDate).getFullYear()}`,
-      `https://www.politico.com/2024-election/results/${state.toLowerCase()}/`
+      `https://www.politico.com/2024-election/results/${state.toLowerCase()}/`,
     ];
 
     return await this.scrapeMultiple(resultsUrls);
@@ -167,7 +168,7 @@ export class FirecrawlService {
       `https://apnews.com/hub/election-2024`,
       `https://www.reuters.com/world/us/elections/`,
       `https://www.npr.org/sections/politics/`,
-      `https://www.pbs.org/newshour/politics`
+      `https://www.pbs.org/newshour/politics`,
     ];
 
     return await this.scrapeMultiple(newsUrls);
@@ -179,8 +180,12 @@ export class FirecrawlService {
   private extractCandidateInfo(content: string, candidateName: string): CandidateInfo | null {
     try {
       // Basic extraction using regex patterns
-      const partyMatch = content.match(new RegExp(`${candidateName}.*?(Republican|Democratic|Independent|Green|Libertarian)`, 'i'));
-      const officeMatch = content.match(new RegExp(`(Senator|Representative|Governor|Mayor|Congress)`, 'i'));
+      const partyMatch = content.match(
+        new RegExp(`${candidateName}.*?(Republican|Democratic|Independent|Green|Libertarian)`, 'i')
+      );
+      const officeMatch = content.match(
+        new RegExp(`(Senator|Representative|Governor|Mayor|Congress)`, 'i')
+      );
       const websiteMatch = content.match(/https?:\/\/[^\s<>"]+/g);
 
       return {
@@ -189,9 +194,8 @@ export class FirecrawlService {
         office: officeMatch?.[1] || 'Unknown',
         website: websiteMatch?.[0] || undefined,
         biography: this.extractBiography(content, candidateName),
-        positions: this.extractPositions(content)
+        positions: this.extractPositions(content),
       };
-
     } catch (error) {
       console.error('Error extracting candidate info:', error);
       return null;
@@ -203,9 +207,9 @@ export class FirecrawlService {
    */
   private extractBiography(content: string, candidateName: string): string | undefined {
     const sentences = content.split(/[.!?]+/);
-    const bioSentences = sentences.filter(sentence => 
-      sentence.toLowerCase().includes(candidateName.toLowerCase()) && 
-      sentence.length > 50
+    const bioSentences = sentences.filter(
+      sentence =>
+        sentence.toLowerCase().includes(candidateName.toLowerCase()) && sentence.length > 50
     );
 
     return bioSentences.slice(0, 3).join('. ').trim() || undefined;
@@ -216,16 +220,24 @@ export class FirecrawlService {
    */
   private extractPositions(content: string): string[] {
     const positionKeywords = [
-      'healthcare', 'education', 'economy', 'climate', 'immigration', 
-      'defense', 'taxes', 'infrastructure', 'jobs', 'energy'
+      'healthcare',
+      'education',
+      'economy',
+      'climate',
+      'immigration',
+      'defense',
+      'taxes',
+      'infrastructure',
+      'jobs',
+      'energy',
     ];
 
     const positions: string[] = [];
     const sentences = content.split(/[.!?]+/);
 
     positionKeywords.forEach(keyword => {
-      const relevantSentence = sentences.find(sentence =>
-        sentence.toLowerCase().includes(keyword) && sentence.length > 30
+      const relevantSentence = sentences.find(
+        sentence => sentence.toLowerCase().includes(keyword) && sentence.length > 30
       );
       if (relevantSentence) {
         positions.push(relevantSentence.trim());
@@ -245,7 +257,7 @@ export class FirecrawlService {
       `https://${stateCode}.gov/elections/`,
       `https://www.${stateCode}.gov/elections/`,
       `https://ballotpedia.org/${state}_elections`,
-      `https://www.vote411.org/ballot#state=${state}`
+      `https://www.vote411.org/ballot#state=${state}`,
     ];
   }
 
@@ -253,12 +265,7 @@ export class FirecrawlService {
    * Validate scraped data quality
    */
   private validateScrapedData(data: ScrapedElectionData): boolean {
-    return !!(
-      data.content &&
-      data.content.length > 100 &&
-      data.title &&
-      data.source
-    );
+    return !!(data.content && data.content.length > 100 && data.title && data.source);
   }
 
   /**
@@ -291,14 +298,21 @@ export function getFirecrawlService(): FirecrawlService | null {
 /**
  * High-level functions for common scraping tasks
  */
-export async function scrapeOfficialElectionData(state: string, electionType: string = 'general'): Promise<ScrapedElectionData[]> {
+export async function scrapeOfficialElectionData(
+  state: string,
+  electionType: string = 'general'
+): Promise<ScrapedElectionData[]> {
   const service = getFirecrawlService();
   if (!service) return [];
 
   return await service.scrapeStateElectionSites(state);
 }
 
-export async function enrichCandidateWithWebData(candidateName: string, office: string, state: string): Promise<CandidateInfo | null> {
+export async function enrichCandidateWithWebData(
+  candidateName: string,
+  office: string,
+  state: string
+): Promise<CandidateInfo | null> {
   const service = getFirecrawlService();
   if (!service) return null;
 

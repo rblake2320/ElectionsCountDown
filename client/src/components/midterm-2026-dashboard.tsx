@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Users, Building, MapPin, TrendingUp } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Users, Building, MapPin, TrendingUp } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 interface MidtermData {
   summary: {
@@ -36,15 +36,19 @@ interface MidtermData {
 }
 
 export function Midterm2026Dashboard() {
-  const { data: midtermData, isLoading, error } = useQuery<MidtermData>({
-    queryKey: ["/api/elections/2026/midterms"],
+  const {
+    data: midtermData,
+    isLoading,
+    error,
+  } = useQuery<MidtermData>({
+    queryKey: ['/api/elections/2026/midterms'],
   });
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <Card key={i} className="animate-pulse">
               <CardHeader>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
@@ -81,14 +85,10 @@ export function Midterm2026Dashboard() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           2026 Midterm Elections
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
-          {summary.totalOffices}
-        </p>
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">{summary.totalOffices}</p>
         <div className="flex items-center justify-center gap-2 text-lg">
           <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-          <span className="font-semibold text-gray-900 dark:text-white">
-            November 3, 2026
-          </span>
+          <span className="font-semibold text-gray-900 dark:text-white">November 3, 2026</span>
         </div>
       </div>
 
@@ -170,9 +170,7 @@ export function Midterm2026Dashboard() {
             <TrendingUp className="h-5 w-5" />
             Featured 2026 Elections
           </CardTitle>
-          <CardDescription>
-            Major races to watch in the 2026 midterm cycle
-          </CardDescription>
+          <CardDescription>Major races to watch in the 2026 midterm cycle</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -190,9 +188,7 @@ export function Midterm2026Dashboard() {
                       <Badge variant="outline" className="text-xs">
                         {election.type}
                       </Badge>
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {election.location}
-                      </span>
+                      <span className="text-gray-500 dark:text-gray-400">{election.location}</span>
                       <span className="text-gray-500 dark:text-gray-400">
                         Turnout: {election.estimatedTurnout}%
                       </span>

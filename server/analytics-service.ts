@@ -1,7 +1,7 @@
 import { db } from './db';
-import { 
-  interactionLogs, 
-  engagementMetrics, 
+import {
+  interactionLogs,
+  engagementMetrics,
   userPreferences,
   userDemographics,
   nonVoterTracking,
@@ -9,7 +9,7 @@ import {
   type InsertEngagementMetrics,
   type InsertUserPreferences,
   type InsertUserDemographics,
-  type InsertNonVoterTracking
+  type InsertNonVoterTracking,
 } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
@@ -38,7 +38,10 @@ export class AnalyticsService {
   }
 
   // Save user preferences with consent tracking
-  async updateUserPreferences(userId: number, preferences: Partial<InsertUserPreferences>): Promise<void> {
+  async updateUserPreferences(
+    userId: number,
+    preferences: Partial<InsertUserPreferences>
+  ): Promise<void> {
     try {
       const existingPrefs = await db
         .select()
@@ -51,14 +54,12 @@ export class AnalyticsService {
           .set({ ...preferences, updatedAt: new Date() })
           .where(eq(userPreferences.userId, userId));
       } else {
-        await db
-          .insert(userPreferences)
-          .values({ 
-            userId, 
-            ...preferences,
-            consentGiven: true,
-            consentDate: new Date()
-          });
+        await db.insert(userPreferences).values({
+          userId,
+          ...preferences,
+          consentGiven: true,
+          consentDate: new Date(),
+        });
       }
     } catch (error) {
       console.error('Error updating user preferences:', error);
@@ -66,7 +67,10 @@ export class AnalyticsService {
   }
 
   // Save user demographics data
-  async updateUserDemographics(userId: number, demographics: Partial<InsertUserDemographics>): Promise<void> {
+  async updateUserDemographics(
+    userId: number,
+    demographics: Partial<InsertUserDemographics>
+  ): Promise<void> {
     try {
       const existing = await db
         .select()
@@ -79,9 +83,7 @@ export class AnalyticsService {
           .set({ ...demographics, updatedAt: new Date() })
           .where(eq(userDemographics.userId, userId));
       } else {
-        await db
-          .insert(userDemographics)
-          .values({ userId, ...demographics });
+        await db.insert(userDemographics).values({ userId, ...demographics });
       }
     } catch (error) {
       console.error('Error updating user demographics:', error);
@@ -89,7 +91,10 @@ export class AnalyticsService {
   }
 
   // Track non-voter engagement
-  async updateNonVoterTracking(userId: number, data: Partial<InsertNonVoterTracking>): Promise<void> {
+  async updateNonVoterTracking(
+    userId: number,
+    data: Partial<InsertNonVoterTracking>
+  ): Promise<void> {
     try {
       const existing = await db
         .select()
@@ -102,9 +107,7 @@ export class AnalyticsService {
           .set({ ...data, updatedAt: new Date() })
           .where(eq(nonVoterTracking.userId, userId));
       } else {
-        await db
-          .insert(nonVoterTracking)
-          .values({ userId, ...data });
+        await db.insert(nonVoterTracking).values({ userId, ...data });
       }
     } catch (error) {
       console.error('Error updating non-voter tracking:', error);
@@ -120,7 +123,7 @@ export class AnalyticsService {
         totalUsers: 0,
         averageTimeOnPage: 0,
         mostViewedElections: [],
-        peakUsageTimes: []
+        peakUsageTimes: [],
       };
     } catch (error) {
       console.error('Error getting engagement insights:', error);
@@ -165,7 +168,7 @@ export class AnalyticsService {
         preferences: preferences || null,
         demographics: demographics || null,
         nonVoterData: nonVoter || null,
-        exportDate: new Date().toISOString()
+        exportDate: new Date().toISOString(),
       };
     } catch (error) {
       console.error('Error exporting user data:', error);
@@ -181,9 +184,9 @@ export class AnalyticsService {
         db.delete(userDemographics).where(eq(userDemographics.userId, userId)),
         db.delete(nonVoterTracking).where(eq(nonVoterTracking.userId, userId)),
         db.delete(interactionLogs).where(eq(interactionLogs.userId, userId)),
-        db.delete(engagementMetrics).where(eq(engagementMetrics.userId, userId))
+        db.delete(engagementMetrics).where(eq(engagementMetrics.userId, userId)),
       ]);
-      
+
       return true;
     } catch (error) {
       console.error('Error deleting user data:', error);

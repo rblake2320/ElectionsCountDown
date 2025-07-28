@@ -32,7 +32,7 @@ export class PositionAggregatorService {
     CANDIDATE_PORTAL: 'candidate_upload',
     OFFICIAL_WEBSITE: 'candidate_website',
     NEWS_ANALYSIS: 'news_analysis',
-    VOTING_RECORD: 'voting_record'
+    VOTING_RECORD: 'voting_record',
   };
 
   private readonly POSITION_CATEGORIES = [
@@ -47,7 +47,7 @@ export class PositionAggregatorService {
     'Taxes',
     'Technology',
     'Criminal Justice',
-    'Foreign Policy'
+    'Foreign Policy',
   ];
 
   async aggregatePositionsForCandidate(candidateId: number): Promise<CandidatePosition[]> {
@@ -79,7 +79,10 @@ export class PositionAggregatorService {
     return positions;
   }
 
-  private async aggregatePositionsByCategory(candidate: any, category: string): Promise<CandidatePosition> {
+  private async aggregatePositionsByCategory(
+    candidate: any,
+    category: string
+  ): Promise<CandidatePosition> {
     const sources: PositionSource[] = [];
 
     // 1. Check candidate portal uploads first (highest priority if verified)
@@ -133,20 +136,25 @@ export class PositionAggregatorService {
       category,
       positions: sources,
       aggregatedPosition,
-      confidence
+      confidence,
     };
   }
 
-  private async getCandidatePortalPosition(candidateId: number, category: string): Promise<PositionSource | null> {
+  private async getCandidatePortalPosition(
+    candidateId: number,
+    category: string
+  ): Promise<PositionSource | null> {
     try {
       const position = await db
         .select()
         .from(candidatePositions)
-        .where(and(
-          eq(candidatePositions.candidateId, candidateId),
-          eq(candidatePositions.category, category),
-          eq(candidatePositions.isVerified, true)
-        ))
+        .where(
+          and(
+            eq(candidatePositions.candidateId, candidateId),
+            eq(candidatePositions.category, category),
+            eq(candidatePositions.isVerified, true)
+          )
+        )
         .orderBy(sql`${candidatePositions.lastUpdated} DESC`)
         .limit(1);
 
@@ -157,7 +165,7 @@ export class PositionAggregatorService {
           position: position[0].position,
           details: position[0].detailedStatement || undefined,
           dateRecorded: position[0].lastUpdated || position[0].createdAt || new Date(),
-          url: position[0].sourceUrl || undefined
+          url: position[0].sourceUrl || undefined,
         };
       }
     } catch (error) {
@@ -166,7 +174,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getVotingRecordPosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getVotingRecordPosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     // Analyze actual voting record from congress.gov
     if (!candidate.propublicaId && !candidate.congressBioguideId) return null;
 
@@ -179,7 +190,7 @@ export class PositionAggregatorService {
           position: votingPattern.position,
           details: votingPattern.details,
           dateRecorded: new Date(),
-          url: votingPattern.sourceUrl
+          url: votingPattern.sourceUrl,
         };
       }
     } catch (error) {
@@ -188,7 +199,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getPropublicaPosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getPropublicaPosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     if (!process.env.PROPUBLICA_API_KEY || !candidate.propublicaId) return null;
 
     try {
@@ -196,15 +210,15 @@ export class PositionAggregatorService {
         `https://api.propublica.org/congress/v1/members/${candidate.propublicaId}/votes.json`,
         {
           headers: {
-            'X-API-Key': process.env.PROPUBLICA_API_KEY
-          }
+            'X-API-Key': process.env.PROPUBLICA_API_KEY,
+          },
         }
       );
 
       if (response.ok) {
-        const data = await response.json() as any;
+        const data = (await response.json()) as any;
         const categoryVotes = this.filterVotesByCategory(data.results?.[0]?.votes || [], category);
-        
+
         if (categoryVotes.length > 0) {
           const analysis = this.analyzeVotePattern(categoryVotes, category);
           return {
@@ -213,7 +227,7 @@ export class PositionAggregatorService {
             position: analysis.position,
             details: analysis.summary,
             dateRecorded: new Date(),
-            url: `https://projects.propublica.org/represent/members/${candidate.propublicaId}`
+            url: `https://projects.propublica.org/represent/members/${candidate.propublicaId}`,
           };
         }
       }
@@ -223,7 +237,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getFundingBasedPosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getFundingBasedPosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     if (!process.env.OPENSECRETS_API_KEY || !candidate.fecId) return null;
 
     try {
@@ -236,7 +253,7 @@ export class PositionAggregatorService {
           position: fundingAnalysis.inferredPosition,
           details: fundingAnalysis.analysis,
           dateRecorded: new Date(),
-          url: `https://www.opensecrets.org/members-of-congress/summary?cid=${candidate.fecId}`
+          url: `https://www.opensecrets.org/members-of-congress/summary?cid=${candidate.fecId}`,
         };
       }
     } catch (error) {
@@ -245,7 +262,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getOfficialWebsitePosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getOfficialWebsitePosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     if (!candidate.officialWebsite) return null;
 
     try {
@@ -258,7 +278,7 @@ export class PositionAggregatorService {
           position: websiteAnalysis.position,
           details: websiteAnalysis.context,
           dateRecorded: new Date(),
-          url: websiteAnalysis.sourceUrl
+          url: websiteAnalysis.sourceUrl,
         };
       }
     } catch (error) {
@@ -267,7 +287,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getBallotpediaPosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getBallotpediaPosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     try {
       const ballotpediaData = await this.fetchBallotpediaData(candidate.name, candidate.state);
       if (ballotpediaData && ballotpediaData[category]) {
@@ -277,7 +300,7 @@ export class PositionAggregatorService {
           position: ballotpediaData[category].position,
           details: ballotpediaData[category].details,
           dateRecorded: new Date(),
-          url: ballotpediaData.profileUrl
+          url: ballotpediaData.profileUrl,
         };
       }
     } catch (error) {
@@ -286,7 +309,10 @@ export class PositionAggregatorService {
     return null;
   }
 
-  private async getNewsAnalysisPosition(candidate: any, category: string): Promise<PositionSource | null> {
+  private async getNewsAnalysisPosition(
+    candidate: any,
+    category: string
+  ): Promise<PositionSource | null> {
     try {
       // Use news APIs to gather position information
       const newsAnalysis = await this.analyzeNewsReports(candidate.name, category);
@@ -297,7 +323,7 @@ export class PositionAggregatorService {
           position: newsAnalysis.position,
           details: newsAnalysis.summary,
           dateRecorded: new Date(),
-          url: newsAnalysis.primarySource
+          url: newsAnalysis.primarySource,
         };
       }
     } catch (error) {
@@ -311,7 +337,7 @@ export class PositionAggregatorService {
 
     // Prioritize by confidence and source reliability
     const sortedSources = sources.sort((a, b) => b.confidence - a.confidence);
-    
+
     // If we have a high-confidence candidate portal position, use it primarily
     const candidatePortal = sources.find(s => s.source === this.DATA_SOURCES.CANDIDATE_PORTAL);
     if (candidatePortal && candidatePortal.confidence > 0.9) {
@@ -334,7 +360,7 @@ export class PositionAggregatorService {
     // Weight confidence based on number of agreeing sources
     const avgConfidence = sources.reduce((sum, s) => sum + s.confidence, 0) / sources.length;
     const sourceCountBonus = Math.min(sources.length * 0.1, 0.3); // Max 30% bonus
-    
+
     return Math.min(avgConfidence + sourceCountBonus, 1.0);
   }
 
@@ -376,7 +402,7 @@ export class PositionAggregatorService {
 
   async updateCandidatePositions(candidateId: number): Promise<void> {
     const positions = await this.aggregatePositionsForCandidate(candidateId);
-    
+
     for (const categoryData of positions) {
       // Update or insert aggregated positions
       await this.saveAggregatedPosition(categoryData);

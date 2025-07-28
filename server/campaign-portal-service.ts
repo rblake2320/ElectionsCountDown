@@ -1,6 +1,6 @@
 import { db } from './db';
-import { 
-  campaignAccounts, 
+import {
+  campaignAccounts,
   campaignAccessLogs,
   dataPurchases,
   userSegments,
@@ -9,7 +9,7 @@ import {
   elections,
   type InsertCampaignAccount,
   type InsertCampaignAccessLog,
-  type InsertDataPurchase
+  type InsertDataPurchase,
 } from '@shared/schema';
 import { eq, and, gte, lte, count, avg, sum } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -17,9 +17,21 @@ import crypto from 'crypto';
 // Subscription tier pricing (in cents)
 export const SUBSCRIPTION_TIERS = {
   basic: { price: 9900, name: 'Basic', features: ['Aggregated state data', 'Basic analytics'] },
-  pro: { price: 49900, name: 'Pro', features: ['District-level analytics', 'Demographic breakdowns', 'Trend analysis'] },
-  enterprise: { price: 249900, name: 'Enterprise', features: ['Individual user insights (anonymized)', 'Real-time analytics', 'API access'] },
-  custom: { price: 0, name: 'Custom', features: ['Raw data exports', 'Custom integrations', 'Dedicated support'] }
+  pro: {
+    price: 49900,
+    name: 'Pro',
+    features: ['District-level analytics', 'Demographic breakdowns', 'Trend analysis'],
+  },
+  enterprise: {
+    price: 249900,
+    name: 'Enterprise',
+    features: ['Individual user insights (anonymized)', 'Real-time analytics', 'API access'],
+  },
+  custom: {
+    price: 0,
+    name: 'Custom',
+    features: ['Raw data exports', 'Custom integrations', 'Dedicated support'],
+  },
 };
 
 export class CampaignPortalService {
@@ -27,13 +39,13 @@ export class CampaignPortalService {
   async createCampaignAccount(data: InsertCampaignAccount): Promise<any> {
     try {
       const apiKey = this.generateApiKey();
-      
+
       const [campaign] = await db
         .insert(campaignAccounts)
         .values({
           ...data,
           apiKey,
-          subscriptionTier: 'basic' // Default to basic tier
+          subscriptionTier: 'basic', // Default to basic tier
         })
         .returning();
 
@@ -49,10 +61,7 @@ export class CampaignPortalService {
       const [campaign] = await db
         .select()
         .from(campaignAccounts)
-        .where(and(
-          eq(campaignAccounts.apiKey, apiKey),
-          eq(campaignAccounts.isActive, true)
-        ));
+        .where(and(eq(campaignAccounts.apiKey, apiKey), eq(campaignAccounts.isActive, true)));
 
       if (!campaign) {
         throw new Error('Invalid API key or inactive account');
@@ -79,14 +88,14 @@ export class CampaignPortalService {
         electionId,
         totalViews: await this.getTotalViews(electionId),
         engagementScore: await this.getEngagementScore(electionId),
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
 
       switch (tier) {
         case 'basic':
           return {
             ...baseAnalytics,
-            stateLevel: await this.getStateLevelData(electionId)
+            stateLevel: await this.getStateLevelData(electionId),
           };
 
         case 'pro':
@@ -94,7 +103,7 @@ export class CampaignPortalService {
             ...baseAnalytics,
             stateLevel: await this.getStateLevelData(electionId),
             districtLevel: await this.getDistrictLevelData(electionId),
-            demographics: await this.getDemographicBreakdown(electionId)
+            demographics: await this.getDemographicBreakdown(electionId),
           };
 
         case 'enterprise':
@@ -105,7 +114,7 @@ export class CampaignPortalService {
             districtLevel: await this.getDistrictLevelData(electionId),
             demographics: await this.getDemographicBreakdown(electionId),
             realTimeMetrics: await this.getRealTimeMetrics(electionId),
-            anonymizedUserInsights: await this.getAnonymizedUserInsights(electionId)
+            anonymizedUserInsights: await this.getAnonymizedUserInsights(electionId),
           };
 
         default:
@@ -144,12 +153,14 @@ export class CampaignPortalService {
       const polling = await db
         .select()
         .from(pollingResults)
-        .where(and(
-          eq(pollingResults.electionId, electionId),
-          gte(pollingResults.conductedDate, startDate),
-          lte(pollingResults.conductedDate, endDate),
-          eq(pollingResults.isPublic, true) // Only public polling data
-        ));
+        .where(
+          and(
+            eq(pollingResults.electionId, electionId),
+            gte(pollingResults.conductedDate, startDate),
+            lte(pollingResults.conductedDate, endDate),
+            eq(pollingResults.isPublic, true) // Only public polling data
+          )
+        );
 
       return {
         electionId,
@@ -157,8 +168,8 @@ export class CampaignPortalService {
         pollingResults: polling.map(poll => ({
           ...poll,
           // Remove any potentially identifying information
-          pollingOrganization: poll.pollingOrganization ? 'Available' : 'Not disclosed'
-        }))
+          pollingOrganization: poll.pollingOrganization ? 'Available' : 'Not disclosed',
+        })),
       };
     } catch (error) {
       console.error('Error getting polling data:', error);
@@ -167,7 +178,11 @@ export class CampaignPortalService {
   }
 
   // Data export functionality
-  async purchaseDataExport(campaignId: number, datasetType: string, format: string = 'json'): Promise<any> {
+  async purchaseDataExport(
+    campaignId: number,
+    datasetType: string,
+    format: string = 'json'
+  ): Promise<any> {
     try {
       const campaign = await db
         .select()
@@ -187,7 +202,7 @@ export class CampaignPortalService {
           campaignId,
           datasetType,
           price,
-          format
+          format,
         })
         .returning();
 
@@ -198,7 +213,7 @@ export class CampaignPortalService {
         purchaseId: purchase.id,
         downloadUrl,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-        price: price / 100 // Convert to dollars
+        price: price / 100, // Convert to dollars
       };
     } catch (error) {
       console.error('Error purchasing data export:', error);
@@ -211,16 +226,18 @@ export class CampaignPortalService {
     return 'camp_' + crypto.randomBytes(32).toString('hex');
   }
 
-  private async logAccess(campaignId: number, endpoint: string, datasetType: string): Promise<void> {
+  private async logAccess(
+    campaignId: number,
+    endpoint: string,
+    datasetType: string
+  ): Promise<void> {
     try {
-      await db
-        .insert(campaignAccessLogs)
-        .values({
-          campaignId,
-          endpointAccessed: endpoint,
-          datasetType,
-          cost: 0 // Would calculate based on usage
-        });
+      await db.insert(campaignAccessLogs).values({
+        campaignId,
+        endpointAccessed: endpoint,
+        datasetType,
+        cost: 0, // Would calculate based on usage
+      });
     } catch (error) {
       console.error('Error logging access:', error);
     }
@@ -244,10 +261,12 @@ export class CampaignPortalService {
 
     return {
       totalEngagement: clusters.reduce((sum, cluster) => sum + (cluster.engagementScore || 0), 0),
-      averageInterest: clusters.length > 0 
-        ? clusters.reduce((sum, cluster) => sum + (cluster.interestLevel || 0), 0) / clusters.length 
-        : 0,
-      geographicSpread: clusters.length
+      averageInterest:
+        clusters.length > 0
+          ? clusters.reduce((sum, cluster) => sum + (cluster.interestLevel || 0), 0) /
+            clusters.length
+          : 0,
+      geographicSpread: clusters.length,
     };
   }
 
@@ -256,7 +275,7 @@ export class CampaignPortalService {
     return {
       districtBreakdown: [],
       competitiveDistricts: [],
-      targetAreas: []
+      targetAreas: [],
     };
   }
 
@@ -270,8 +289,8 @@ export class CampaignPortalService {
       segments: segments.map(segment => ({
         name: segment.segmentName,
         size: segment.userCount,
-        criteria: segment.criteria
-      }))
+        criteria: segment.criteria,
+      })),
     };
   }
 
@@ -279,7 +298,7 @@ export class CampaignPortalService {
     return {
       liveViewers: Math.floor(Math.random() * 500) + 50,
       hourlyTrend: [], // Would be populated with real data
-      peakHours: []
+      peakHours: [],
     };
   }
 
@@ -287,7 +306,7 @@ export class CampaignPortalService {
     return {
       behaviorPatterns: [],
       engagementClusters: [],
-      influenceNetwork: []
+      influenceNetwork: [],
     };
   }
 
@@ -297,19 +316,19 @@ export class CampaignPortalService {
       aggregatedMetrics: {
         totalUsers: Math.floor(Math.random() * 1000) + 100,
         averageEngagement: Math.random() * 10,
-        partyLean: 'neutral'
-      }
+        partyLean: 'neutral',
+      },
     };
   }
 
   private async getDetailedGeographicData(region: string, tier: string): Promise<any> {
     const basic = await this.getStateLevelGeographicData(region);
-    
+
     return {
       ...basic,
       zipCodeLevel: tier === 'enterprise' || tier === 'custom' ? [] : undefined,
       demographicBreakdown: [],
-      competitorAnalysis: []
+      competitorAnalysis: [],
     };
   }
 
@@ -336,18 +355,18 @@ export class CampaignPortalService {
 
   private calculateExportPrice(datasetType: string, tier: string): number {
     const basePrices: Record<string, number> = {
-      'basic_analytics': 2500, // $25
-      'demographic_data': 5000, // $50
-      'engagement_metrics': 7500, // $75
-      'geographic_clusters': 10000, // $100
-      'custom_export': 15000 // $150
+      basic_analytics: 2500, // $25
+      demographic_data: 5000, // $50
+      engagement_metrics: 7500, // $75
+      geographic_clusters: 10000, // $100
+      custom_export: 15000, // $150
     };
 
     const tierMultiplier: Record<string, number> = {
-      'basic': 1.0,
-      'pro': 0.8,
-      'enterprise': 0.6,
-      'custom': 0.4
+      basic: 1.0,
+      pro: 0.8,
+      enterprise: 0.6,
+      custom: 0.4,
     };
 
     const basePrice = basePrices[datasetType] || 5000;
@@ -356,7 +375,11 @@ export class CampaignPortalService {
     return Math.floor(basePrice * multiplier);
   }
 
-  private async generateDownloadUrl(purchaseId: number, datasetType: string, format: string): Promise<string> {
+  private async generateDownloadUrl(
+    purchaseId: number,
+    datasetType: string,
+    format: string
+  ): Promise<string> {
     // Would generate secure download URL with cloud storage
     return `https://downloads.electiontracker.com/${purchaseId}/${datasetType}.${format}?expires=${Date.now() + 86400000}`;
   }

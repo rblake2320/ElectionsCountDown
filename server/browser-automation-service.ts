@@ -46,8 +46,8 @@ export class BrowserAutomationService {
             '--no-first-run',
             '--no-zygote',
             '--single-process',
-            '--disable-gpu'
-          ]
+            '--disable-gpu',
+          ],
         });
         console.log('Puppeteer browser initialized successfully');
       } catch (error) {
@@ -66,14 +66,16 @@ export class BrowserAutomationService {
     try {
       const browser = await this.initializePuppeteer();
       page = await browser.newPage();
-      
+
       // Set user agent to avoid blocking
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-      
+      await page.setUserAgent(
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      );
+
       // Navigate to the page
-      await page.goto(url, { 
+      await page.goto(url, {
         waitUntil: 'networkidle0',
-        timeout: 30000 
+        timeout: 30000,
       });
 
       // Extract page data
@@ -82,24 +84,26 @@ export class BrowserAutomationService {
           title: document.title,
           content: document.body.innerText,
           html: document.documentElement.outerHTML,
-          links: Array.from(document.querySelectorAll('a')).map(a => ({
-            text: a.textContent?.trim(),
-            href: a.href
-          })).filter(link => link.text && link.href),
+          links: Array.from(document.querySelectorAll('a'))
+            .map(a => ({
+              text: a.textContent?.trim(),
+              href: a.href,
+            }))
+            .filter(link => link.text && link.href),
           tables: Array.from(document.querySelectorAll('table')).map(table => ({
             headers: Array.from(table.querySelectorAll('th')).map(th => th.textContent?.trim()),
-            rows: Array.from(table.querySelectorAll('tr')).map(tr => 
-              Array.from(tr.querySelectorAll('td')).map(td => td.textContent?.trim())
-            ).filter(row => row.length > 0)
-          }))
+            rows: Array.from(table.querySelectorAll('tr'))
+              .map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.textContent?.trim()))
+              .filter(row => row.length > 0),
+          })),
         };
       });
 
       // Take screenshot for verification
-      const screenshot = await page.screenshot({ 
+      const screenshot = await page.screenshot({
         type: 'png',
         fullPage: true,
-        encoding: 'base64'
+        encoding: 'base64',
       });
 
       return {
@@ -109,13 +113,12 @@ export class BrowserAutomationService {
         metadata: {
           links: pageData.links,
           tables: pageData.tables,
-          htmlLength: pageData.html.length
+          htmlLength: pageData.html.length,
         },
         screenshots: [screenshot],
         scrapedAt: new Date(),
-        success: true
+        success: true,
       };
-
     } catch (error) {
       console.error(`Error scraping ${url}:`, error);
       return {
@@ -125,7 +128,7 @@ export class BrowserAutomationService {
         metadata: {},
         scrapedAt: new Date(),
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     } finally {
       if (page) {
@@ -140,7 +143,7 @@ export class BrowserAutomationService {
   async extractElectionData(url: string): Promise<ElectionPageData | null> {
     try {
       const scrapingResult = await this.scrapeElectionResults(url);
-      
+
       if (!scrapingResult.success) {
         return null;
       }
@@ -152,9 +155,8 @@ export class BrowserAutomationService {
       return {
         candidates,
         results,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
-
     } catch (error) {
       console.error('Error extracting election data:', error);
       return null;
@@ -165,13 +167,12 @@ export class BrowserAutomationService {
    * Monitor multiple election websites
    */
   async monitorElectionSites(urls: string[]): Promise<BrowserScrapingResult[]> {
-    const results = await Promise.allSettled(
-      urls.map(url => this.scrapeElectionResults(url))
-    );
+    const results = await Promise.allSettled(urls.map(url => this.scrapeElectionResults(url)));
 
     return results
-      .filter((result): result is PromiseFulfilledResult<BrowserScrapingResult> => 
-        result.status === 'fulfilled'
+      .filter(
+        (result): result is PromiseFulfilledResult<BrowserScrapingResult> =>
+          result.status === 'fulfilled'
       )
       .map(result => result.value);
   }
@@ -189,7 +190,7 @@ export class BrowserAutomationService {
       puppeteer: false,
       playwright: false,
       selenium: false,
-      errors: [] as string[]
+      errors: [] as string[],
     };
 
     // Test Puppeteer
@@ -201,21 +202,27 @@ export class BrowserAutomationService {
         testResults.errors.push(`Puppeteer: ${result.error}`);
       }
     } catch (error) {
-      testResults.errors.push(`Puppeteer: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      testResults.errors.push(
+        `Puppeteer: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
 
     // Test Playwright (placeholder for now)
     try {
       testResults.playwright = true; // Will implement when playwright is properly set up
     } catch (error) {
-      testResults.errors.push(`Playwright: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      testResults.errors.push(
+        `Playwright: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
 
     // Test Selenium (placeholder for now)
     try {
       testResults.selenium = true; // Will implement when selenium is properly set up
     } catch (error) {
-      testResults.errors.push(`Selenium: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      testResults.errors.push(
+        `Selenium: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
 
     return testResults;
@@ -224,8 +231,11 @@ export class BrowserAutomationService {
   /**
    * Extract candidate information from scraped content
    */
-  private extractCandidatesFromContent(content: string): Array<{name: string; party: string; votes?: number; percentage?: number}> {
-    const candidates: Array<{name: string; party: string; votes?: number; percentage?: number}> = [];
+  private extractCandidatesFromContent(
+    content: string
+  ): Array<{ name: string; party: string; votes?: number; percentage?: number }> {
+    const candidates: Array<{ name: string; party: string; votes?: number; percentage?: number }> =
+      [];
     const lines = content.split('\n');
 
     for (const line of lines) {
@@ -235,7 +245,7 @@ export class BrowserAutomationService {
         candidates.push({
           name: candidateMatch[1].trim(),
           party: candidateMatch[2].trim(),
-          percentage: parseFloat(candidateMatch[3])
+          percentage: parseFloat(candidateMatch[3]),
         });
       }
 
@@ -261,12 +271,12 @@ export class BrowserAutomationService {
     for (const table of tables) {
       if (table.headers && table.rows) {
         // Look for election results tables
-        const hasElectionHeaders = table.headers.some((header: string) => 
-          header && (
-            header.toLowerCase().includes('candidate') ||
-            header.toLowerCase().includes('votes') ||
-            header.toLowerCase().includes('percentage')
-          )
+        const hasElectionHeaders = table.headers.some(
+          (header: string) =>
+            header &&
+            (header.toLowerCase().includes('candidate') ||
+              header.toLowerCase().includes('votes') ||
+              header.toLowerCase().includes('percentage'))
         );
 
         if (hasElectionHeaders) {

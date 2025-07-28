@@ -10,7 +10,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { UserIcon, CheckCircle2, AlertCircle, TrendingUp, Shield, Globe, Users, FileText, Settings } from 'lucide-react';
+import {
+  UserIcon,
+  CheckCircle2,
+  AlertCircle,
+  TrendingUp,
+  Shield,
+  Globe,
+  Users,
+  FileText,
+  Settings,
+} from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { apiRequest } from '@/lib/queryClient';
 import CandidateLogin from '@/components/candidate-login';
@@ -84,8 +94,6 @@ interface CandidateProfile {
   keyAccomplishments?: string[];
 }
 
-
-
 export default function CandidatePortal() {
   const [location, setLocation] = useLocation();
   const [auth, setAuth] = useState<CandidateAuth | null>(null);
@@ -97,12 +105,12 @@ export default function CandidatePortal() {
   useEffect(() => {
     const token = localStorage.getItem('candidate_token');
     const candidateData = localStorage.getItem('candidate_data');
-    
+
     if (token && candidateData) {
       try {
         setAuth({
           token,
-          candidate: JSON.parse(candidateData)
+          candidate: JSON.parse(candidateData),
         });
       } catch (error) {
         localStorage.removeItem('candidate_token');
@@ -117,9 +125,9 @@ export default function CandidatePortal() {
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Get analytics data
@@ -128,9 +136,9 @@ export default function CandidatePortal() {
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Get policy template
@@ -139,9 +147,9 @@ export default function CandidatePortal() {
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Profile update mutation
@@ -150,25 +158,25 @@ export default function CandidatePortal() {
       return await apiRequest('/api/candidate/profile', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${auth?.token}`,
+          Authorization: `Bearer ${auth?.token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(profileData),
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['/api/candidate/profile'] });
       queryClient.invalidateQueries({ queryKey: ['/api/candidate/analytics'] });
       toast({
-        title: "Profile Updated",
-        description: data.message || "Your profile has been updated successfully.",
+        title: 'Profile Updated',
+        description: data.message || 'Your profile has been updated successfully.',
       });
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Update Failed",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
+        title: 'Update Failed',
+        description: 'Failed to update profile. Please try again.',
+        variant: 'destructive',
       });
     },
   });
@@ -216,7 +224,9 @@ export default function CandidatePortal() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant={auth.candidate.subscriptionTier === 'premium' ? 'default' : 'secondary'}>
+              <Badge
+                variant={auth.candidate.subscriptionTier === 'premium' ? 'default' : 'secondary'}
+              >
                 {auth.candidate.subscriptionTier}
               </Badge>
               <Button variant="outline" onClick={handleLogout}>
@@ -274,7 +284,8 @@ export default function CandidatePortal() {
                     </div>
                     <Progress value={analytics?.analytics?.profileStats?.dataCompleteness || 0} />
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {analytics?.analytics?.profileStats?.completedFields || 0} of {analytics?.analytics?.profileStats?.totalFields || 25} fields completed
+                      {analytics?.analytics?.profileStats?.completedFields || 0} of{' '}
+                      {analytics?.analytics?.profileStats?.totalFields || 25} fields completed
                     </p>
                   </div>
                 </CardContent>
@@ -287,9 +298,7 @@ export default function CandidatePortal() {
                     <Shield className="h-5 w-5 text-blue-600" />
                     Data Attribution
                   </CardTitle>
-                  <CardDescription>
-                    Source tracking for transparency
-                  </CardDescription>
+                  <CardDescription>Source tracking for transparency</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -322,14 +331,16 @@ export default function CandidatePortal() {
                     <Users className="h-5 w-5 text-purple-600" />
                     Verification Status
                   </CardTitle>
-                  <CardDescription>
-                    Account verification and trust score
-                  </CardDescription>
+                  <CardDescription>Account verification and trust score</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Badge 
-                      variant={candidateProfile?.candidate?.verificationStatus === 'verified' ? 'default' : 'secondary'}
+                    <Badge
+                      variant={
+                        candidateProfile?.candidate?.verificationStatus === 'verified'
+                          ? 'default'
+                          : 'secondary'
+                      }
                       className="w-full justify-center"
                     >
                       {candidateProfile?.candidate?.verificationStatus || 'Pending'}
@@ -347,9 +358,7 @@ export default function CandidatePortal() {
               <Card>
                 <CardHeader>
                   <CardTitle>Recommendations</CardTitle>
-                  <CardDescription>
-                    Actions to improve your campaign presence
-                  </CardDescription>
+                  <CardDescription>Actions to improve your campaign presence</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -367,8 +376,8 @@ export default function CandidatePortal() {
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <CandidateProfileForm 
-              profile={candidateProfile?.candidate} 
+            <CandidateProfileForm
+              profile={candidateProfile?.candidate}
               onUpdate={updateProfileMutation.mutate}
               isLoading={updateProfileMutation.isPending}
             />
@@ -376,7 +385,7 @@ export default function CandidatePortal() {
 
           {/* Policies Tab */}
           <TabsContent value="policies" className="space-y-6">
-            <CandidatePolicyForm 
+            <CandidatePolicyForm
               profile={candidateProfile?.candidate}
               policyTemplate={policyTemplate?.categories}
               onUpdate={updateProfileMutation.mutate}
@@ -398,4 +407,3 @@ export default function CandidatePortal() {
     </div>
   );
 }
-

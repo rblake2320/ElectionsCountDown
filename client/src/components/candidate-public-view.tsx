@@ -2,7 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ExternalLink, MapPin, Calendar, Award, Briefcase, GraduationCap, Users } from 'lucide-react';
+import {
+  ExternalLink,
+  MapPin,
+  Calendar,
+  Award,
+  Briefcase,
+  GraduationCap,
+  Users,
+} from 'lucide-react';
 
 interface CandidatePublicViewProps {
   candidate: any;
@@ -22,16 +30,34 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
   }
 
   const getAttributionBadge = (fieldName: string) => {
-    const attribution = candidate.getDataAttribution ? candidate.getDataAttribution(fieldName) : 'Unknown Source';
-    
+    const attribution = candidate.getDataAttribution
+      ? candidate.getDataAttribution(fieldName)
+      : 'Unknown Source';
+
     if (attribution === 'Candidate Supplied') {
-      return <Badge variant="default" className="text-xs">Candidate Supplied</Badge>;
+      return (
+        <Badge variant="default" className="text-xs">
+          Candidate Supplied
+        </Badge>
+      );
     } else if (attribution === 'AI Researched') {
-      return <Badge variant="secondary" className="text-xs">AI Researched</Badge>;
+      return (
+        <Badge variant="secondary" className="text-xs">
+          AI Researched
+        </Badge>
+      );
     } else if (attribution.startsWith('Verified:')) {
-      return <Badge variant="outline" className="text-xs">Verified</Badge>;
+      return (
+        <Badge variant="outline" className="text-xs">
+          Verified
+        </Badge>
+      );
     } else {
-      return <Badge variant="destructive" className="text-xs">Not Available</Badge>;
+      return (
+        <Badge variant="destructive" className="text-xs">
+          Not Available
+        </Badge>
+      );
     }
   };
 
@@ -46,9 +72,7 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
                 {candidate.preferredName || candidate.fullName || candidate.name}
                 {getAttributionBadge('fullName')}
               </CardTitle>
-              <CardDescription className="text-lg">
-                {candidate.party} Candidate
-              </CardDescription>
+              <CardDescription className="text-lg">{candidate.party} Candidate</CardDescription>
               {candidate.campaignSlogan && (
                 <p className="italic text-gray-600 dark:text-gray-400 mt-2">
                   "{candidate.campaignSlogan}" {getAttributionBadge('campaignSlogan')}
@@ -104,9 +128,11 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
           </CardHeader>
           <CardContent>
             <p className="text-gray-700 dark:text-gray-300">
-              {candidate.background || candidate.politicalExperience || 'Candidate has not supplied that info'}
+              {candidate.background ||
+                candidate.politicalExperience ||
+                'Candidate has not supplied that info'}
             </p>
-            
+
             {candidate.familyStatus && (
               <div className="mt-4">
                 <h4 className="font-semibold mb-2">Personal</h4>
@@ -136,9 +162,7 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       {edu.institution} • {edu.year}
                     </p>
-                    {edu.field && (
-                      <p className="text-sm text-gray-500">{edu.field}</p>
-                    )}
+                    {edu.field && <p className="text-sm text-gray-500">{edu.field}</p>}
                   </div>
                 ))}
               </div>
@@ -197,9 +221,7 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
                 {candidate.previousOffices.map((office: any, index: number) => (
                   <div key={index} className="border-l-2 border-purple-200 pl-4">
                     <h4 className="font-semibold">{office.office}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {office.years}
-                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{office.years}</p>
                     {office.achievements && (
                       <p className="text-sm text-gray-500 mt-1">{office.achievements}</p>
                     )}
@@ -226,9 +248,7 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
               {candidate.topPriorities.map((priority: any, index: number) => (
                 <div key={index} className="p-4 border rounded-lg">
                   <h4 className="font-semibold mb-2">{priority.priority}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {priority.description}
-                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{priority.description}</p>
                 </div>
               ))}
             </div>
@@ -249,12 +269,17 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.entries(candidate.policyPositions).map(([key, value]) => {
                 if (!value) return null;
-                const title = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace('Position', '');
+                const title = key
+                  .replace(/([A-Z])/g, ' $1')
+                  .replace(/^./, str => str.toUpperCase())
+                  .replace('Position', '');
                 return (
                   <div key={key} className="p-4 border rounded-lg">
                     <h4 className="font-semibold mb-2">{title}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {String(value).length > 100 ? `${String(value).substring(0, 100)}...` : String(value)}
+                      {String(value).length > 100
+                        ? `${String(value).substring(0, 100)}...`
+                        : String(value)}
                     </p>
                   </div>
                 );
@@ -278,9 +303,7 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {endorsement.description}
                   </p>
-                  {endorsement.date && (
-                    <p className="text-xs text-gray-500">{endorsement.date}</p>
-                  )}
+                  {endorsement.date && <p className="text-xs text-gray-500">{endorsement.date}</p>}
                 </div>
               ))}
             </div>
@@ -314,8 +337,8 @@ export default function CandidatePublicView({ candidate }: CandidatePublicViewPr
             <div>
               <p className="font-medium">Data Transparency</p>
               <p className="text-gray-600 dark:text-gray-400">
-                Profile Completion: {candidate.dataCompleteness || 0}% • 
-                Status: {candidate.verificationStatus || 'Pending'}
+                Profile Completion: {candidate.dataCompleteness || 0}% • Status:{' '}
+                {candidate.verificationStatus || 'Pending'}
               </p>
             </div>
             <div className="flex gap-2">

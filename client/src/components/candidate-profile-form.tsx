@@ -32,7 +32,11 @@ interface CandidateProfileFormProps {
   isLoading: boolean;
 }
 
-export default function CandidateProfileForm({ profile, onUpdate, isLoading }: CandidateProfileFormProps) {
+export default function CandidateProfileForm({
+  profile,
+  onUpdate,
+  isLoading,
+}: CandidateProfileFormProps) {
   const [employmentHistory, setEmploymentHistory] = useState(profile?.employmentHistory || []);
   const [education, setEducation] = useState(profile?.education || []);
   const [previousOffices, setPreviousOffices] = useState(profile?.previousOffices || []);
@@ -57,7 +61,10 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
   });
 
   const addEmployment = () => {
-    setEmploymentHistory([...employmentHistory, { company: '', position: '', years: '', description: '' }]);
+    setEmploymentHistory([
+      ...employmentHistory,
+      { company: '', position: '', years: '', description: '' },
+    ]);
   };
 
   const updateEmployment = (index: number, field: string, value: string) => {
@@ -99,7 +106,10 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
   };
 
   const addEndorsement = () => {
-    setEndorsements([...endorsements, { organization: '', description: '', date: new Date().toISOString().split('T')[0] }]);
+    setEndorsements([
+      ...endorsements,
+      { organization: '', description: '', date: new Date().toISOString().split('T')[0] },
+    ]);
   };
 
   const updateEndorsement = (index: number, field: string, value: string) => {
@@ -160,7 +170,11 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
             </div>
             <div>
               <Label htmlFor="age">Age</Label>
-              <Input {...form.register('age', { valueAsNumber: true })} type="number" placeholder="45" />
+              <Input
+                {...form.register('age', { valueAsNumber: true })}
+                type="number"
+                placeholder="45"
+              />
             </div>
             <div>
               <Label htmlFor="birthPlace">Birth Place</Label>
@@ -189,7 +203,10 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="currentOccupation">Current Occupation</Label>
-            <Input {...form.register('currentOccupation')} placeholder="e.g., Attorney, Business Owner" />
+            <Input
+              {...form.register('currentOccupation')}
+              placeholder="e.g., Attorney, Business Owner"
+            />
           </div>
 
           {/* Employment History */}
@@ -205,7 +222,12 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
               <div key={index} className="border p-4 rounded-lg space-y-3 mb-3">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Position {index + 1}</h4>
-                  <Button type="button" onClick={() => removeEmployment(index)} size="sm" variant="ghost">
+                  <Button
+                    type="button"
+                    onClick={() => removeEmployment(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -213,23 +235,23 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
                   <Input
                     placeholder="Company/Organization"
                     value={emp.company}
-                    onChange={(e) => updateEmployment(index, 'company', e.target.value)}
+                    onChange={e => updateEmployment(index, 'company', e.target.value)}
                   />
                   <Input
                     placeholder="Position Title"
                     value={emp.position}
-                    onChange={(e) => updateEmployment(index, 'position', e.target.value)}
+                    onChange={e => updateEmployment(index, 'position', e.target.value)}
                   />
                   <Input
                     placeholder="Years (e.g., 2018-2022)"
                     value={emp.years}
-                    onChange={(e) => updateEmployment(index, 'years', e.target.value)}
+                    onChange={e => updateEmployment(index, 'years', e.target.value)}
                   />
                 </div>
                 <Textarea
                   placeholder="Description of responsibilities and achievements"
                   value={emp.description}
-                  onChange={(e) => updateEmployment(index, 'description', e.target.value)}
+                  onChange={e => updateEmployment(index, 'description', e.target.value)}
                 />
               </div>
             ))}
@@ -248,7 +270,12 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
               <div key={index} className="border p-4 rounded-lg space-y-3 mb-3">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Education {index + 1}</h4>
-                  <Button type="button" onClick={() => removeEducation(index)} size="sm" variant="ghost">
+                  <Button
+                    type="button"
+                    onClick={() => removeEducation(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -256,22 +283,22 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
                   <Input
                     placeholder="Institution"
                     value={edu.institution}
-                    onChange={(e) => updateEducation(index, 'institution', e.target.value)}
+                    onChange={e => updateEducation(index, 'institution', e.target.value)}
                   />
                   <Input
                     placeholder="Degree/Program"
                     value={edu.degree}
-                    onChange={(e) => updateEducation(index, 'degree', e.target.value)}
+                    onChange={e => updateEducation(index, 'degree', e.target.value)}
                   />
                   <Input
                     placeholder="Year Completed"
                     value={edu.year}
-                    onChange={(e) => updateEducation(index, 'year', e.target.value)}
+                    onChange={e => updateEducation(index, 'year', e.target.value)}
                   />
                   <Input
                     placeholder="Field of Study"
                     value={edu.field}
-                    onChange={(e) => updateEducation(index, 'field', e.target.value)}
+                    onChange={e => updateEducation(index, 'field', e.target.value)}
                   />
                 </div>
               </div>
@@ -280,7 +307,10 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
 
           <div>
             <Label htmlFor="militaryService">Military Service</Label>
-            <Textarea {...form.register('militaryService')} placeholder="Describe any military service..." />
+            <Textarea
+              {...form.register('militaryService')}
+              placeholder="Describe any military service..."
+            />
           </div>
         </CardContent>
       </Card>
@@ -290,13 +320,17 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
         <CardHeader>
           <CardTitle>Political Experience</CardTitle>
           <CardDescription>
-            Your political background and experience. <Badge variant="outline">Candidate Supplied</Badge>
+            Your political background and experience.{' '}
+            <Badge variant="outline">Candidate Supplied</Badge>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="politicalExperience">Political Experience Overview</Label>
-            <Textarea {...form.register('politicalExperience')} placeholder="Describe your political background..." />
+            <Textarea
+              {...form.register('politicalExperience')}
+              placeholder="Describe your political background..."
+            />
           </div>
 
           {/* Previous Offices */}
@@ -312,7 +346,12 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
               <div key={index} className="border p-4 rounded-lg space-y-3 mb-3">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Office {index + 1}</h4>
-                  <Button type="button" onClick={() => removeOffice(index)} size="sm" variant="ghost">
+                  <Button
+                    type="button"
+                    onClick={() => removeOffice(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -320,18 +359,18 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
                   <Input
                     placeholder="Office Title"
                     value={office.office}
-                    onChange={(e) => updateOffice(index, 'office', e.target.value)}
+                    onChange={e => updateOffice(index, 'office', e.target.value)}
                   />
                   <Input
                     placeholder="Years Served"
                     value={office.years}
-                    onChange={(e) => updateOffice(index, 'years', e.target.value)}
+                    onChange={e => updateOffice(index, 'years', e.target.value)}
                   />
                 </div>
                 <Textarea
                   placeholder="Key achievements and accomplishments"
                   value={office.achievements}
-                  onChange={(e) => updateOffice(index, 'achievements', e.target.value)}
+                  onChange={e => updateOffice(index, 'achievements', e.target.value)}
                 />
               </div>
             ))}
@@ -350,7 +389,12 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
               <div key={index} className="border p-4 rounded-lg space-y-3 mb-3">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Endorsement {index + 1}</h4>
-                  <Button type="button" onClick={() => removeEndorsement(index)} size="sm" variant="ghost">
+                  <Button
+                    type="button"
+                    onClick={() => removeEndorsement(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -358,19 +402,19 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
                   <Input
                     placeholder="Organization/Person"
                     value={end.organization}
-                    onChange={(e) => updateEndorsement(index, 'organization', e.target.value)}
+                    onChange={e => updateEndorsement(index, 'organization', e.target.value)}
                   />
                   <Input
                     placeholder="Date"
                     type="date"
                     value={end.date}
-                    onChange={(e) => updateEndorsement(index, 'date', e.target.value)}
+                    onChange={e => updateEndorsement(index, 'date', e.target.value)}
                   />
                 </div>
                 <Textarea
                   placeholder="Endorsement description or quote"
                   value={end.description}
-                  onChange={(e) => updateEndorsement(index, 'description', e.target.value)}
+                  onChange={e => updateEndorsement(index, 'description', e.target.value)}
                 />
               </div>
             ))}
@@ -383,21 +427,31 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
         <CardHeader>
           <CardTitle>Campaign Information</CardTitle>
           <CardDescription>
-            Information about your current campaign. <Badge variant="outline">Candidate Supplied</Badge>
+            Information about your current campaign.{' '}
+            <Badge variant="outline">Candidate Supplied</Badge>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="campaignWebsite">Campaign Website</Label>
-            <Input {...form.register('campaignWebsite')} type="url" placeholder="https://yourname.com" />
+            <Input
+              {...form.register('campaignWebsite')}
+              type="url"
+              placeholder="https://yourname.com"
+            />
             {form.formState.errors.campaignWebsite && (
-              <p className="text-sm text-red-600">{form.formState.errors.campaignWebsite.message}</p>
+              <p className="text-sm text-red-600">
+                {form.formState.errors.campaignWebsite.message}
+              </p>
             )}
           </div>
-          
+
           <div>
             <Label htmlFor="campaignSlogan">Campaign Slogan</Label>
-            <Input {...form.register('campaignSlogan')} placeholder="Your campaign slogan or tagline" />
+            <Input
+              {...form.register('campaignSlogan')}
+              placeholder="Your campaign slogan or tagline"
+            />
           </div>
 
           {/* Key Accomplishments */}
@@ -414,9 +468,14 @@ export default function CandidateProfileForm({ profile, onUpdate, isLoading }: C
                 <Input
                   placeholder="Key accomplishment or achievement"
                   value={acc}
-                  onChange={(e) => updateAccomplishment(index, e.target.value)}
+                  onChange={e => updateAccomplishment(index, e.target.value)}
                 />
-                <Button type="button" onClick={() => removeAccomplishment(index)} size="sm" variant="ghost">
+                <Button
+                  type="button"
+                  onClick={() => removeAccomplishment(index)}
+                  size="sm"
+                  variant="ghost"
+                >
                   <X className="h-4 w-4" />
                 </Button>
               </div>

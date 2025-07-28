@@ -5,7 +5,12 @@ import { realTimeMonitor } from './real-time-monitor';
 
 interface ElectionEvent {
   id: string;
-  type: 'result_update' | 'candidate_change' | 'precinct_report' | 'district_call' | 'recount_declared';
+  type:
+    | 'result_update'
+    | 'candidate_change'
+    | 'precinct_report'
+    | 'district_call'
+    | 'recount_declared';
   electionId: number;
   timestamp: Date;
   source: string;
@@ -71,7 +76,7 @@ export class EventProcessingService extends EventEmitter {
       data: rawEvent.data,
       priority: this.calculatePriority(rawEvent),
       validated: false,
-      confidence: 0
+      confidence: 0,
     };
 
     // Validate event data
@@ -88,14 +93,16 @@ export class EventProcessingService extends EventEmitter {
   }
 
   // Event validation using AI service
-  private async validateEvent(event: ElectionEvent): Promise<{ verified: boolean; confidence: number }> {
+  private async validateEvent(
+    event: ElectionEvent
+  ): Promise<{ verified: boolean; confidence: number }> {
     try {
       const claim = this.eventToClaim(event);
       const validation = await aiValidationService.validateElectionClaim(claim);
-      
+
       return {
         verified: validation.verified,
-        confidence: validation.confidence
+        confidence: validation.confidence,
       };
     } catch (error) {
       console.error('Event validation failed:', error);
@@ -160,14 +167,14 @@ export class EventProcessingService extends EventEmitter {
   // Specific event processors
   private async processResultUpdate(event: ElectionEvent): Promise<void> {
     const { electionId, data } = event;
-    
+
     // Update candidate results
     if (data.candidates) {
       for (const candidate of data.candidates) {
         await storage.updateCandidateResults(candidate.id, {
           votes: candidate.votes,
           percentage: candidate.percentage,
-          lastUpdated: event.timestamp
+          lastUpdated: event.timestamp,
         });
       }
     }
@@ -176,25 +183,25 @@ export class EventProcessingService extends EventEmitter {
     this.emit('results_updated', {
       electionId,
       timestamp: event.timestamp,
-      candidates: data.candidates
+      candidates: data.candidates,
     });
   }
 
   private async processCandidateChange(event: ElectionEvent): Promise<void> {
     const { electionId, data } = event;
-    
+
     // Validate candidate change
     if (event.validated && event.confidence > 0.7) {
       await storage.updateCandidate(data.candidateId, {
         name: data.name,
         party: data.party,
-        lastUpdated: event.timestamp
+        lastUpdated: event.timestamp,
       });
 
       this.emit('candidate_updated', {
         electionId,
         candidateId: data.candidateId,
-        changes: data
+        changes: data,
       });
     }
   }
@@ -206,7 +213,7 @@ export class EventProcessingService extends EventEmitter {
       candidates: event.data.candidates,
       totalVotes: event.data.totalVotes,
       reportingComplete: event.data.reportingComplete,
-      lastUpdated: event.timestamp
+      lastUpdated: event.timestamp,
     };
 
     this.precinctData.set(event.data.precinctId, precinctUpdate);
@@ -225,15 +232,16 @@ export class EventProcessingService extends EventEmitter {
       margin: event.data.margin,
       confidence: event.confidence,
       calledBy: event.source,
-      timestamp: event.timestamp
+      timestamp: event.timestamp,
     };
 
     this.districtCalls.set(event.data.districtId, districtCall);
 
     // Update election with district winner
     await storage.updateElectionResults(event.electionId, {
-      districtWinners: Array.from(this.districtCalls.values())
-        .filter(call => call.electionId === event.electionId)
+      districtWinners: Array.from(this.districtCalls.values()).filter(
+        call => call.electionId === event.electionId
+      ),
     });
 
     this.emit('district_called', districtCall);
@@ -241,36 +249,37 @@ export class EventProcessingService extends EventEmitter {
 
   private async processRecountDeclaration(event: ElectionEvent): Promise<void> {
     const { electionId, data } = event;
-    
+
     // Flag election for recount
     await storage.updateElection(electionId, {
       status: 'recount_declared',
       recountReason: data.reason,
       recountDeadline: data.deadline,
-      lastUpdated: event.timestamp
+      lastUpdated: event.timestamp,
     });
 
     this.emit('recount_declared', {
       electionId,
       reason: data.reason,
-      deadline: data.deadline
+      deadline: data.deadline,
     });
   }
 
   // District completion checker
   private async checkDistrictCompletion(electionId: number, districtId: string): Promise<void> {
-    const precincts = Array.from(this.precinctData.values())
-      .filter(p => p.electionId === electionId && p.precinctId.startsWith(districtId));
-    
+    const precincts = Array.from(this.precinctData.values()).filter(
+      p => p.electionId === electionId && p.precinctId.startsWith(districtId)
+    );
+
     const totalPrecincts = precincts.length;
     const reportedPrecincts = precincts.filter(p => p.reportingComplete).length;
-    
+
     if (totalPrecincts > 0 && reportedPrecincts === totalPrecincts) {
       this.emit('district_complete', {
         electionId,
         districtId,
         reportingPercentage: 100,
-        totalVotes: precincts.reduce((sum, p) => sum + p.totalVotes, 0)
+        totalVotes: precincts.reduce((sum, p) => sum + p.totalVotes, 0),
       });
     }
   }
@@ -278,20 +287,21 @@ export class EventProcessingService extends EventEmitter {
   // Queue management
   private sortQueueByPriority(): void {
     const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-    this.eventQueue.sort((a, b) => 
-      priorityOrder[a.priority] - priorityOrder[b.priority]
-    );
+    this.eventQueue.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
   }
 
   // Integration with existing real-time monitor
   async connectToRealTimeMonitor(): Promise<void> {
-    realTimeMonitor.on('election_data_scraped', async (data) => {
-      await this.ingestEvent({
-        type: 'result_update',
-        electionId: data.electionId,
-        data: data.results,
-        timestamp: data.scrapedAt
-      }, 'real_time_monitor');
+    realTimeMonitor.on('election_data_scraped', async data => {
+      await this.ingestEvent(
+        {
+          type: 'result_update',
+          electionId: data.electionId,
+          data: data.results,
+          timestamp: data.scrapedAt,
+        },
+        'real_time_monitor'
+      );
     });
   }
 
@@ -325,7 +335,7 @@ export class EventProcessingService extends EventEmitter {
       isProcessing: this.isProcessing,
       eventsProcessedToday: this.getEventsProcessedToday(),
       precinctCount: this.precinctData.size,
-      districtCallCount: this.districtCalls.size
+      districtCallCount: this.districtCalls.size,
     };
   }
 
@@ -336,12 +346,15 @@ export class EventProcessingService extends EventEmitter {
 
   // Manual event injection for testing
   async injectTestEvent(type: string, electionId: number, data: any): Promise<string> {
-    return this.ingestEvent({
-      type,
-      electionId,
-      data,
-      timestamp: new Date()
-    }, 'manual_test');
+    return this.ingestEvent(
+      {
+        type,
+        electionId,
+        data,
+        timestamp: new Date(),
+      },
+      'manual_test'
+    );
   }
 }
 
