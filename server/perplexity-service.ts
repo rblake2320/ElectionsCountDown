@@ -31,11 +31,13 @@ export class PerplexityService {
     this.apiKey = apiKey;
   }
 
-  private async makeRequest(messages: Array<{role: string, content: string}>): Promise<PerplexityResponse> {
+  private async makeRequest(
+    messages: Array<{ role: string; content: string }>
+  ): Promise<PerplexityResponse> {
     const response = await fetch(this.baseUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -50,7 +52,7 @@ export class PerplexityService {
         top_k: 0,
         stream: false,
         presence_penalty: 0,
-        frequency_penalty: 1
+        frequency_penalty: 1,
       }),
     });
 
@@ -66,12 +68,13 @@ export class PerplexityService {
       const messages = [
         {
           role: 'system',
-          content: 'You are an expert on U.S. elections. Provide comprehensive, accurate information about upcoming elections with specific dates, locations, and details. Focus on authentic, verifiable election data.'
+          content:
+            'You are an expert on U.S. elections. Provide comprehensive, accurate information about upcoming elections with specific dates, locations, and details. Focus on authentic, verifiable election data.',
         },
         {
           role: 'user',
-          content: query
-        }
+          content: query,
+        },
       ];
 
       const response = await this.makeRequest(messages);
@@ -100,19 +103,19 @@ export class PerplexityService {
   async searchSpecificElection(state: string, year: string, type?: string): Promise<string> {
     const typeQuery = type ? ` ${type} elections` : ' elections';
     const query = `Find all ${year}${typeQuery} in ${state}, including federal, state, and local elections. Provide specific dates, locations, and offices being contested.`;
-    
+
     return this.searchElections(query);
   }
 
   async searchCandidateInfo(candidateName: string, election: string): Promise<string> {
     const query = `Find information about candidate ${candidateName} running in ${election}. Include party affiliation, background, campaign website, and key policy positions.`;
-    
+
     return this.searchElections(query);
   }
 
   async verifyElectionDate(electionTitle: string, date: string): Promise<string> {
     const query = `Verify the date and details for ${electionTitle} scheduled for ${date}. Confirm if this date is accurate and provide any additional context about this election.`;
-    
+
     return this.searchElections(query);
   }
 }

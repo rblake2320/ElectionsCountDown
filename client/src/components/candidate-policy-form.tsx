@@ -22,7 +22,12 @@ interface CandidatePolicyFormProps {
   isLoading: boolean;
 }
 
-export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate, isLoading }: CandidatePolicyFormProps) {
+export default function CandidatePolicyForm({
+  profile,
+  policyTemplate,
+  onUpdate,
+  isLoading,
+}: CandidatePolicyFormProps) {
   const [positions, setPositions] = useState({
     economyPosition: profile?.policyPositions?.economy || '',
     healthcarePosition: profile?.policyPositions?.healthcare || '',
@@ -41,7 +46,7 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
   const updatePosition = (field: string, value: string) => {
     setPositions(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -62,7 +67,9 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
   const handleSave = () => {
     const policyData = {
       ...positions,
-      topPriorities: topPriorities.filter((priority: any) => priority.priority && priority.description),
+      topPriorities: topPriorities.filter(
+        (priority: any) => priority.priority && priority.description
+      ),
     };
     onUpdate(policyData);
   };
@@ -86,7 +93,8 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
         <CardHeader>
           <CardTitle>Campaign Priorities</CardTitle>
           <CardDescription>
-            Your top campaign priorities and initiatives. <Badge variant="outline">Candidate Supplied</Badge>
+            Your top campaign priorities and initiatives.{' '}
+            <Badge variant="outline">Candidate Supplied</Badge>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,7 +110,12 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
               <div key={index} className="border p-4 rounded-lg space-y-3">
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Priority {index + 1}</h4>
-                  <Button type="button" onClick={() => removePriority(index)} size="sm" variant="ghost">
+                  <Button
+                    type="button"
+                    onClick={() => removePriority(index)}
+                    size="sm"
+                    variant="ghost"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -110,12 +123,12 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                   <Input
                     placeholder="Priority title (e.g., 'Economic Growth')"
                     value={priority.priority}
-                    onChange={(e) => updatePriority(index, 'priority', e.target.value)}
+                    onChange={e => updatePriority(index, 'priority', e.target.value)}
                   />
                   <Textarea
                     placeholder="Detailed description of this priority and your plans..."
                     value={priority.description}
-                    onChange={(e) => updatePriority(index, 'description', e.target.value)}
+                    onChange={e => updatePriority(index, 'description', e.target.value)}
                   />
                 </div>
               </div>
@@ -129,7 +142,8 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
         <CardHeader>
           <CardTitle>Policy Positions</CardTitle>
           <CardDescription>
-            Your detailed positions on key policy areas. <Badge variant="outline">Candidate Supplied</Badge>
+            Your detailed positions on key policy areas.{' '}
+            <Badge variant="outline">Candidate Supplied</Badge>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,14 +164,14 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                   description="Economic policy, job creation, business regulation"
                   questions={policyTemplate.find(p => p.id === 'economy')?.questions || []}
                   value={positions.economyPosition}
-                  onChange={(value) => updatePosition('economyPosition', value)}
+                  onChange={value => updatePosition('economyPosition', value)}
                 />
                 <PolicyPositionCard
                   title="Taxes"
                   description="Tax policy, government spending, fiscal responsibility"
                   questions={policyTemplate.find(p => p.id === 'taxes')?.questions || []}
                   value={positions.taxesPosition}
-                  onChange={(value) => updatePosition('taxesPosition', value)}
+                  onChange={value => updatePosition('taxesPosition', value)}
                 />
               </div>
             </TabsContent>
@@ -169,7 +183,7 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                 description="Healthcare policy, insurance, medical costs"
                 questions={policyTemplate.find(p => p.id === 'healthcare')?.questions || []}
                 value={positions.healthcarePosition}
-                onChange={(value) => updatePosition('healthcarePosition', value)}
+                onChange={value => updatePosition('healthcarePosition', value)}
               />
             </TabsContent>
 
@@ -180,7 +194,7 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                 description="Public education, higher education, school funding"
                 questions={policyTemplate.find(p => p.id === 'education')?.questions || []}
                 value={positions.educationPosition}
-                onChange={(value) => updatePosition('educationPosition', value)}
+                onChange={value => updatePosition('educationPosition', value)}
               />
             </TabsContent>
 
@@ -192,14 +206,14 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                   description="Climate change, clean energy, conservation"
                   questions={policyTemplate.find(p => p.id === 'environment')?.questions || []}
                   value={positions.environmentPosition}
-                  onChange={(value) => updatePosition('environmentPosition', value)}
+                  onChange={value => updatePosition('environmentPosition', value)}
                 />
                 <PolicyPositionCard
                   title="Infrastructure"
                   description="Transportation, broadband, public works"
                   questions={policyTemplate.find(p => p.id === 'infrastructure')?.questions || []}
                   value={positions.infrastructurePosition}
-                  onChange={(value) => updatePosition('infrastructurePosition', value)}
+                  onChange={value => updatePosition('infrastructurePosition', value)}
                 />
               </div>
             </TabsContent>
@@ -212,28 +226,28 @@ export default function CandidatePolicyForm({ profile, policyTemplate, onUpdate,
                   description="Immigration policy, border security, citizenship"
                   questions={policyTemplate.find(p => p.id === 'immigration')?.questions || []}
                   value={positions.immigrationPosition}
-                  onChange={(value) => updatePosition('immigrationPosition', value)}
+                  onChange={value => updatePosition('immigrationPosition', value)}
                 />
                 <PolicyPositionCard
                   title="Criminal Justice"
                   description="Law enforcement, prison reform, public safety"
                   questions={policyTemplate.find(p => p.id === 'criminalJustice')?.questions || []}
                   value={positions.criminalJusticePosition}
-                  onChange={(value) => updatePosition('criminalJusticePosition', value)}
+                  onChange={value => updatePosition('criminalJusticePosition', value)}
                 />
                 <PolicyPositionCard
                   title="Social Issues"
                   description="Civil rights, equality, social programs"
                   questions={policyTemplate.find(p => p.id === 'socialIssues')?.questions || []}
                   value={positions.socialIssuesPosition}
-                  onChange={(value) => updatePosition('socialIssuesPosition', value)}
+                  onChange={value => updatePosition('socialIssuesPosition', value)}
                 />
                 <PolicyPositionCard
                   title="Foreign Policy"
                   description="International relations, defense, trade"
                   questions={policyTemplate.find(p => p.id === 'foreignPolicy')?.questions || []}
                   value={positions.foreignPolicyPosition}
-                  onChange={(value) => updatePosition('foreignPolicyPosition', value)}
+                  onChange={value => updatePosition('foreignPolicyPosition', value)}
                 />
               </div>
             </TabsContent>
@@ -259,7 +273,13 @@ interface PolicyPositionCardProps {
   onChange: (value: string) => void;
 }
 
-function PolicyPositionCard({ title, description, questions, value, onChange }: PolicyPositionCardProps) {
+function PolicyPositionCard({
+  title,
+  description,
+  questions,
+  value,
+  onChange,
+}: PolicyPositionCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -285,7 +305,7 @@ function PolicyPositionCard({ title, description, questions, value, onChange }: 
             id={`position-${title.toLowerCase().replace(/\s+/g, '-')}`}
             placeholder={`Describe your position on ${title.toLowerCase()}...`}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             rows={4}
           />
         </div>

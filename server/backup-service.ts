@@ -18,7 +18,7 @@ export class BackupService {
     schedule: '0 2 * * *', // Daily at 2 AM
     retentionDays: 30,
     backupPath: './backups',
-    compressionEnabled: true
+    compressionEnabled: true,
   };
 
   // Create comprehensive database backup
@@ -35,7 +35,7 @@ export class BackupService {
 
       // Create PostgreSQL dump with data
       const pgDumpCommand = `pg_dump "${process.env.DATABASE_URL}" --verbose --format=custom --file="${backupPath}"`;
-      
+
       await execAsync(pgDumpCommand);
       console.log(`Full backup created: ${backupPath}`);
 
@@ -94,7 +94,7 @@ export class BackupService {
         users: userData.rows,
         watchlists: watchlistData.rows,
         totalUsers: userData.rows.length,
-        totalWatchlistItems: watchlistData.rows.length
+        totalWatchlistItems: watchlistData.rows.length,
       };
 
       await writeFile(backupPath, JSON.stringify(backupData, null, 2));
@@ -143,7 +143,7 @@ export class BackupService {
         elections: electionData.rows,
         candidates: candidateData.rows,
         totalElections: electionData.rows.length,
-        totalCandidates: candidateData.rows.length
+        totalCandidates: candidateData.rows.length,
       };
 
       await writeFile(backupPath, JSON.stringify(backupData, null, 2));
@@ -196,7 +196,7 @@ export class BackupService {
         timestamp: new Date().toISOString(),
         campaigns: campaignData.rows,
         accessPatterns: accessData.rows,
-        totalCampaigns: campaignData.rows.length
+        totalCampaigns: campaignData.rows.length,
       };
 
       await writeFile(backupPath, JSON.stringify(backupData, null, 2));
@@ -212,7 +212,7 @@ export class BackupService {
   // Pre-archival backup
   async createPreArchivalBackup(): Promise<string[]> {
     console.log('Creating pre-archival backup...');
-    
+
     try {
       const backupPaths = [];
 
@@ -239,7 +239,8 @@ export class BackupService {
 
     const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
-    const analyticsData = await db.execute(`
+    const analyticsData = await db.execute(
+      `
       SELECT 
         il.*,
         em.time_on_page,
@@ -249,13 +250,15 @@ export class BackupService {
       LEFT JOIN engagement_metrics em ON il.user_id = em.user_id 
         AND DATE(il.timestamp) = DATE(em.created_at)
       WHERE il.timestamp < $1
-    `, [ninetyDaysAgo]);
+    `,
+      [ninetyDaysAgo]
+    );
 
     const backupData = {
       timestamp: new Date().toISOString(),
       archivalCutoff: ninetyDaysAgo.toISOString(),
       analytics: analyticsData.rows,
-      totalRecords: analyticsData.rows.length
+      totalRecords: analyticsData.rows.length,
     };
 
     await writeFile(backupPath, JSON.stringify(backupData, null, 2));
@@ -269,7 +272,8 @@ export class BackupService {
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const completedElections = await db.execute(`
+    const completedElections = await db.execute(
+      `
       SELECT 
         e.*,
         COALESCE(json_agg(c.*) FILTER (WHERE c.id IS NOT NULL), '[]') as candidates
@@ -277,13 +281,15 @@ export class BackupService {
       LEFT JOIN candidates c ON e.id = c.election_id
       WHERE e.date < $1 AND e.is_active = false
       GROUP BY e.id
-    `, [thirtyDaysAgo]);
+    `,
+      [thirtyDaysAgo]
+    );
 
     const backupData = {
       timestamp: new Date().toISOString(),
       completionCutoff: thirtyDaysAgo.toISOString(),
       completedElections: completedElections.rows,
-      totalElections: completedElections.rows.length
+      totalElections: completedElections.rows.length,
     };
 
     await writeFile(backupPath, JSON.stringify(backupData, null, 2));
@@ -294,14 +300,17 @@ export class BackupService {
   async getBackupStatus(): Promise<any> {
     try {
       const { stdout } = await execAsync(`ls -la ${this.config.backupPath}`);
-      const backupFiles = stdout.split('\n').filter(line => line.includes('.sql') || line.includes('.json'));
+      const backupFiles = stdout
+        .split('\n')
+        .filter(line => line.includes('.sql') || line.includes('.json'));
 
       return {
         backupDirectory: this.config.backupPath,
         totalBackups: backupFiles.length,
-        lastBackup: backupFiles.length > 0 ? backupFiles[backupFiles.length - 1] : 'No backups found',
+        lastBackup:
+          backupFiles.length > 0 ? backupFiles[backupFiles.length - 1] : 'No backups found',
         config: this.config,
-        diskUsage: await this.getBackupDiskUsage()
+        diskUsage: await this.getBackupDiskUsage(),
       };
     } catch (error) {
       console.error('Error getting backup status:', error);
@@ -323,26 +332,29 @@ export class BackupService {
     console.log('Scheduling automated backups...');
 
     // Run daily backups at 2 AM
-    return setInterval(async () => {
-      try {
-        console.log('Running scheduled backup...');
-        
-        // Create incremental backups
-        await this.backupUserData();
-        await this.backupElectionData();
-        await this.backupCampaignAnalytics();
-        
-        // Weekly full backup (Sunday)
-        const today = new Date().getDay();
-        if (today === 0) {
-          await this.createFullBackup();
+    return setInterval(
+      async () => {
+        try {
+          console.log('Running scheduled backup...');
+
+          // Create incremental backups
+          await this.backupUserData();
+          await this.backupElectionData();
+          await this.backupCampaignAnalytics();
+
+          // Weekly full backup (Sunday)
+          const today = new Date().getDay();
+          if (today === 0) {
+            await this.createFullBackup();
+          }
+
+          console.log('Scheduled backup completed');
+        } catch (error) {
+          console.error('Scheduled backup failed:', error);
         }
-        
-        console.log('Scheduled backup completed');
-      } catch (error) {
-        console.error('Scheduled backup failed:', error);
-      }
-    }, 24 * 60 * 60 * 1000); // 24 hours
+      },
+      24 * 60 * 60 * 1000
+    ); // 24 hours
   }
 }
 

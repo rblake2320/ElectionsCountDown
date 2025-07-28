@@ -1,4 +1,4 @@
-import { Midterm2026Dashboard } from "@/components/midterm-2026-dashboard";
+import { Midterm2026Dashboard } from '@/components/midterm-2026-dashboard';
 
 export default function Midterm2026() {
   return (

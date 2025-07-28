@@ -13,24 +13,42 @@ We welcome contributions to the ElectionTracker platform! This document provides
 ## Development Guidelines
 
 ### Code Style
+
 - Use TypeScript for all new code
 - Follow existing code formatting (Prettier configuration included)
+- Run `npm run lint` to check for ESLint issues
+- Run `npm run format` to format code with Prettier
 - Write meaningful commit messages
 - Include comments for complex logic
 
+### Development Commands
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run check        # TypeScript type checking
+npm run lint         # Check code with ESLint
+npm run lint:fix     # Fix ESLint issues automatically
+npm run format       # Format code with Prettier
+npm run format:check # Check code formatting
+```
+
 ### API Integration
+
 - All new data sources must provide authentic data only
 - Implement proper error handling and rate limiting
 - Document API endpoints and response formats
 - Include data validation and sanitization
 
 ### Database Changes
+
 - Use Drizzle ORM for all database operations
 - Update schema in `shared/schema.ts`
 - Run `npm run db:push` to apply changes
 - Never use destructive operations without explicit approval
 
 ### Security Requirements
+
 - Validate all user inputs
 - Implement proper authentication checks
 - Use environment variables for sensitive data
@@ -39,18 +57,21 @@ We welcome contributions to the ElectionTracker platform! This document provides
 ## Contribution Process
 
 ### For Bug Fixes
+
 1. Create an issue describing the bug
 2. Reference the issue in your pull request
 3. Include test cases if applicable
 4. Ensure all existing tests pass
 
 ### For New Features
+
 1. Discuss the feature in an issue first
 2. Ensure it aligns with the project's data authenticity goals
 3. Update documentation as needed
 4. Add appropriate tests
 
 ### For API Integrations
+
 1. Verify the data source is authoritative and reliable
 2. Implement proper error handling
 3. Add rate limiting and caching as appropriate
@@ -59,6 +80,7 @@ We welcome contributions to the ElectionTracker platform! This document provides
 ## Pull Request Guidelines
 
 ### Before Submitting
+
 - [ ] Code follows project style guidelines
 - [ ] All tests pass
 - [ ] Documentation is updated
@@ -66,6 +88,7 @@ We welcome contributions to the ElectionTracker platform! This document provides
 - [ ] Data sources are authentic and verified
 
 ### PR Description Should Include
+
 - Clear description of changes
 - Link to related issues
 - Screenshots for UI changes
@@ -75,12 +98,14 @@ We welcome contributions to the ElectionTracker platform! This document provides
 ## Data Integrity Standards
 
 ### Authentic Data Only
+
 - No mock, placeholder, or synthetic data
 - All polling percentages from verified sources
 - Clear data source attribution
 - Proper error states for unavailable data
 
 ### Approved Data Sources
+
 - Government APIs (FEC, Census, Google Civic)
 - Official election authorities
 - Verified news organizations
@@ -90,6 +115,7 @@ We welcome contributions to the ElectionTracker platform! This document provides
 ## Testing
 
 ### Local Testing
+
 ```bash
 npm run test          # Run unit tests
 npm run test:api      # Test API endpoints
@@ -98,6 +124,7 @@ npm run type-check    # Verify TypeScript
 ```
 
 ### Integration Testing
+
 - Test with real API connections
 - Verify data authenticity
 - Check error handling
@@ -106,12 +133,14 @@ npm run type-check    # Verify TypeScript
 ## Documentation
 
 ### Code Documentation
+
 - Comment complex algorithms
 - Document API endpoints
 - Include type definitions
 - Provide usage examples
 
 ### User Documentation
+
 - Update README.md for new features
 - Include setup instructions
 - Document configuration options
@@ -120,12 +149,14 @@ npm run type-check    # Verify TypeScript
 ## Community Guidelines
 
 ### Communication
+
 - Be respectful and professional
 - Focus on constructive feedback
 - Ask questions when unclear
 - Help others when possible
 
 ### Issue Reporting
+
 - Use clear, descriptive titles
 - Include steps to reproduce
 - Provide error messages

@@ -2,7 +2,9 @@ import fs from 'fs';
 
 // Read the JSON file
 const data = JSON.parse(fs.readFileSync('attached_assets/congress_members_complete.json', 'utf8'));
-const supplement = JSON.parse(fs.readFileSync('attached_assets/missing_members_supplement.json', 'utf8'));
+const supplement = JSON.parse(
+  fs.readFileSync('attached_assets/missing_members_supplement.json', 'utf8')
+);
 
 console.log('=== ANALYSIS OF CONGRESSIONAL DATASET ===\n');
 

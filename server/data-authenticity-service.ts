@@ -23,10 +23,10 @@ export class DataAuthenticityService {
   private verifiedSources = new Set([
     'polling-data-service',
     'google-civic-api',
-    'openfec-api', 
+    'openfec-api',
     'propublica-congress-api',
     'realclearpolitics-api',
-    'polling-averages-api'
+    'polling-averages-api',
   ]);
 
   /**
@@ -40,7 +40,7 @@ export class DataAuthenticityService {
 
     // Check if source is in our verified list
     const isVerifiedSource = this.verifiedSources.has(candidate.pollingSource);
-    
+
     // Check if data is recent (within 7 days for polling)
     const lastUpdate = new Date(candidate.lastPollingUpdate);
     const daysSinceUpdate = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24);
@@ -57,10 +57,10 @@ export class DataAuthenticityService {
         timestamp: lastUpdate,
         apiEndpoint: this.getApiEndpointForSource(candidate.pollingSource),
         confidence: this.calculateConfidence(candidate.pollingSource, daysSinceUpdate),
-        isLive: daysSinceUpdate <= 1
+        isLive: daysSinceUpdate <= 1,
       },
       lastVerified: lastUpdate,
-      isAuthentic: true
+      isAuthentic: true,
     };
   }
 
@@ -85,10 +85,10 @@ export class DataAuthenticityService {
         timestamp: new Date(candidate.updatedAt),
         apiEndpoint: 'official-election-results',
         confidence: 1.0, // Official results have highest confidence
-        isLive: false // Election results are final
+        isLive: false, // Election results are final
       },
       lastVerified: new Date(candidate.updatedAt),
-      isAuthentic: true
+      isAuthentic: true,
     };
   }
 
@@ -107,7 +107,7 @@ export class DataAuthenticityService {
       pollingData: polling,
       voteData: votes,
       dataQuality: this.assessDataQuality(polling, votes),
-      warnings: this.generateWarnings(candidate, polling, votes)
+      warnings: this.generateWarnings(candidate, polling, votes),
     };
   }
 
@@ -124,19 +124,19 @@ export class DataAuthenticityService {
       pollingSupport: polling ? polling.value : null,
       pollingSource: polling ? polling.source.source : null,
       lastPollingUpdate: polling ? polling.lastVerified : null,
-      
+
       // Only include vote percentage if it's authentic
       votePercentage: votes ? votes.value : null,
       votesReceived: votes ? candidate.votesReceived : null,
-      
+
       // Add authenticity metadata
       dataAuthenticity: {
         hasAuthenticPolling: !!polling,
         hasAuthenticVotes: !!votes,
         lastDataVerification: new Date(),
         pollingConfidence: polling?.source.confidence || 0,
-        dataQuality: this.assessDataQuality(polling, votes)
-      }
+        dataQuality: this.assessDataQuality(polling, votes),
+      },
     };
   }
 
@@ -147,14 +147,14 @@ export class DataAuthenticityService {
       'openfec-api': 'https://api.open.fec.gov/v1',
       'propublica-congress-api': 'https://api.propublica.org/congress/v1',
       'realclearpolitics-api': '/api/rcp/polling',
-      'polling-averages-api': '/api/polling/averages'
+      'polling-averages-api': '/api/polling/averages',
     };
     return endpoints[source] || 'unknown';
   }
 
   private calculateConfidence(source: string, daysSinceUpdate: number): number {
     let baseConfidence = 0.5;
-    
+
     // Higher confidence for established sources
     const sourceConfidence: Record<string, number> = {
       'polling-data-service': 0.9,
@@ -162,7 +162,7 @@ export class DataAuthenticityService {
       'openfec-api': 1.0,
       'propublica-congress-api': 0.95,
       'realclearpolitics-api': 0.85,
-      'polling-averages-api': 0.8
+      'polling-averages-api': 0.8,
     };
 
     baseConfidence = sourceConfidence[source] || 0.5;
@@ -172,19 +172,28 @@ export class DataAuthenticityService {
     return Math.max(baseConfidence - agePenalty, 0.1);
   }
 
-  private assessDataQuality(polling: AuthenticPercentageData | null, votes: AuthenticPercentageData | null): string {
+  private assessDataQuality(
+    polling: AuthenticPercentageData | null,
+    votes: AuthenticPercentageData | null
+  ): string {
     if (votes) return 'excellent'; // Official results are best
     if (polling && polling.source.confidence > 0.8) return 'good';
     if (polling && polling.source.confidence > 0.6) return 'fair';
     return 'poor';
   }
 
-  private generateWarnings(candidate: any, polling: AuthenticPercentageData | null, votes: AuthenticPercentageData | null): string[] {
+  private generateWarnings(
+    candidate: any,
+    polling: AuthenticPercentageData | null,
+    votes: AuthenticPercentageData | null
+  ): string[] {
     const warnings: string[] = [];
 
     // Warn about static/placeholder data
     if (candidate.pollingSupport && !polling) {
-      warnings.push('Polling percentage shown is static database value, not from live polling sources');
+      warnings.push(
+        'Polling percentage shown is static database value, not from live polling sources'
+      );
     }
 
     if (candidate.votePercentage && !votes) {
@@ -193,7 +202,9 @@ export class DataAuthenticityService {
 
     // Warn about old data
     if (polling && !polling.source.isLive) {
-      const days = Math.floor((Date.now() - polling.lastVerified.getTime()) / (1000 * 60 * 60 * 24));
+      const days = Math.floor(
+        (Date.now() - polling.lastVerified.getTime()) / (1000 * 60 * 60 * 24)
+      );
       if (days > 3) {
         warnings.push(`Polling data is ${days} days old`);
       }

@@ -1,12 +1,27 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe, Shield, Activity, AlertTriangle, CheckCircle, Clock, Users, BarChart3 } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Globe,
+  Shield,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Users,
+  BarChart3,
+} from 'lucide-react';
 
 interface GlobalStatus {
   ideaConnected: boolean;
@@ -60,36 +75,35 @@ interface LegislativeEvent {
 }
 
 export default function GlobalDashboard() {
-  const [selectedCountry, setSelectedCountry] = useState<string>("all");
+  const [selectedCountry, setSelectedCountry] = useState<string>('all');
 
   // Global system status
   const { data: globalStatus, isLoading: statusLoading } = useQuery<GlobalStatus>({
-    queryKey: ["/api/global/status"],
+    queryKey: ['/api/global/status'],
     refetchInterval: 30000,
   });
 
   // Global elections data
   const { data: globalElections, isLoading: electionsLoading } = useQuery<GlobalElection[]>({
-    queryKey: ["/api/global/elections", selectedCountry],
+    queryKey: ['/api/global/elections', selectedCountry],
     enabled: true,
   });
 
   // Legislative events
   const { data: legislativeEvents } = useQuery<LegislativeEvent[]>({
-    queryKey: ["/api/global/legislative/all"],
+    queryKey: ['/api/global/legislative/all'],
   });
 
-  const getStatusColor = (connected: boolean) => 
-    connected ? "text-green-600" : "text-red-600";
+  const getStatusColor = (connected: boolean) => (connected ? 'text-green-600' : 'text-red-600');
 
-  const getStatusIcon = (connected: boolean) => 
+  const getStatusIcon = (connected: boolean) =>
     connected ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />;
 
   const getElectionStatusBadge = (status: string) => {
     const variants = {
-      upcoming: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      ongoing: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      completed: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+      upcoming: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      ongoing: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      completed: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
     };
     return variants[status as keyof typeof variants] || variants.upcoming;
   };
@@ -125,12 +139,15 @@ export default function GlobalDashboard() {
           <CardContent>
             <div className="flex items-center space-x-2">
               {getStatusIcon(globalStatus?.monitoring.isRunning || false)}
-              <span className={`font-medium ${getStatusColor(globalStatus?.monitoring.isRunning || false)}`}>
+              <span
+                className={`font-medium ${getStatusColor(globalStatus?.monitoring.isRunning || false)}`}
+              >
                 {globalStatus?.monitoring.isRunning ? 'Active' : 'Stopped'}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {globalStatus?.monitoring.activeTargets || 0}/{globalStatus?.monitoring.targetCount || 0} targets
+              {globalStatus?.monitoring.activeTargets || 0}/
+              {globalStatus?.monitoring.targetCount || 0} targets
             </p>
           </CardContent>
         </Card>
@@ -163,9 +180,7 @@ export default function GlobalDashboard() {
             <div className="text-2xl font-bold text-green-600">
               {globalStatus?.compliance.regulations.length || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Active regulations
-            </p>
+            <p className="text-xs text-muted-foreground">Active regulations</p>
           </CardContent>
         </Card>
 
@@ -242,15 +257,13 @@ export default function GlobalDashboard() {
                             {election.status}
                           </Badge>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4 text-sm">
                           <span>Type: {election.electionType}</span>
-                          {election.voterTurnout && (
-                            <span>Turnout: {election.voterTurnout}%</span>
-                          )}
+                          {election.voterTurnout && <span>Turnout: {election.voterTurnout}%</span>}
                           <span>Parties: {election.participatingParties.length}</span>
                         </div>
-                        
+
                         <div className="mt-2 text-xs text-muted-foreground">
                           Source: {election.source}
                         </div>
@@ -274,9 +287,7 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>International Data Sources</CardTitle>
-                <CardDescription>
-                  Global election monitoring services
-                </CardDescription>
+                <CardDescription>Global election monitoring services</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -288,7 +299,7 @@ export default function GlobalDashboard() {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>ACE Electoral Network</span>
                   <div className="flex items-center space-x-2">
@@ -298,7 +309,7 @@ export default function GlobalDashboard() {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Ballotpedia</span>
                   <div className="flex items-center space-x-2">
@@ -314,9 +325,7 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Legislative Data Sources</CardTitle>
-                <CardDescription>
-                  State and federal legislative monitoring
-                </CardDescription>
+                <CardDescription>State and federal legislative monitoring</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -328,7 +337,7 @@ export default function GlobalDashboard() {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>ProPublica Congress</span>
                   <div className="flex items-center space-x-2">
@@ -336,7 +345,7 @@ export default function GlobalDashboard() {
                     <span className="text-green-600">Connected</span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>VoteSmart</span>
                   <div className="flex items-center space-x-2">
@@ -353,22 +362,18 @@ export default function GlobalDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Legislative Activity</CardTitle>
-              <CardDescription>
-                State legislative events that may impact elections
-              </CardDescription>
+              <CardDescription>State legislative events that may impact elections</CardDescription>
             </CardHeader>
             <CardContent>
               {legislativeEvents && legislativeEvents.length > 0 ? (
                 <div className="space-y-3">
-                  {legislativeEvents.slice(0, 10).map((event) => (
+                  {legislativeEvents.slice(0, 10).map(event => (
                     <div key={event.id} className="border rounded-lg p-3">
                       <div className="flex items-start justify-between mb-1">
                         <h4 className="font-medium text-sm">{event.data.name}</h4>
                         <Badge variant="outline">{event.state}</Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        {event.data.description}
-                      </p>
+                      <p className="text-xs text-muted-foreground mb-2">{event.data.description}</p>
                       <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                         <span>Type: {event.type}</span>
                         <span>Date: {new Date(event.date).toLocaleDateString()}</span>
@@ -392,9 +397,7 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Regulatory Compliance</CardTitle>
-                <CardDescription>
-                  Active compliance frameworks
-                </CardDescription>
+                <CardDescription>Active compliance frameworks</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -411,9 +414,7 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Data Protection</CardTitle>
-                <CardDescription>
-                  Privacy and audit information
-                </CardDescription>
+                <CardDescription>Privacy and audit information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -422,21 +423,20 @@ export default function GlobalDashboard() {
                     {globalStatus?.compliance.auditLogCount || 0}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm font-medium">Data Types Monitored</div>
                   <div className="text-2xl font-bold">
                     {globalStatus?.compliance.dataTypes.length || 0}
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="text-sm font-medium">Last Retention Cleanup</div>
                   <div className="text-sm text-muted-foreground">
-                    {globalStatus?.compliance.lastRetentionCleanup 
+                    {globalStatus?.compliance.lastRetentionCleanup
                       ? new Date(globalStatus.compliance.lastRetentionCleanup).toLocaleDateString()
-                      : 'Not available'
-                    }
+                      : 'Not available'}
                   </div>
                 </div>
               </CardContent>
@@ -446,8 +446,9 @@ export default function GlobalDashboard() {
           <Alert>
             <Shield className="h-4 w-4" />
             <AlertDescription>
-              All election data is processed in compliance with GDPR, CCPA, PIPEDA, LGPD, and international election monitoring standards. 
-              Automated compliance checks run continuously to ensure data protection requirements are met.
+              All election data is processed in compliance with GDPR, CCPA, PIPEDA, LGPD, and
+              international election monitoring standards. Automated compliance checks run
+              continuously to ensure data protection requirements are met.
             </AlertDescription>
           </Alert>
         </TabsContent>

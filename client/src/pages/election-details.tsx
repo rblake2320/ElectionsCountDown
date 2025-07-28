@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { useParams, Link } from "wouter";
-import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Calendar, MapPin, Users, Trophy, TrendingUp, BarChart3 } from "lucide-react";
-import { format } from "date-fns";
-import { CountdownTimer } from "@/components/countdown-timer";
-import { CandidateComparisonWizard } from "@/components/candidate-comparison-wizard";
-import { PollingTrendChart } from "@/components/polling-trend-chart";
-import { usePollingTrends } from "@/hooks/use-polling-trends";
-import { useCandidates } from "@/hooks/use-elections";
-import type { Election, Candidate } from "@shared/schema";
+import { useState } from 'react';
+import { useParams, Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Calendar, MapPin, Users, Trophy, TrendingUp, BarChart3 } from 'lucide-react';
+import { format } from 'date-fns';
+import { CountdownTimer } from '@/components/countdown-timer';
+import { CandidateComparisonWizard } from '@/components/candidate-comparison-wizard';
+import { PollingTrendChart } from '@/components/polling-trend-chart';
+import { usePollingTrends } from '@/hooks/use-polling-trends';
+import { useCandidates } from '@/hooks/use-elections';
+import type { Election, Candidate } from '@shared/schema';
 
 export default function ElectionDetails() {
   const params = useParams();
-  const electionId = parseInt(params.id || "0");
-  const [activeTab, setActiveTab] = useState("overview");
+  const electionId = parseInt(params.id || '0');
+  const [activeTab, setActiveTab] = useState('overview');
 
   const { data: election, isLoading: electionLoading } = useQuery({
     queryKey: [`/api/elections/${electionId}`],
@@ -26,7 +26,7 @@ export default function ElectionDetails() {
 
   const { data: candidates = [], isLoading: candidatesLoading } = useCandidates(electionId);
 
-  const { data: pollingData, isLoading: pollingLoading } = usePollingTrends(electionId, "90");
+  const { data: pollingData, isLoading: pollingLoading } = usePollingTrends(electionId, '90');
 
   if (electionLoading || candidatesLoading) {
     return (
@@ -76,13 +76,11 @@ export default function ElectionDetails() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {election.title}
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{election.title}</h1>
           <div className="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              {format(electionDate, "EEEE, MMMM d, yyyy")}
+              {format(electionDate, 'EEEE, MMMM d, yyyy')}
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
@@ -101,18 +99,13 @@ export default function ElectionDetails() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Badge variant={isUpcoming ? "secondary" : hasResults ? "default" : "outline"}>
-                {isUpcoming ? "Upcoming" : hasResults ? "Results Available" : "Past Election"}
+              <Badge variant={isUpcoming ? 'secondary' : hasResults ? 'default' : 'outline'}>
+                {isUpcoming ? 'Upcoming' : hasResults ? 'Results Available' : 'Past Election'}
               </Badge>
-              {election.type && (
-                <Badge variant="outline">{election.type}</Badge>
-              )}
+              {election.type && <Badge variant="outline">{election.type}</Badge>}
             </div>
             {isUpcoming && (
-              <CountdownTimer 
-                targetDate={election.date}
-                className="text-sm font-medium"
-              />
+              <CountdownTimer targetDate={election.date} className="text-sm font-medium" />
             )}
           </div>
         </CardContent>
@@ -135,14 +128,15 @@ export default function ElectionDetails() {
                 <Users className="h-5 w-5" />
                 Candidates
               </CardTitle>
-              <CardDescription>
-                Current candidate standings and information
-              </CardDescription>
+              <CardDescription>Current candidate standings and information</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {candidates.map((candidate) => (
-                  <div key={candidate.id} className="flex items-center justify-between p-4 border rounded-lg">
+                {candidates.map(candidate => (
+                  <div
+                    key={candidate.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-3">
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">
@@ -152,12 +146,8 @@ export default function ElectionDetails() {
                           {candidate.party}
                         </p>
                       </div>
-                      {candidate.isIncumbent && (
-                        <Badge variant="secondary">Incumbent</Badge>
-                      )}
-                      {candidate.isWinner && (
-                        <Trophy className="h-4 w-4 text-green-600" />
-                      )}
+                      {candidate.isIncumbent && <Badge variant="secondary">Incumbent</Badge>}
+                      {candidate.isWinner && <Trophy className="h-4 w-4 text-green-600" />}
                     </div>
                     <div className="text-right">
                       {candidate.votePercentage && (
@@ -202,14 +192,12 @@ export default function ElectionDetails() {
 
         <TabsContent value="candidates" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {candidates.map((candidate) => (
+            {candidates.map(candidate => (
               <Card key={candidate.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{candidate.name}</CardTitle>
-                    {candidate.isIncumbent && (
-                      <Badge variant="secondary">Incumbent</Badge>
-                    )}
+                    {candidate.isIncumbent && <Badge variant="secondary">Incumbent</Badge>}
                   </div>
                   <CardDescription>
                     {candidate.party} • {election.level} Election
@@ -222,26 +210,22 @@ export default function ElectionDetails() {
                         {candidate.description}
                       </p>
                     )}
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Current Support:</span>
                       <div className="flex items-center gap-2">
                         {candidate.votePercentage && (
-                          <Badge variant="default">
-                            {candidate.votePercentage}% votes
-                          </Badge>
+                          <Badge variant="default">{candidate.votePercentage}% votes</Badge>
                         )}
                         {candidate.pollingSupport && (
-                          <Badge variant="outline">
-                            {candidate.pollingSupport}% polling
-                          </Badge>
+                          <Badge variant="outline">{candidate.pollingSupport}% polling</Badge>
                         )}
                       </div>
                     </div>
 
                     {candidate.website && (
                       <div>
-                        <a 
+                        <a
                           href={candidate.website}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -258,10 +242,7 @@ export default function ElectionDetails() {
           </div>
 
           {candidates.length >= 2 && (
-            <CandidateComparisonWizard
-              electionId={electionId}
-              candidates={candidates}
-            />
+            <CandidateComparisonWizard electionId={electionId} candidates={candidates} />
           )}
         </TabsContent>
 
@@ -272,9 +253,7 @@ export default function ElectionDetails() {
                 <TrendingUp className="h-5 w-5" />
                 Election Analysis
               </CardTitle>
-              <CardDescription>
-                AI-powered insights and trend analysis
-              </CardDescription>
+              <CardDescription>AI-powered insights and trend analysis</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">

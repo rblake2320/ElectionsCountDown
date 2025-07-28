@@ -1,21 +1,21 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  CheckCircle, 
-  XCircle, 
-  Database, 
-  Globe, 
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  CheckCircle,
+  XCircle,
+  Database,
+  Globe,
   Search,
   Users,
   BarChart3,
   MapPin,
-  Calendar
-} from "lucide-react";
+  Calendar,
+} from 'lucide-react';
 
 interface APIStatus {
   apis: {
@@ -46,25 +46,25 @@ interface PolicyComparison {
 }
 
 export default function CivicDashboard() {
-  const [candidateIds, setCandidateIds] = useState("H001075,S001193");
-  const [policyCategories, setPolicyCategories] = useState("Economy & Jobs,Healthcare,Education");
-  const [address, setAddress] = useState("123 Main St, Columbus, OH 43215");
-  const [internationalCandidate, setInternationalCandidate] = useState("Boris Johnson");
-  const [country, setCountry] = useState("UK");
+  const [candidateIds, setCandidateIds] = useState('H001075,S001193');
+  const [policyCategories, setPolicyCategories] = useState('Economy & Jobs,Healthcare,Education');
+  const [address, setAddress] = useState('123 Main St, Columbus, OH 43215');
+  const [internationalCandidate, setInternationalCandidate] = useState('Boris Johnson');
+  const [country, setCountry] = useState('UK');
 
   // Get civic aggregator status
   const { data: status } = useQuery({
-    queryKey: ["/api/civic/status"],
+    queryKey: ['/api/civic/status'],
     refetchInterval: 30000, // Refresh every 30 seconds
   }) as { data: APIStatus | undefined };
 
   // Policy comparison query
   const { data: policyComparison, isLoading: isPolicyLoading } = useQuery({
-    queryKey: ["/api/civic/compare", candidateIds, policyCategories],
+    queryKey: ['/api/civic/compare', candidateIds, policyCategories],
     queryFn: async () => {
       const params = new URLSearchParams({
         candidateIds,
-        policyCategories
+        policyCategories,
       });
       const response = await fetch(`/api/civic/compare?${params}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -75,7 +75,7 @@ export default function CivicDashboard() {
 
   // Ballot info query
   const { data: ballotInfo, isLoading: isBallotLoading } = useQuery({
-    queryKey: ["/api/civic/ballot-info", address],
+    queryKey: ['/api/civic/ballot-info', address],
     queryFn: async () => {
       const params = new URLSearchParams({ address });
       const response = await fetch(`/api/civic/ballot-info?${params}`);
@@ -87,11 +87,11 @@ export default function CivicDashboard() {
 
   // International data query
   const { data: internationalData, isLoading: isInternationalLoading } = useQuery({
-    queryKey: ["/api/civic/international", internationalCandidate, country],
+    queryKey: ['/api/civic/international', internationalCandidate, country],
     queryFn: async () => {
       const params = new URLSearchParams({
         candidateName: internationalCandidate,
-        country
+        country,
       });
       const response = await fetch(`/api/civic/international?${params}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -100,13 +100,12 @@ export default function CivicDashboard() {
     enabled: internationalCandidate.length > 0 && country.length > 0,
   });
 
-  const StatusIcon = ({ connected }: { connected: boolean }) => (
+  const StatusIcon = ({ connected }: { connected: boolean }) =>
     connected ? (
       <CheckCircle className="w-4 h-4 text-green-600" />
     ) : (
       <XCircle className="w-4 h-4 text-red-600" />
-    )
-  );
+    );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -140,17 +139,18 @@ export default function CivicDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {status?.apis && Object.entries(status.apis).map(([api, connected]) => (
-                    <div key={api} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <StatusIcon connected={connected} />
-                        <span className="capitalize">{api}</span>
+                  {status?.apis &&
+                    Object.entries(status.apis).map(([api, connected]) => (
+                      <div key={api} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <StatusIcon connected={connected} />
+                          <span className="capitalize">{api}</span>
+                        </div>
+                        <Badge variant={connected ? 'default' : 'destructive'}>
+                          {connected ? 'Connected' : 'Disconnected'}
+                        </Badge>
                       </div>
-                      <Badge variant={connected ? "default" : "destructive"}>
-                        {connected ? "Connected" : "Disconnected"}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))}
                 </CardContent>
               </Card>
 
@@ -160,22 +160,23 @@ export default function CivicDashboard() {
                     <Globe className="w-5 h-5" />
                     International Support
                   </CardTitle>
-                  <CardDescription>
-                    Global election data sources and coverage
-                  </CardDescription>
+                  <CardDescription>Global election data sources and coverage</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {status?.internationalSupport && Object.entries(status.internationalSupport).map(([source, supported]) => (
-                    <div key={source} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <StatusIcon connected={supported} />
-                        <span className="capitalize">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
+                  {status?.internationalSupport &&
+                    Object.entries(status.internationalSupport).map(([source, supported]) => (
+                      <div key={source} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <StatusIcon connected={supported} />
+                          <span className="capitalize">
+                            {source.replace(/([A-Z])/g, ' $1').trim()}
+                          </span>
+                        </div>
+                        <Badge variant={supported ? 'default' : 'secondary'}>
+                          {supported ? 'Available' : 'Planned'}
+                        </Badge>
                       </div>
-                      <Badge variant={supported ? "default" : "secondary"}>
-                        {supported ? "Available" : "Planned"}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))}
                 </CardContent>
               </Card>
             </div>
@@ -208,7 +209,7 @@ export default function CivicDashboard() {
                     <label className="text-sm font-medium mb-2 block">Candidate IDs</label>
                     <Input
                       value={candidateIds}
-                      onChange={(e) => setCandidateIds(e.target.value)}
+                      onChange={e => setCandidateIds(e.target.value)}
                       placeholder="H001075,S001193"
                     />
                   </div>
@@ -216,7 +217,7 @@ export default function CivicDashboard() {
                     <label className="text-sm font-medium mb-2 block">Policy Categories</label>
                     <Input
                       value={policyCategories}
-                      onChange={(e) => setPolicyCategories(e.target.value)}
+                      onChange={e => setPolicyCategories(e.target.value)}
                       placeholder="Economy & Jobs,Healthcare,Education"
                     />
                   </div>
@@ -225,21 +226,26 @@ export default function CivicDashboard() {
                 {isPolicyLoading && (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mx-auto"></div>
-                    <p className="mt-2 text-sm text-text-muted">Gathering multi-source policy data...</p>
+                    <p className="mt-2 text-sm text-text-muted">
+                      Gathering multi-source policy data...
+                    </p>
                   </div>
                 )}
 
                 {policyComparison && (
                   <div className="space-y-4">
-                    {policyComparison.map((category) => (
+                    {policyComparison.map(category => (
                       <Card key={category.category}>
                         <CardHeader>
                           <CardTitle className="text-lg">{category.category}</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
-                            {category.positions.map((position) => (
-                              <div key={position.candidateId} className="border-l-4 border-brand-primary pl-4">
+                            {category.positions.map(position => (
+                              <div
+                                key={position.candidateId}
+                                className="border-l-4 border-brand-primary pl-4"
+                              >
                                 <div className="flex items-center justify-between mb-1">
                                   <h4 className="font-medium">{position.candidateName}</h4>
                                   <Badge variant="outline">
@@ -276,7 +282,7 @@ export default function CivicDashboard() {
                   <label className="text-sm font-medium mb-2 block">Address</label>
                   <Input
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={e => setAddress(e.target.value)}
                     placeholder="123 Main St, Columbus, OH 43215"
                   />
                 </div>
@@ -307,9 +313,7 @@ export default function CivicDashboard() {
                   <Globe className="w-5 h-5" />
                   International Election Data
                 </CardTitle>
-                <CardDescription>
-                  UK Parliament API and Wikidata global coverage
-                </CardDescription>
+                <CardDescription>UK Parliament API and Wikidata global coverage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -317,7 +321,7 @@ export default function CivicDashboard() {
                     <label className="text-sm font-medium mb-2 block">Candidate Name</label>
                     <Input
                       value={internationalCandidate}
-                      onChange={(e) => setInternationalCandidate(e.target.value)}
+                      onChange={e => setInternationalCandidate(e.target.value)}
                       placeholder="Boris Johnson"
                     />
                   </div>
@@ -325,7 +329,7 @@ export default function CivicDashboard() {
                     <label className="text-sm font-medium mb-2 block">Country</label>
                     <Input
                       value={country}
-                      onChange={(e) => setCountry(e.target.value)}
+                      onChange={e => setCountry(e.target.value)}
                       placeholder="UK"
                     />
                   </div>
@@ -365,7 +369,8 @@ export default function CivicDashboard() {
                   </p>
                   <Badge className="mb-2">Free Tier</Badge>
                   <p className="text-xs">
-                    curl -H "X-API-Key:$KEY" https://api.propublica.org/congress/v1/members/H001075.json
+                    curl -H "X-API-Key:$KEY"
+                    https://api.propublica.org/congress/v1/members/H001075.json
                   </p>
                 </CardContent>
               </Card>

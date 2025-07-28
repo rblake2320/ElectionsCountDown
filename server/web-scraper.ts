@@ -26,11 +26,11 @@ export class ElectionWebScraper {
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     try {
       this.browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
       });
       this.isInitialized = true;
       console.log('Election web scraper initialized successfully');
@@ -48,10 +48,10 @@ export class ElectionWebScraper {
     try {
       const page = await this.browser!.newPage();
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-      
+
       // Navigate to the election results page
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-      
+
       // Extract election data
       const electionData = await page.evaluate(() => {
         const extractText = (selector: string): string => {
@@ -63,7 +63,7 @@ export class ElectionWebScraper {
         const titleSelectors = ['h1', '.election-title', '.race-title', '[data-election-title]'];
         const dateSelectors = ['.election-date', '.date', '[data-date]', '.race-date'];
         const locationSelectors = ['.location', '.district', '.constituency', '[data-location]'];
-        
+
         let title = '';
         let date = '';
         let location = '';
@@ -84,9 +84,16 @@ export class ElectionWebScraper {
         }
 
         // Extract candidate results if available
-        const candidates: Array<{name: string, party: string, votes?: number, percentage?: number}> = [];
-        const candidateRows = document.querySelectorAll('.candidate, .result-row, tr[data-candidate]');
-        
+        const candidates: Array<{
+          name: string;
+          party: string;
+          votes?: number;
+          percentage?: number;
+        }> = [];
+        const candidateRows = document.querySelectorAll(
+          '.candidate, .result-row, tr[data-candidate]'
+        );
+
         candidateRows.forEach(row => {
           const nameEl = row.querySelector('.name, .candidate-name, td:first-child');
           const partyEl = row.querySelector('.party, .candidate-party, .affiliation');
@@ -97,8 +104,12 @@ export class ElectionWebScraper {
             candidates.push({
               name: nameEl.textContent.trim(),
               party: partyEl?.textContent?.trim() || 'Unknown',
-              votes: votesEl?.textContent ? parseInt(votesEl.textContent.replace(/[^\d]/g, '') || '0') : undefined,
-              percentage: percentEl?.textContent ? parseFloat(percentEl.textContent.replace(/[^\d.]/g, '') || '0') : undefined
+              votes: votesEl?.textContent
+                ? parseInt(votesEl.textContent.replace(/[^\d]/g, '') || '0')
+                : undefined,
+              percentage: percentEl?.textContent
+                ? parseFloat(percentEl.textContent.replace(/[^\d.]/g, '') || '0')
+                : undefined,
             });
           }
         });
@@ -127,9 +138,8 @@ export class ElectionWebScraper {
         description: `Real-time election data from ${url}`,
         candidates: electionData.candidates,
         resultsComplete: electionData.candidates.length > 0,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-
     } catch (error) {
       console.error(`Failed to scrape election site ${url}:`, error);
       return null;
@@ -147,7 +157,7 @@ export class ElectionWebScraper {
       // Parse election listings from common feed formats
       $('.election-item, .race-item, .contest').each((_, element) => {
         const $el = $(element);
-        
+
         const title = $el.find('.title, .name, h3, h4').first().text().trim();
         const date = $el.find('.date, .election-date').first().text().trim();
         const location = $el.find('.location, .district').first().text().trim();
@@ -161,7 +171,7 @@ export class ElectionWebScraper {
             type: this.determineElectionType(title, feedUrl),
             level: this.determineElectionLevel(title, feedUrl),
             description: `Election data from feed: ${feedUrl}`,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
           });
         }
       });
@@ -177,7 +187,7 @@ export class ElectionWebScraper {
     const results = new Map<string, ScrapedElectionData>();
 
     await Promise.allSettled(
-      urls.map(async (url) => {
+      urls.map(async url => {
         const data = await this.scrapeElectionSite(url);
         if (data) {
           results.set(url, data);
@@ -202,30 +212,79 @@ export class ElectionWebScraper {
     const titleLower = title.toLowerCase();
     const urlLower = url.toLowerCase();
 
-    if (titleLower.includes('congress') || titleLower.includes('senate') || 
-        titleLower.includes('house') || urlLower.includes('federal')) return 'Federal';
-    if (titleLower.includes('governor') || titleLower.includes('state') || 
-        titleLower.includes('legislature')) return 'State';
+    if (
+      titleLower.includes('congress') ||
+      titleLower.includes('senate') ||
+      titleLower.includes('house') ||
+      urlLower.includes('federal')
+    )
+      return 'Federal';
+    if (
+      titleLower.includes('governor') ||
+      titleLower.includes('state') ||
+      titleLower.includes('legislature')
+    )
+      return 'State';
     return 'Local';
   }
 
   private extractState(title: string, location: string, url: string): string {
     // State abbreviation mapping
     const stateAbbreviations: { [key: string]: string } = {
-      'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-      'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-      'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-      'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-      'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
-      'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
-      'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
-      'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-      'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-      'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
+      Alabama: 'AL',
+      Alaska: 'AK',
+      Arizona: 'AZ',
+      Arkansas: 'AR',
+      California: 'CA',
+      Colorado: 'CO',
+      Connecticut: 'CT',
+      Delaware: 'DE',
+      Florida: 'FL',
+      Georgia: 'GA',
+      Hawaii: 'HI',
+      Idaho: 'ID',
+      Illinois: 'IL',
+      Indiana: 'IN',
+      Iowa: 'IA',
+      Kansas: 'KS',
+      Kentucky: 'KY',
+      Louisiana: 'LA',
+      Maine: 'ME',
+      Maryland: 'MD',
+      Massachusetts: 'MA',
+      Michigan: 'MI',
+      Minnesota: 'MN',
+      Mississippi: 'MS',
+      Missouri: 'MO',
+      Montana: 'MT',
+      Nebraska: 'NE',
+      Nevada: 'NV',
+      'New Hampshire': 'NH',
+      'New Jersey': 'NJ',
+      'New Mexico': 'NM',
+      'New York': 'NY',
+      'North Carolina': 'NC',
+      'North Dakota': 'ND',
+      Ohio: 'OH',
+      Oklahoma: 'OK',
+      Oregon: 'OR',
+      Pennsylvania: 'PA',
+      'Rhode Island': 'RI',
+      'South Carolina': 'SC',
+      'South Dakota': 'SD',
+      Tennessee: 'TN',
+      Texas: 'TX',
+      Utah: 'UT',
+      Vermont: 'VT',
+      Virginia: 'VA',
+      Washington: 'WA',
+      'West Virginia': 'WV',
+      Wisconsin: 'WI',
+      Wyoming: 'WY',
     };
 
     const text = `${title} ${location} ${url}`.toLowerCase();
-    
+
     // Check for state names or abbreviations
     for (const [stateName, stateAbbr] of Object.entries(stateAbbreviations)) {
       if (text.includes(stateName.toLowerCase()) || text.includes(stateAbbr.toLowerCase())) {

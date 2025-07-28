@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { type Election, type Candidate, type ElectionFilters } from "@shared/schema";
+import { useQuery } from '@tanstack/react-query';
+import { type Election, type Candidate, type ElectionFilters } from '@shared/schema';
 
 export function useElections(filters?: ElectionFilters) {
   return useQuery({
@@ -17,7 +17,7 @@ export function useElections(filters?: ElectionFilters) {
           }
         });
       }
-      
+
       const response = await fetch(`/api/elections?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch elections');

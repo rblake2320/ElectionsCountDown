@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Loader2, AlertCircle } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Search, MapPin, Loader2, AlertCircle } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 interface VoterInfoResult {
   election: {
@@ -26,7 +26,7 @@ interface VoterInfoResult {
 }
 
 export function VoterInfoLookup() {
-  const [address, setAddress] = useState("");
+  const [address, setAddress] = useState('');
   const [voterInfo, setVoterInfo] = useState<VoterInfoResult | null>(null);
 
   const voterInfoMutation = useMutation({
@@ -37,10 +37,10 @@ export function VoterInfoLookup() {
       }
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setVoterInfo(data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error fetching voter info:', error);
     },
   });
@@ -73,14 +73,11 @@ export function VoterInfoLookup() {
           <Input
             placeholder="Enter your address (e.g., 123 Main St, City, State)"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={e => setAddress(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={voterInfoMutation.isPending}
           />
-          <Button 
-            onClick={handleSearch} 
-            disabled={!address.trim() || voterInfoMutation.isPending}
-          >
+          <Button onClick={handleSearch} disabled={!address.trim() || voterInfoMutation.isPending}>
             {voterInfoMutation.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -93,7 +90,8 @@ export function VoterInfoLookup() {
           <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
             <AlertCircle className="h-4 w-4" />
             <span className="text-sm">
-              Unable to find voter information for this address. Please check the address and try again.
+              Unable to find voter information for this address. Please check the address and try
+              again.
             </span>
           </div>
         )}
@@ -101,9 +99,16 @@ export function VoterInfoLookup() {
         {voterInfo && voterInfo.election && (
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">{voterInfo.election.title || 'Election Information'}</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">
+                {voterInfo.election.title || 'Election Information'}
+              </h3>
               <div className="text-sm text-blue-700">
-                <p>Date: {voterInfo.election.date ? new Date(voterInfo.election.date).toLocaleDateString() : 'Date TBD'}</p>
+                <p>
+                  Date:{' '}
+                  {voterInfo.election.date
+                    ? new Date(voterInfo.election.date).toLocaleDateString()
+                    : 'Date TBD'}
+                </p>
                 <p>Location: {voterInfo.election.location || 'Location TBD'}</p>
                 <p>State: {voterInfo.election.state || 'State TBD'}</p>
               </div>

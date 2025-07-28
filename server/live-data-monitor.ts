@@ -19,9 +19,12 @@ export class LiveDataMonitor {
     console.log('Starting live data monitoring...');
 
     // Check election count every 30 minutes
-    this.monitoringInterval = setInterval(async () => {
-      await this.checkAndMaintainElectionCount();
-    }, 30 * 60 * 1000);
+    this.monitoringInterval = setInterval(
+      async () => {
+        await this.checkAndMaintainElectionCount();
+      },
+      30 * 60 * 1000
+    );
 
     // Initial check
     await this.checkAndMaintainElectionCount();
@@ -51,7 +54,6 @@ export class LiveDataMonitor {
 
       // Also check Google Civic API for new elections
       await this.checkGoogleCivicForUpdates();
-
     } catch (error) {
       console.error('Error in election count monitoring:', error);
     }
@@ -61,10 +63,11 @@ export class LiveDataMonitor {
     try {
       const { comprehensiveElectionSync } = await import('./comprehensive-election-sync');
       const result = await comprehensiveElectionSync.syncAllElections();
-      
-      console.log(`Synced ${result.results.reduce((sum, r) => sum + r.newElections, 0)} new elections`);
+
+      console.log(
+        `Synced ${result.results.reduce((sum, r) => sum + r.newElections, 0)} new elections`
+      );
       console.log(`Election count: ${result.totalBefore} → ${result.totalAfter}`);
-      
     } catch (error) {
       console.error('Error syncing additional elections:', error);
     }
@@ -74,7 +77,7 @@ export class LiveDataMonitor {
     try {
       const { getGoogleCivicService } = await import('./google-civic-service');
       const civicService = getGoogleCivicService();
-      
+
       if (!civicService) return;
 
       const elections = await civicService.fetchElections();
@@ -82,7 +85,7 @@ export class LiveDataMonitor {
 
       for (const election of elections) {
         const existing = await storage.getElectionByTitleAndDate(election.title, election.date);
-        
+
         if (!existing) {
           await storage.createElection({
             title: election.title,
@@ -94,7 +97,7 @@ export class LiveDataMonitor {
             level: this.determineElectionLevel(election.title),
             offices: election.offices || [],
             description: election.description || null,
-            isActive: true
+            isActive: true,
           });
           newCount++;
         }
@@ -103,7 +106,6 @@ export class LiveDataMonitor {
       if (newCount > 0) {
         console.log(`Added ${newCount} new elections from Google Civic API`);
       }
-
     } catch (error) {
       console.error('Error checking Google Civic for updates:', error);
     }
@@ -116,15 +118,21 @@ export class LiveDataMonitor {
   }
 
   private determineElectionLevel(title: string): string {
-    if (title.toLowerCase().includes('house') || title.toLowerCase().includes('senate') || title.toLowerCase().includes('congressional')) return 'Federal';
-    if (title.toLowerCase().includes('governor') || title.toLowerCase().includes('state')) return 'State';
+    if (
+      title.toLowerCase().includes('house') ||
+      title.toLowerCase().includes('senate') ||
+      title.toLowerCase().includes('congressional')
+    )
+      return 'Federal';
+    if (title.toLowerCase().includes('governor') || title.toLowerCase().includes('state'))
+      return 'State';
     return 'Local';
   }
 
   getStatus(): { isMonitoring: boolean; uptime?: number } {
     return {
       isMonitoring: this.isMonitoring,
-      uptime: this.isMonitoring ? Date.now() : undefined
+      uptime: this.isMonitoring ? Date.now() : undefined,
     };
   }
 }

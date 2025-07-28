@@ -17,8 +17,8 @@ export class PerplexityCongressService {
     const response = await fetch(this.baseUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${this.apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'llama-3.1-sonar-small-128k-online',
@@ -26,8 +26,8 @@ export class PerplexityCongressService {
         max_tokens: 2000,
         temperature: 0.2,
         search_recency_filter: 'month',
-        return_related_questions: false
-      })
+        return_related_questions: false,
+      }),
     });
 
     if (!response.ok) {
@@ -44,7 +44,8 @@ export class PerplexityCongressService {
     const messages = [
       {
         role: 'system',
-        content: 'You are a congressional data expert. Provide accurate, current information about U.S. Congress members.'
+        content:
+          'You are a congressional data expert. Provide accurate, current information about U.S. Congress members.',
       },
       {
         role: 'user',
@@ -55,8 +56,8 @@ Please identify:
 2. Any states with irregular senator counts
 3. Recent congressional appointments or special elections that might affect the roster
 
-Focus on identifying specific missing members or recent changes to help complete an accurate congressional roster for the current Congress.`
-      }
+Focus on identifying specific missing members or recent changes to help complete an accurate congressional roster for the current Congress.`,
+      },
     ];
 
     try {
@@ -64,12 +65,12 @@ Focus on identifying specific missing members or recent changes to help complete
       return {
         success: true,
         data: response.choices[0]?.message?.content || '',
-        citations: response.citations || []
+        citations: response.citations || [],
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -78,12 +79,12 @@ Focus on identifying specific missing members or recent changes to help complete
     const messages = [
       {
         role: 'system',
-        content: 'Verify congressional member information using current, official sources.'
+        content: 'Verify congressional member information using current, official sources.',
       },
       {
         role: 'user',
-        content: `Please verify: Is ${memberName} currently serving as the representative for ${state}${district ? ` district ${district}` : ' (Senate)'}? If not, who is the current representative?`
-      }
+        content: `Please verify: Is ${memberName} currently serving as the representative for ${state}${district ? ` district ${district}` : ' (Senate)'}? If not, who is the current representative?`,
+      },
     ];
 
     try {
@@ -91,12 +92,12 @@ Focus on identifying specific missing members or recent changes to help complete
       return {
         success: true,
         data: response.choices[0]?.message?.content || '',
-        citations: response.citations || []
+        citations: response.citations || [],
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -105,12 +106,13 @@ Focus on identifying specific missing members or recent changes to help complete
     const messages = [
       {
         role: 'system',
-        content: 'You are an election information expert. Provide accurate, factual information about elections, candidates, and voting procedures.'
+        content:
+          'You are an election information expert. Provide accurate, factual information about elections, candidates, and voting procedures.',
       },
       {
         role: 'user',
-        content: query
-      }
+        content: query,
+      },
     ];
 
     try {

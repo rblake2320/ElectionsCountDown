@@ -56,10 +56,7 @@ export class AuthService {
     }
 
     // Update last login
-    await db
-      .update(users)
-      .set({ lastLogin: new Date() })
-      .where(eq(users.id, user.id));
+    await db.update(users).set({ lastLogin: new Date() }).where(eq(users.id, user.id));
 
     // Create session
     const token = await this.createSession(user.id);
@@ -73,7 +70,7 @@ export class AuthService {
   async validateSession(token: string): Promise<User | null> {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: number; sessionId: string };
-      
+
       // Check if session exists and is valid
       const [session] = await db
         .select()
@@ -95,49 +92,37 @@ export class AuthService {
   async signout(token: string): Promise<void> {
     try {
       // Remove session from database
-      await db
-        .delete(userSessions)
-        .where(eq(userSessions.sessionToken, token));
+      await db.delete(userSessions).where(eq(userSessions.sessionToken, token));
     } catch (error) {
       console.error('Error during signout:', error);
     }
   }
 
   private async createSession(userId: number): Promise<string> {
-    const sessionToken = jwt.sign(
-      { userId, sessionId: `session_${Date.now()}` },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const sessionToken = jwt.sign({ userId, sessionId: `session_${Date.now()}` }, JWT_SECRET, {
+      expiresIn: '7d',
+    });
 
     const expiresAt = new Date(Date.now() + SESSION_DURATION);
 
-    await db
-      .insert(userSessions)
-      .values({
-        userId,
-        sessionToken,
-        expiresAt,
-      });
+    await db.insert(userSessions).values({
+      userId,
+      sessionToken,
+      expiresAt,
+    });
 
     return sessionToken;
   }
 
   private async getUserByEmail(email: string): Promise<User | null> {
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email));
-    
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+
     return user || null;
   }
 
   private async getUserById(id: number): Promise<User | null> {
-    const [user] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, id));
-    
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+
     return user || null;
   }
 

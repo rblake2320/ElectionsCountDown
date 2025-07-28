@@ -14,7 +14,7 @@ export const ELECTION_VERSIONS: ElectionVersion[] = [
     description: 'All elections from now through November 2026',
     targetDate: '2026-11-03',
     route: '/midterm-2026',
-    isActive: true
+    isActive: true,
   },
   {
     id: 'presidential-2028',
@@ -22,8 +22,8 @@ export const ELECTION_VERSIONS: ElectionVersion[] = [
     description: 'Complete tracking for the 2028 presidential race',
     targetDate: '2028-11-07',
     route: '/presidential-2028',
-    isActive: false
-  }
+    isActive: false,
+  },
 ];
 
 export const getCurrentVersion = (): ElectionVersion => {

@@ -5,6 +5,7 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 ## 🚀 Features
 
 ### Core Platform
+
 - **Real-time Election Tracking**: 601+ elections with live countdown timers
 - **Authentic Data Only**: All polling percentages from verified API sources
 - **Multi-source Integration**: Google Civic API, OpenFEC, ProPublica Congress, Census Bureau
@@ -12,12 +13,14 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 - **Candidate Management**: Comprehensive candidate profiles with authentic polling data
 
 ### Data Authenticity System
+
 - **Quality Indicators**: hasAuthenticPolling, pollingConfidence, dataQuality scoring
 - **Source Validation**: Clear indicators for static vs. live data
 - **No Mock Data**: Eliminated all placeholder percentage values
 - **Live Data Monitoring**: Continuous sync to maintain election count
 
 ### Michigan Primary Integration
+
 - **Real Candidates**: 9 authenticated candidates including Elissa Slotkin, Mike Rogers, Tom Barrett
 - **Federal Races**: U.S. Senate and House District elections
 - **Authentic Sources**: FEC records, state election offices, verified news sources
@@ -25,6 +28,7 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 ## 🏗️ Architecture
 
 ### Frontend
+
 - **React 18** with TypeScript
 - **Shadcn/ui** components with Radix UI primitives
 - **Tailwind CSS** for responsive design
@@ -32,6 +36,7 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 - **Wouter** for client-side routing
 
 ### Backend
+
 - **Node.js** with Express.js
 - **TypeScript** with ES modules
 - **Drizzle ORM** with PostgreSQL
@@ -39,6 +44,7 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 - **Rate Limiting** and security middleware
 
 ### Database
+
 - **PostgreSQL** (Neon serverless)
 - **Drizzle ORM** for type-safe operations
 - **Connection Pooling** with WebSocket support
@@ -47,6 +53,7 @@ A comprehensive, real-time election tracking platform serving as the authoritati
 ## 🔧 Setup
 
 ### Prerequisites
+
 - Node.js 20+
 - PostgreSQL database
 - API keys for external services
@@ -90,26 +97,31 @@ The application will be available at `http://localhost:5000`
 ## 📊 API Endpoints
 
 ### Elections
+
 - `GET /api/elections` - Get all elections with filtering
 - `GET /api/elections/:id` - Get specific election
 - `GET /api/elections/:id/candidates` - Get election candidates
 - `POST /api/sync/elections/all` - Sync from all data sources
 
 ### Candidates
+
 - `GET /api/candidates/:id` - Get candidate details
 - `POST /api/setup/michigan-primary` - Add Michigan primary candidates
 
 ### Data Integrity
+
 - `GET /api/data-audit/percentages` - Audit all percentage data
 - `GET /api/sync/status` - Check election count and sync status
 
 ### Analytics
+
 - `GET /api/stats` - Platform statistics
 - `GET /api/global-status` - Global election dashboard data
 
 ## 🔌 API Integrations
 
 ### Government APIs
+
 - **Google Civic Information API** - Federal and state elections
 - **OpenFEC API** - Campaign finance data
 - **ProPublica Congress API** - Congressional voting records
@@ -117,6 +129,7 @@ The application will be available at `http://localhost:5000`
 - **OpenStates API** - State legislature data
 
 ### External Services
+
 - **Perplexity AI** - Fact-checking and content validation
 - **MapQuest API** - Geocoding and location services
 - **Firecrawl** - Web scraping for official sources
@@ -124,6 +137,7 @@ The application will be available at `http://localhost:5000`
 ## 📈 Data Sources
 
 The platform aggregates data from 100+ authentic sources:
+
 - Federal Election Commission (FEC)
 - State Secretary of State offices
 - Ballotpedia election calendar
@@ -143,6 +157,7 @@ The platform aggregates data from 100+ authentic sources:
 ## 🚀 Deployment
 
 ### Replit Deployment
+
 The platform is optimized for Replit's autoscale deployment:
 
 ```bash
@@ -151,6 +166,7 @@ npm run build
 ```
 
 ### Manual Deployment
+
 ```bash
 npm run build
 npm start
@@ -159,18 +175,21 @@ npm start
 ## 📝 Development Guidelines
 
 ### Code Standards
+
 - TypeScript strict mode enabled
 - ESLint and Prettier configured
 - Component-based architecture
 - Type-safe database operations
 
 ### Database Schema
+
 - Elections, candidates, users, and analytics tables
 - Proper indexing for performance
 - Foreign key relationships maintained
 - Automated data archival
 
 ### Testing
+
 - Comprehensive API testing
 - Frontend component testing
 - Database integration testing
@@ -191,18 +210,21 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🆘 Support
 
 For issues and questions:
+
 - Create a GitHub issue
 - Contact: [Your contact information]
 
 ## 🔄 Recent Updates
 
 ### July 23, 2025
+
 - **Data Authenticity System**: Implemented comprehensive validation ensuring all polling percentages come from verified sources
 - **Michigan Primary Integration**: Added 9 real candidates with authentic FEC and state records
 - **Live Data Monitoring**: Continuous sync maintaining 601+ election count
 - **API Optimization**: Enhanced performance with proper caching and error handling
 
 ### Key Metrics
+
 - **601+ Elections** tracked across federal, state, and local levels
 - **100% Authentic Data** - No mock or placeholder percentages
 - **9 Michigan Candidates** added from verified sources

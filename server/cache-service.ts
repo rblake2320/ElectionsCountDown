@@ -7,19 +7,19 @@ class MemoryCache {
   private cache: Map<string, { data: any; expiry: number }> = new Map();
 
   set(key: string, data: any, ttlSeconds: number = 300) {
-    const expiry = Date.now() + (ttlSeconds * 1000);
+    const expiry = Date.now() + ttlSeconds * 1000;
     this.cache.set(key, { data, expiry });
   }
 
   get(key: string): any | null {
     const item = this.cache.get(key);
     if (!item) return null;
-    
+
     if (Date.now() > item.expiry) {
       this.cache.delete(key);
       return null;
     }
-    
+
     return item.data;
   }
 
@@ -48,28 +48,28 @@ export class CacheService {
 
   constructor() {
     // Clean up expired cache entries every 5 minutes
-    this.cleanupInterval = setInterval(() => {
-      this.cache.cleanup();
-    }, 5 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cache.cleanup();
+      },
+      5 * 60 * 1000
+    );
   }
 
   // Cache election countdowns (1 second TTL for real-time updates)
   async getElectionCountdowns(filters?: any): Promise<any> {
     const cacheKey = `countdowns:${JSON.stringify(filters || {})}`;
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached) return cached;
 
-    const electionsData = await db
-      .select()
-      .from(elections)
-      .where(eq(elections.isActive, true));
+    const electionsData = await db.select().from(elections).where(eq(elections.isActive, true));
 
     const countdowns = electionsData.map(election => ({
       id: election.id,
       title: election.title,
       timeRemaining: Math.max(0, election.date.getTime() - Date.now()),
-      isActive: election.date.getTime() > Date.now()
+      isActive: election.date.getTime() > Date.now(),
     }));
 
     this.cache.set(cacheKey, countdowns, 1); // 1 second TTL
@@ -80,11 +80,11 @@ export class CacheService {
   async getElectionsWithCache(filters?: any): Promise<any> {
     const cacheKey = `elections:${JSON.stringify(filters || {})}`;
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached) return cached;
 
     let query = db.select().from(elections);
-    
+
     if (filters?.state) {
       query = query.where(eq(elections.state, filters.state));
     }
@@ -110,12 +110,12 @@ export class CacheService {
   async getAggregateAnalytics(electionId?: number): Promise<any> {
     const cacheKey = `analytics:aggregate:${electionId || 'all'}`;
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached) return cached;
 
     // Calculate real aggregate analytics
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    
+
     const analyticsData = await db
       .select()
       .from(userAnalytics)
@@ -124,12 +124,13 @@ export class CacheService {
     const aggregated = {
       totalViews: analyticsData.length,
       uniqueUsers: new Set(analyticsData.map(a => a.userId)).size,
-      averageTimeOnSite: analyticsData.reduce((sum, a) => sum + (a.timeOnSite || 0), 0) / analyticsData.length,
+      averageTimeOnSite:
+        analyticsData.reduce((sum, a) => sum + (a.timeOnSite || 0), 0) / analyticsData.length,
       mostViewedPages: analyticsData.reduce((acc: any, a) => {
         acc[a.page] = (acc[a.page] || 0) + 1;
         return acc;
       }, {}),
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
 
     this.cache.set(cacheKey, aggregated, 600); // 10 minute TTL
@@ -173,7 +174,7 @@ export class CacheService {
   getCacheStats() {
     const entries = this.cache['cache'].size;
     const keys = Array.from(this.cache['cache'].keys());
-    
+
     return {
       totalEntries: entries,
       keysByType: {
@@ -182,7 +183,7 @@ export class CacheService {
         sessions: keys.filter(k => k.startsWith('session:')).length,
         analytics: keys.filter(k => k.startsWith('analytics:')).length,
         campaigns: keys.filter(k => k.startsWith('campaign:')).length,
-      }
+      },
     };
   }
 

@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Square, Plus, Globe, AlertCircle, CheckCircle, XCircle } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Play, Square, Plus, Globe, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 interface MonitoringTarget {
   url: string;
@@ -29,81 +35,86 @@ interface MonitoringStatus {
 }
 
 export default function MonitoringDashboard() {
-  const [newTargetUrl, setNewTargetUrl] = useState("");
+  const [newTargetUrl, setNewTargetUrl] = useState('');
   const [newTargetType, setNewTargetType] = useState<'results' | 'feed' | 'api'>('results');
   const [newTargetPriority, setNewTargetPriority] = useState<'high' | 'medium' | 'low'>('medium');
-  const [newTargetState, setNewTargetState] = useState("");
+  const [newTargetState, setNewTargetState] = useState('');
   const [intervalMinutes, setIntervalMinutes] = useState(5);
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Get monitoring status
-  const { data: monitoringStatus, isLoading, error } = useQuery<MonitoringStatus>({
-    queryKey: ["/api/monitoring/status"],
+  const {
+    data: monitoringStatus,
+    isLoading,
+    error,
+  } = useQuery<MonitoringStatus>({
+    queryKey: ['/api/monitoring/status'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Start monitoring mutation
   const startMonitoringMutation = useMutation({
-    mutationFn: () => apiRequest("/api/monitoring/start", "POST", { intervalMinutes }),
+    mutationFn: () => apiRequest('/api/monitoring/start', 'POST', { intervalMinutes }),
     onSuccess: () => {
       toast({
-        title: "Monitoring Started",
-        description: "Real-time election monitoring is now active",
+        title: 'Monitoring Started',
+        description: 'Real-time election monitoring is now active',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/monitoring/status"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/monitoring/status'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Start Monitoring",
+        title: 'Failed to Start Monitoring',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   // Stop monitoring mutation
   const stopMonitoringMutation = useMutation({
-    mutationFn: () => apiRequest("/api/monitoring/stop", "POST"),
+    mutationFn: () => apiRequest('/api/monitoring/stop', 'POST'),
     onSuccess: () => {
       toast({
-        title: "Monitoring Stopped",
-        description: "Real-time election monitoring has been stopped",
+        title: 'Monitoring Stopped',
+        description: 'Real-time election monitoring has been stopped',
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/monitoring/status"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/monitoring/status'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Stop Monitoring",
+        title: 'Failed to Stop Monitoring',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
 
   // Add monitoring target mutation
   const addTargetMutation = useMutation({
-    mutationFn: () => apiRequest("/api/monitoring/targets", "POST", {
-      url: newTargetUrl,
-      type: newTargetType,
-      priority: newTargetPriority,
-      state: newTargetState || undefined,
-    }),
+    mutationFn: () =>
+      apiRequest('/api/monitoring/targets', 'POST', {
+        url: newTargetUrl,
+        type: newTargetType,
+        priority: newTargetPriority,
+        state: newTargetState || undefined,
+      }),
     onSuccess: () => {
       toast({
-        title: "Target Added",
-        description: "New monitoring target has been added successfully",
+        title: 'Target Added',
+        description: 'New monitoring target has been added successfully',
       });
-      setNewTargetUrl("");
-      setNewTargetState("");
-      queryClient.invalidateQueries({ queryKey: ["/api/monitoring/status"] });
+      setNewTargetUrl('');
+      setNewTargetState('');
+      queryClient.invalidateQueries({ queryKey: ['/api/monitoring/status'] });
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Add Target",
+        title: 'Failed to Add Target',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });
@@ -119,9 +130,9 @@ export default function MonitoringDashboard() {
   const handleAddTarget = () => {
     if (!newTargetUrl.trim()) {
       toast({
-        title: "URL Required",
-        description: "Please enter a valid URL for the monitoring target",
-        variant: "destructive",
+        title: 'URL Required',
+        description: 'Please enter a valid URL for the monitoring target',
+        variant: 'destructive',
       });
       return;
     }
@@ -185,8 +196,8 @@ export default function MonitoringDashboard() {
         </div>
         <div className="flex items-center space-x-2">
           {monitoringStatus?.isRunning ? (
-            <Button 
-              onClick={handleStopMonitoring} 
+            <Button
+              onClick={handleStopMonitoring}
               variant="destructive"
               disabled={stopMonitoringMutation.isPending}
             >
@@ -194,10 +205,7 @@ export default function MonitoringDashboard() {
               Stop Monitoring
             </Button>
           ) : (
-            <Button 
-              onClick={handleStartMonitoring}
-              disabled={startMonitoringMutation.isPending}
-            >
+            <Button onClick={handleStartMonitoring} disabled={startMonitoringMutation.isPending}>
               <Play className="h-4 w-4 mr-2" />
               Start Monitoring
             </Button>
@@ -245,10 +253,9 @@ export default function MonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-sm">
-              {monitoringStatus?.lastChecked ? 
-                new Date(monitoringStatus.lastChecked).toLocaleString() : 
-                'Never'
-              }
+              {monitoringStatus?.lastChecked
+                ? new Date(monitoringStatus.lastChecked).toLocaleString()
+                : 'Never'}
             </div>
           </CardContent>
         </Card>
@@ -273,7 +280,10 @@ export default function MonitoringDashboard() {
               {monitoringStatus?.targets && monitoringStatus.targets.length > 0 ? (
                 <div className="space-y-3">
                   {monitoringStatus.targets.map((target, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           {getStatusIcon(target.status)}
@@ -283,21 +293,14 @@ export default function MonitoringDashboard() {
                           <Badge variant="outline" className={getPriorityColor(target.priority)}>
                             {target.priority}
                           </Badge>
-                          <Badge variant="outline">
-                            {target.type}
-                          </Badge>
-                          {target.state && (
-                            <Badge variant="outline">
-                              {target.state}
-                            </Badge>
-                          )}
+                          <Badge variant="outline">{target.type}</Badge>
+                          {target.state && <Badge variant="outline">{target.state}</Badge>}
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {target.lastChecked ? 
-                          new Date(target.lastChecked).toLocaleTimeString() : 
-                          'Not checked'
-                        }
+                        {target.lastChecked
+                          ? new Date(target.lastChecked).toLocaleTimeString()
+                          : 'Not checked'}
                       </div>
                     </div>
                   ))}
@@ -317,9 +320,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Add Monitoring Target</CardTitle>
-              <CardDescription>
-                Add a new election site or data feed to monitor
-              </CardDescription>
+              <CardDescription>Add a new election site or data feed to monitor</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -327,14 +328,17 @@ export default function MonitoringDashboard() {
                 <Input
                   placeholder="https://example.com/election-results"
                   value={newTargetUrl}
-                  onChange={(e) => setNewTargetUrl(e.target.value)}
+                  onChange={e => setNewTargetUrl(e.target.value)}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Type</label>
-                  <Select value={newTargetType} onValueChange={(value: 'results' | 'feed' | 'api') => setNewTargetType(value)}>
+                  <Select
+                    value={newTargetType}
+                    onValueChange={(value: 'results' | 'feed' | 'api') => setNewTargetType(value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -348,7 +352,12 @@ export default function MonitoringDashboard() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Priority</label>
-                  <Select value={newTargetPriority} onValueChange={(value: 'high' | 'medium' | 'low') => setNewTargetPriority(value)}>
+                  <Select
+                    value={newTargetPriority}
+                    onValueChange={(value: 'high' | 'medium' | 'low') =>
+                      setNewTargetPriority(value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -366,12 +375,12 @@ export default function MonitoringDashboard() {
                 <Input
                   placeholder="e.g., CA, TX, NY"
                   value={newTargetState}
-                  onChange={(e) => setNewTargetState(e.target.value)}
+                  onChange={e => setNewTargetState(e.target.value)}
                 />
               </div>
 
-              <Button 
-                onClick={handleAddTarget} 
+              <Button
+                onClick={handleAddTarget}
                 className="w-full"
                 disabled={addTargetMutation.isPending}
               >
@@ -386,9 +395,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Monitoring Settings</CardTitle>
-              <CardDescription>
-                Configure monitoring intervals and behavior
-              </CardDescription>
+              <CardDescription>Configure monitoring intervals and behavior</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -398,7 +405,7 @@ export default function MonitoringDashboard() {
                   min="1"
                   max="60"
                   value={intervalMinutes}
-                  onChange={(e) => setIntervalMinutes(parseInt(e.target.value) || 5)}
+                  onChange={e => setIntervalMinutes(parseInt(e.target.value) || 5)}
                 />
                 <p className="text-xs text-muted-foreground">
                   How often to check monitoring targets for updates
@@ -408,7 +415,7 @@ export default function MonitoringDashboard() {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Lower intervals provide more real-time updates but use more resources. 
+                  Lower intervals provide more real-time updates but use more resources.
                   Recommended: 5-15 minutes for most use cases.
                 </AlertDescription>
               </Alert>

@@ -1,8 +1,8 @@
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { CongressData } from "@/components/congress-data";
-import { CongressMemberSearch } from "@/components/congress-member-search";
+import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { CongressData } from '@/components/congress-data';
+import { CongressMemberSearch } from '@/components/congress-member-search';
 
 export default function Congress() {
   return (

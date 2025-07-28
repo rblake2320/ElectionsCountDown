@@ -18,7 +18,7 @@ interface PositionData {
 export class CandidatePositionAPI {
   private readonly POLICY_CATEGORIES = [
     'Infrastructure',
-    'Healthcare', 
+    'Healthcare',
     'Education',
     'Economy',
     'Environment',
@@ -26,7 +26,7 @@ export class CandidatePositionAPI {
     'Immigration',
     'Criminal Justice',
     'Social Issues',
-    'Foreign Policy'
+    'Foreign Policy',
   ];
 
   async getPositionsForCandidate(candidateId: number): Promise<PositionData[]> {
@@ -52,7 +52,7 @@ export class CandidatePositionAPI {
       const result = await db
         .select({
           candidate: candidates,
-          congressMember: congressMembers
+          congressMember: congressMembers,
         })
         .from(candidates)
         .leftJoin(congressMembers, eq(candidates.name, congressMembers.name))
@@ -66,7 +66,10 @@ export class CandidatePositionAPI {
     }
   }
 
-  private async analyzePositionForCategory(candidate: any, category: string): Promise<PositionData | null> {
+  private async analyzePositionForCategory(
+    candidate: any,
+    category: string
+  ): Promise<PositionData | null> {
     const sources = [];
     let finalPosition = '';
     let confidence = 0;
@@ -117,9 +120,11 @@ export class CandidatePositionAPI {
 
     return {
       category,
-      position: finalPosition || `Position analysis available from ${sources.length} source${sources.length > 1 ? 's' : ''}`,
+      position:
+        finalPosition ||
+        `Position analysis available from ${sources.length} source${sources.length > 1 ? 's' : ''}`,
       confidence: Math.min(confidence, 1.0),
-      sources: sources.sort((a, b) => b.confidence - a.confidence)
+      sources: sources.sort((a, b) => b.confidence - a.confidence),
     };
   }
 
@@ -128,11 +133,13 @@ export class CandidatePositionAPI {
       const position = await db
         .select()
         .from(candidatePositions)
-        .where(and(
-          eq(candidatePositions.candidateId, candidateId),
-          eq(candidatePositions.category, category),
-          eq(candidatePositions.isVerified, true)
-        ))
+        .where(
+          and(
+            eq(candidatePositions.candidateId, candidateId),
+            eq(candidatePositions.category, category),
+            eq(candidatePositions.isVerified, true)
+          )
+        )
         .orderBy(desc(candidatePositions.lastUpdated))
         .limit(1);
 
@@ -142,7 +149,7 @@ export class CandidatePositionAPI {
           description: position[0].position,
           confidence: 0.95,
           url: position[0].sourceUrl || undefined,
-          date: position[0].lastUpdated || position[0].createdAt || new Date()
+          date: position[0].lastUpdated || position[0].createdAt || new Date(),
         };
       }
     } catch (error) {
@@ -163,7 +170,7 @@ export class CandidatePositionAPI {
         description: committeeFocus.description,
         confidence: committeeFocus.confidence,
         url: `https://www.congress.gov/member/${member.bioguideId}`,
-        date: new Date()
+        date: new Date(),
       };
     }
 
@@ -175,7 +182,7 @@ export class CandidatePositionAPI {
         description: experience.description,
         confidence: experience.confidence,
         url: `https://www.congress.gov/member/${member.bioguideId}`,
-        date: new Date()
+        date: new Date(),
       };
     }
 
@@ -184,16 +191,16 @@ export class CandidatePositionAPI {
 
   private analyzeCommitteeAlignment(member: any, category: string) {
     const categoryCommitteeMap = {
-      'Infrastructure': ['Transportation', 'Public Works', 'Commerce'],
-      'Healthcare': ['Health', 'Ways and Means', 'Energy'],
-      'Education': ['Education', 'Labor', 'Workforce'],
-      'Economy': ['Financial Services', 'Ways and Means', 'Small Business'],
-      'Environment': ['Natural Resources', 'Environment', 'Energy'],
-      'Taxes': ['Ways and Means', 'Budget', 'Finance'],
-      'Immigration': ['Judiciary', 'Homeland Security', 'Foreign Affairs'],
+      Infrastructure: ['Transportation', 'Public Works', 'Commerce'],
+      Healthcare: ['Health', 'Ways and Means', 'Energy'],
+      Education: ['Education', 'Labor', 'Workforce'],
+      Economy: ['Financial Services', 'Ways and Means', 'Small Business'],
+      Environment: ['Natural Resources', 'Environment', 'Energy'],
+      Taxes: ['Ways and Means', 'Budget', 'Finance'],
+      Immigration: ['Judiciary', 'Homeland Security', 'Foreign Affairs'],
       'Criminal Justice': ['Judiciary', 'Oversight', 'Homeland Security'],
       'Social Issues': ['Judiciary', 'Oversight', 'Education'],
-      'Foreign Policy': ['Foreign Affairs', 'Armed Services', 'Intelligence']
+      'Foreign Policy': ['Foreign Affairs', 'Armed Services', 'Intelligence'],
     };
 
     const relevantCommittees = categoryCommitteeMap[category] || [];
@@ -204,7 +211,7 @@ export class CandidatePositionAPI {
         if (committee.toLowerCase().includes(relevantCommittee.toLowerCase())) {
           return {
             description: `Serves on ${committee} committee, demonstrating focus on ${category.toLowerCase()} policy`,
-            confidence: 0.8
+            confidence: 0.8,
           };
         }
       }
@@ -220,17 +227,17 @@ export class CandidatePositionAPI {
     if (yearsInCongress > 10) {
       return {
         description: `Senior ${chamber} member with extensive legislative experience in ${category.toLowerCase()} matters`,
-        confidence: 0.7
+        confidence: 0.7,
       };
     } else if (yearsInCongress > 4) {
       return {
         description: `Experienced ${chamber} member with growing expertise in ${category.toLowerCase()} policy`,
-        confidence: 0.6
+        confidence: 0.6,
       };
     } else if (yearsInCongress > 0) {
       return {
         description: `${chamber} member developing positions on ${category.toLowerCase()} issues`,
-        confidence: 0.5
+        confidence: 0.5,
       };
     }
 
@@ -240,13 +247,13 @@ export class CandidatePositionAPI {
   private async getPartyBasedPosition(candidate: any, category: string) {
     const party = candidate.party;
     const partyPositions = this.getTypicalPartyPositions(party, category);
-    
+
     if (partyPositions) {
       return {
         type: 'Party Platform',
         description: partyPositions.description,
         confidence: partyPositions.confidence,
-        date: new Date()
+        date: new Date(),
       };
     }
 
@@ -255,33 +262,48 @@ export class CandidatePositionAPI {
 
   private getTypicalPartyPositions(party: string, category: string) {
     const democraticPositions = {
-      'Infrastructure': 'Generally supports increased federal investment in infrastructure including broadband, transportation, and green energy projects',
-      'Healthcare': 'Supports expanding healthcare access, protecting ACA, and allowing Medicare to negotiate prescription drug prices',
-      'Education': 'Advocates for increased education funding, student loan relief, and making college more affordable',
-      'Economy': 'Supports progressive taxation, minimum wage increases, and worker protection measures',
-      'Environment': 'Strong supporter of climate action, renewable energy transition, and environmental protection regulations',
-      'Taxes': 'Supports progressive tax system with higher taxes on wealthy individuals and corporations'
+      Infrastructure:
+        'Generally supports increased federal investment in infrastructure including broadband, transportation, and green energy projects',
+      Healthcare:
+        'Supports expanding healthcare access, protecting ACA, and allowing Medicare to negotiate prescription drug prices',
+      Education:
+        'Advocates for increased education funding, student loan relief, and making college more affordable',
+      Economy:
+        'Supports progressive taxation, minimum wage increases, and worker protection measures',
+      Environment:
+        'Strong supporter of climate action, renewable energy transition, and environmental protection regulations',
+      Taxes:
+        'Supports progressive tax system with higher taxes on wealthy individuals and corporations',
     };
 
     const republicanPositions = {
-      'Infrastructure': 'Supports infrastructure investment through public-private partnerships and reduced regulatory barriers',
-      'Healthcare': 'Advocates for market-based healthcare solutions, price transparency, and reducing healthcare costs',
-      'Education': 'Supports school choice, local control of education, and reducing federal education bureaucracy',
-      'Economy': 'Promotes free market policies, tax cuts, deregulation, and business-friendly economic measures',
-      'Environment': 'Supports balanced approach to energy including domestic oil/gas production alongside emerging technologies',
-      'Taxes': 'Advocates for lower taxes, simplified tax code, and pro-business tax policies'
+      Infrastructure:
+        'Supports infrastructure investment through public-private partnerships and reduced regulatory barriers',
+      Healthcare:
+        'Advocates for market-based healthcare solutions, price transparency, and reducing healthcare costs',
+      Education:
+        'Supports school choice, local control of education, and reducing federal education bureaucracy',
+      Economy:
+        'Promotes free market policies, tax cuts, deregulation, and business-friendly economic measures',
+      Environment:
+        'Supports balanced approach to energy including domestic oil/gas production alongside emerging technologies',
+      Taxes: 'Advocates for lower taxes, simplified tax code, and pro-business tax policies',
     };
 
     if (party === 'D' || party === 'Democratic') {
-      return democraticPositions[category] ? {
-        description: democraticPositions[category],
-        confidence: 0.6
-      } : null;
+      return democraticPositions[category]
+        ? {
+            description: democraticPositions[category],
+            confidence: 0.6,
+          }
+        : null;
     } else if (party === 'R' || party === 'Republican') {
-      return republicanPositions[category] ? {
-        description: republicanPositions[category],
-        confidence: 0.6
-      } : null;
+      return republicanPositions[category]
+        ? {
+            description: republicanPositions[category],
+            confidence: 0.6,
+          }
+        : null;
     }
 
     return null;
@@ -294,7 +316,7 @@ export class CandidatePositionAPI {
         description: `Visit candidate's official website for detailed ${category.toLowerCase()} policy positions`,
         confidence: 0.7,
         url: candidate.website,
-        date: new Date()
+        date: new Date(),
       };
     }
     return null;

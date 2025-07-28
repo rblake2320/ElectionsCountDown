@@ -35,13 +35,13 @@ export function CongressMemberSearch() {
     mutationFn: async (name: string) => {
       return await apiRequest(`/api/congress/find-member`, {
         method: 'POST',
-        body: { memberName: name }
+        body: { memberName: name },
       });
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data.found) {
         toast({
-          title: "Member Found and Added",
+          title: 'Member Found and Added',
           description: `${data.member.name} has been added to the database.`,
         });
         // Refresh the search results
@@ -49,17 +49,17 @@ export function CongressMemberSearch() {
         queryClient.invalidateQueries({ queryKey: ['/api/members'] });
       } else {
         toast({
-          title: "Member Not Found",
-          description: data.message || "Could not find this member in official records.",
-          variant: "destructive",
+          title: 'Member Not Found',
+          description: data.message || 'Could not find this member in official records.',
+          variant: 'destructive',
         });
       }
     },
-    onError: (error) => {
+    onError: error => {
       toast({
-        title: "Search Error",
-        description: "Failed to search for member. Please try again.",
-        variant: "destructive",
+        title: 'Search Error',
+        description: 'Failed to search for member. Please try again.',
+        variant: 'destructive',
       });
     },
   });
@@ -76,10 +76,14 @@ export function CongressMemberSearch() {
 
   const getPartyColor = (party: string) => {
     switch (party?.toLowerCase()) {
-      case 'republican': return 'bg-red-100 text-red-800';
-      case 'democratic': return 'bg-blue-100 text-blue-800';
-      case 'independent': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'republican':
+        return 'bg-red-100 text-red-800';
+      case 'democratic':
+        return 'bg-blue-100 text-blue-800';
+      case 'independent':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -97,13 +101,10 @@ export function CongressMemberSearch() {
             <Input
               placeholder="Enter member name (e.g., Nancy Pelosi, Ted Cruz)"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onChange={e => setSearchTerm(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSearch()}
             />
-            <Button 
-              onClick={handleSearch}
-              disabled={searchTerm.length < 2 || searchLoading}
-            >
+            <Button onClick={handleSearch} disabled={searchTerm.length < 2 || searchLoading}>
               {searchLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
@@ -128,7 +129,8 @@ export function CongressMemberSearch() {
                             <p className="font-medium">{member.name}</p>
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <MapPin className="h-3 w-3" />
-                              {member.state}{member.district ? `-${member.district}` : ''} • {member.chamber}
+                              {member.state}
+                              {member.district ? `-${member.district}` : ''} • {member.chamber}
                             </div>
                           </div>
                         </div>

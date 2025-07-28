@@ -1,4 +1,4 @@
-import { CampaignPortal } from "@/components/campaign-portal";
+import { CampaignPortal } from '@/components/campaign-portal';
 
 export default function CampaignPortalPage() {
   return (

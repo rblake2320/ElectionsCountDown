@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { RotateCcw, Filter, RefreshCw, Loader2 } from "lucide-react";
-import { type ElectionFilters } from "@shared/schema";
-import { statesList } from "@/lib/election-data";
-import { useElectionStats } from "@/hooks/use-elections";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { RotateCcw, Filter, RefreshCw, Loader2 } from 'lucide-react';
+import { type ElectionFilters } from '@shared/schema';
+import { statesList } from '@/lib/election-data';
+import { useElectionStats } from '@/hooks/use-elections';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 interface FilterSidebarProps {
   filters: ElectionFilters;
@@ -35,52 +41,52 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
       queryClient.invalidateQueries({ queryKey: ['/api/elections'] });
       queryClient.invalidateQueries({ queryKey: ['/api/stats'] });
       toast({
-        title: "Elections Updated",
-        description: "Successfully synced latest election data from Google Civic Information API",
+        title: 'Elections Updated',
+        description: 'Successfully synced latest election data from Google Civic Information API',
       });
     },
     onError: () => {
       toast({
-        title: "Sync Failed",
-        description: "Unable to sync election data. Please try again later.",
-        variant: "destructive",
+        title: 'Sync Failed',
+        description: 'Unable to sync election data. Please try again later.',
+        variant: 'destructive',
       });
     },
   });
 
   const handleElectionTypeChange = (type: string, checked: boolean) => {
     const currentTypes = filters.electionType || [];
-    const newTypes = checked 
+    const newTypes = checked
       ? [...currentTypes, type as any]
       : currentTypes.filter(t => t !== type);
-    
+
     onFiltersChange({
       ...filters,
-      electionType: newTypes.length > 0 ? newTypes : undefined
+      electionType: newTypes.length > 0 ? newTypes : undefined,
     });
   };
 
   const handleLevelChange = (level: string, checked: boolean) => {
     const currentLevels = filters.level || [];
-    const newLevels = checked 
+    const newLevels = checked
       ? [...currentLevels, level as any]
       : currentLevels.filter(l => l !== level);
-    
+
     onFiltersChange({
       ...filters,
-      level: newLevels.length > 0 ? newLevels : undefined
+      level: newLevels.length > 0 ? newLevels : undefined,
     });
   };
 
   const handlePartyChange = (party: string, checked: boolean) => {
     const currentParties = filters.party || [];
-    const newParties = checked 
+    const newParties = checked
       ? [...currentParties, party]
       : currentParties.filter(p => p !== party);
-    
+
     onFiltersChange({
       ...filters,
-      party: newParties.length > 0 ? newParties : undefined
+      party: newParties.length > 0 ? newParties : undefined,
     });
   };
 
@@ -93,7 +99,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
       timeRange: undefined,
       party: undefined,
       electionType: undefined,
-      search: undefined
+      search: undefined,
     });
   };
 
@@ -116,18 +122,16 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
           <Filter className="h-5 w-5" />
           Filters & Controls
         </CardTitle>
-        
+
         {/* Quick Stats */}
         {stats && (
           <div className="grid grid-cols-2 gap-3 mt-4">
             <div className="bg-gradient-to-r from-primary to-blue-600 text-white p-3 rounded-lg">
               <div className="text-sm opacity-90">Next Election</div>
               <div className="font-bold">
-                {stats.nextElection ? (
-                  `${Math.ceil((new Date(stats.nextElection.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days`
-                ) : (
-                  'None'
-                )}
+                {stats.nextElection
+                  ? `${Math.ceil((new Date(stats.nextElection.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days`
+                  : 'None'}
               </div>
             </div>
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-3 rounded-lg">
@@ -142,12 +146,14 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         {/* Time Range Filter */}
         <div>
           <label className="text-sm font-medium mb-2 block">Time Range</label>
-          <Select 
-            value={filters.timeRange || 'all'} 
-            onValueChange={(value) => onFiltersChange({
-              ...filters,
-              timeRange: value === 'all' ? undefined : value as any
-            })}
+          <Select
+            value={filters.timeRange || 'all'}
+            onValueChange={value =>
+              onFiltersChange({
+                ...filters,
+                timeRange: value === 'all' ? undefined : (value as any),
+              })
+            }
           >
             <SelectTrigger>
               <SelectValue />
@@ -176,7 +182,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                   <Checkbox
                     id={value}
                     checked={isLevelChecked(value)}
-                    onCheckedChange={(checked) => handleLevelChange(value, checked as boolean)}
+                    onCheckedChange={checked => handleLevelChange(value, checked as boolean)}
                   />
                   <label htmlFor={value} className="text-sm cursor-pointer">
                     {label}
@@ -187,7 +193,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                 </Badge>
               </div>
             ))}
-            
+
             {[
               { value: 'primary', label: 'Primary Elections', count: stats?.byType.primary || 0 },
               { value: 'general', label: 'General Elections', count: stats?.byType.general || 0 },
@@ -198,7 +204,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                   <Checkbox
                     id={value}
                     checked={isElectionTypeChecked(value)}
-                    onCheckedChange={(checked) => handleElectionTypeChange(value, checked as boolean)}
+                    onCheckedChange={checked => handleElectionTypeChange(value, checked as boolean)}
                   />
                   <label htmlFor={value} className="text-sm cursor-pointer">
                     {label}
@@ -215,12 +221,14 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         {/* State Filter */}
         <div>
           <label className="text-sm font-medium mb-2 block">State</label>
-          <Select 
-            value={filters.state || 'all'} 
-            onValueChange={(value) => onFiltersChange({
-              ...filters,
-              state: value === 'all' ? undefined : value
-            })}
+          <Select
+            value={filters.state || 'all'}
+            onValueChange={value =>
+              onFiltersChange({
+                ...filters,
+                state: value === 'all' ? undefined : value,
+              })
+            }
           >
             <SelectTrigger>
               <SelectValue />
@@ -250,7 +258,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
                 <Checkbox
                   id={`party-${value}`}
                   checked={isPartyChecked(value)}
-                  onCheckedChange={(checked) => handlePartyChange(value, checked as boolean)}
+                  onCheckedChange={checked => handlePartyChange(value, checked as boolean)}
                 />
                 <label htmlFor={`party-${value}`} className="text-sm cursor-pointer">
                   {label}
@@ -264,8 +272,8 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         <div>
           <label className="text-sm font-medium mb-2 block">Data Management</label>
           <div className="space-y-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => syncElectionsMutation.mutate()}
               disabled={syncElectionsMutation.isPending}
               className="w-full"
@@ -277,11 +285,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
               )}
               Sync Latest Elections
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={clearFilters}
-              className="w-full"
-            >
+            <Button variant="outline" onClick={clearFilters} className="w-full">
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset Filters
             </Button>

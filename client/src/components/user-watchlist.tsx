@@ -1,31 +1,35 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Heart, Clock, MapPin, Trash2 } from "lucide-react";
-import { CountdownTimer } from "./countdown-timer";
-import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import { formatElectionDate, getUrgencyLevel, getUrgencyColor } from "@/lib/election-data";
+import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Heart, Clock, MapPin, Trash2 } from 'lucide-react';
+import { CountdownTimer } from './countdown-timer';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { formatElectionDate, getUrgencyLevel, getUrgencyColor } from '@/lib/election-data';
 
 export function UserWatchlist() {
   const { user, token } = useAuth();
   const { toast } = useToast();
 
-  const { data: watchlist = [], isLoading, refetch } = useQuery({
+  const {
+    data: watchlist = [],
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['/api/watchlist'],
     enabled: !!user && !!token,
     queryFn: async () => {
       const response = await fetch('/api/watchlist', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch watchlist');
       }
-      
+
       return response.json();
     },
   });
@@ -35,22 +39,22 @@ export function UserWatchlist() {
       const response = await fetch(`/api/watchlist/${electionId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         toast({
-          title: "Removed from watchlist",
-          description: "Election removed from your watchlist",
+          title: 'Removed from watchlist',
+          description: 'Election removed from your watchlist',
         });
         refetch();
       }
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to remove election from watchlist",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to remove election from watchlist',
+        variant: 'destructive',
       });
     }
   };
@@ -63,9 +67,7 @@ export function UserWatchlist() {
             <Heart className="h-5 w-5" />
             My Watchlist
           </CardTitle>
-          <CardDescription>
-            Sign in to save elections you want to track
-          </CardDescription>
+          <CardDescription>Sign in to save elections you want to track</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -101,14 +103,15 @@ export function UserWatchlist() {
       <CardContent className="space-y-4">
         {watchlist.length === 0 ? (
           <div className="text-sm text-muted-foreground text-center py-4">
-            No elections saved yet. Click the heart icon on any election to add it to your watchlist.
+            No elections saved yet. Click the heart icon on any election to add it to your
+            watchlist.
           </div>
         ) : (
           watchlist.map((item: any) => {
             const election = item.election;
             const urgency = getUrgencyLevel(election.date);
             const urgencyColor = getUrgencyColor(urgency);
-            
+
             return (
               <div key={item.id} className="border rounded-lg p-3 space-y-2">
                 <div className="flex items-start justify-between">
@@ -136,13 +139,9 @@ export function UserWatchlist() {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
-                
+
                 <div className="pt-2">
-                  <CountdownTimer 
-                    targetDate={election.date} 
-                    size="sm"
-                    className="text-xs"
-                  />
+                  <CountdownTimer targetDate={election.date} size="sm" className="text-xs" />
                 </div>
               </div>
             );

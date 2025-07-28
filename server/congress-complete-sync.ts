@@ -64,7 +64,7 @@ const US_CONGRESSIONAL_DELEGATIONS: StateCongressData[] = [
   { state: 'VI', houseDelegation: 1, senators: 0 },
   { state: 'GU', houseDelegation: 1, senators: 0 },
   { state: 'AS', houseDelegation: 1, senators: 0 },
-  { state: 'MP', houseDelegation: 1, senators: 0 }
+  { state: 'MP', houseDelegation: 1, senators: 0 },
 ];
 
 export class CongressCompleteSyncService {
@@ -91,12 +91,14 @@ export class CongressCompleteSyncService {
     for (const delegation of US_CONGRESSIONAL_DELEGATIONS) {
       try {
         console.log(`Fetching members for ${delegation.state}...`);
-        
+
         const stateMembers = await this.congressService.fetchMembersByState(delegation.state);
-        
+
         if (stateMembers && stateMembers.length > 0) {
           allMembers.push(...stateMembers);
-          console.log(`Found ${stateMembers.length} members for ${delegation.state} (expected: ${delegation.houseDelegation + delegation.senators})`);
+          console.log(
+            `Found ${stateMembers.length} members for ${delegation.state} (expected: ${delegation.houseDelegation + delegation.senators})`
+          );
         } else {
           console.log(`No members found for ${delegation.state} - using general API as fallback`);
         }
@@ -109,23 +111,24 @@ export class CongressCompleteSyncService {
     }
 
     // Deduplicate by bioguideId
-    const uniqueMembers = allMembers.filter((member, index, self) => 
-      index === self.findIndex(m => m.bioguideId === member.bioguideId)
+    const uniqueMembers = allMembers.filter(
+      (member, index, self) => index === self.findIndex(m => m.bioguideId === member.bioguideId)
     );
 
     console.log(`Fetched ${uniqueMembers.length} unique members from state-by-state approach`);
 
     // If we're still missing members, try the general endpoint as a fallback
-    if (uniqueMembers.length < 500) { // Should be closer to 541
+    if (uniqueMembers.length < 500) {
+      // Should be closer to 541
       console.log('State-by-state approach incomplete, trying general endpoint as supplement...');
-      
+
       try {
         const generalMembers = await this.congressService.fetchAllMembers();
-        
+
         // Merge and deduplicate
         const combinedMembers = [...uniqueMembers, ...generalMembers];
-        const finalMembers = combinedMembers.filter((member, index, self) => 
-          index === self.findIndex(m => m.bioguideId === member.bioguideId)
+        const finalMembers = combinedMembers.filter(
+          (member, index, self) => index === self.findIndex(m => m.bioguideId === member.bioguideId)
         );
 
         console.log(`Combined approach yielded ${finalMembers.length} total members`);
@@ -144,10 +147,10 @@ export class CongressCompleteSyncService {
     const membersByState = members.reduce((acc, member) => {
       const state = member.state;
       if (!acc[state]) acc[state] = { house: 0, senate: 0 };
-      
+
       if (member.chamber === 'House') acc[state].house++;
       else if (member.chamber === 'Senate') acc[state].senate++;
-      
+
       return acc;
     }, {});
 
@@ -156,17 +159,27 @@ export class CongressCompleteSyncService {
       const actual = membersByState[delegation.state] || { house: 0, senate: 0 };
       const expectedHouse = delegation.houseDelegation;
       const expectedSenate = delegation.senators;
-      
+
       if (actual.house !== expectedHouse || actual.senate !== expectedSenate) {
-        console.log(`${delegation.state}: Expected ${expectedHouse}H+${expectedSenate}S, Got ${actual.house}H+${actual.senate}S`);
+        console.log(
+          `${delegation.state}: Expected ${expectedHouse}H+${expectedSenate}S, Got ${actual.house}H+${actual.senate}S`
+        );
       }
     }
 
-    const totalHouse = Object.values(membersByState).reduce((sum: number, state: any) => sum + state.house, 0);
-    const totalSenate = Object.values(membersByState).reduce((sum: number, state: any) => sum + state.senate, 0);
-    
-    console.log(`Total validation: ${totalHouse} House + ${totalSenate} Senate = ${totalHouse + totalSenate} members`);
-    
+    const totalHouse = Object.values(membersByState).reduce(
+      (sum: number, state: any) => sum + state.house,
+      0
+    );
+    const totalSenate = Object.values(membersByState).reduce(
+      (sum: number, state: any) => sum + state.senate,
+      0
+    );
+
+    console.log(
+      `Total validation: ${totalHouse} House + ${totalSenate} Senate = ${totalHouse + totalSenate} members`
+    );
+
     return { totalHouse, totalSenate, total: totalHouse + totalSenate };
   }
 }

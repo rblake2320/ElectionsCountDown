@@ -7,6 +7,7 @@ This is a comprehensive election tracking and candidate management platform buil
 ## System Architecture
 
 ### Frontend Architecture
+
 - **Framework**: React with TypeScript
 - **UI Library**: Shadcn/ui components with Radix UI primitives
 - **Styling**: Tailwind CSS with custom design tokens
@@ -15,6 +16,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Development**: Hot module replacement and runtime error overlay
 
 ### Backend Architecture
+
 - **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
 - **Database ORM**: Drizzle ORM for type-safe database operations
@@ -23,6 +25,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Real-time Features**: Event-driven architecture for live election updates
 
 ### Database Architecture
+
 - **Primary Database**: PostgreSQL (Neon serverless)
 - **Schema Management**: Drizzle ORM with migration system
 - **Connection Pooling**: Neon serverless pool with WebSocket support
@@ -32,12 +35,14 @@ This is a comprehensive election tracking and candidate management platform buil
 ## Key Components
 
 ### Election Management System
+
 - Comprehensive election database covering federal, state, and local elections
 - Real-time election result tracking and updates
 - Candidate management with detailed profiles and positions
 - Multi-source data aggregation from government APIs
 
 ### Candidate Portal System
+
 - Secure candidate authentication with JWT tokens
 - Subscription-based access control (Basic, Premium, Enterprise tiers)
 - Campaign content management and Q&A systems
@@ -45,6 +50,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - Position statement management with AI validation
 
 ### Security & Compliance Framework
+
 - Multi-layer authentication and authorization
 - Rate limiting per subscription tier
 - Content validation and sanitization
@@ -53,6 +59,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - Bot prevention with behavioral analysis
 
 ### Data Integration Services
+
 - **Government APIs**: Integration with data.gov, Google Civic Info, Census Bureau
 - **Congressional Data**: ProPublica Congress API, OpenStates integration
 - **Third-party Services**: Perplexity AI for fact-checking and validation
@@ -60,6 +67,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Real-time Monitoring**: Web scraping and RSS feed monitoring
 
 ### Analytics & Monitoring
+
 - User interaction tracking with privacy compliance
 - Real-time performance monitoring and alerting
 - Campaign analytics dashboard with demographic insights
@@ -79,11 +87,13 @@ This is a comprehensive election tracking and candidate management platform buil
 ## External Dependencies
 
 ### Core Infrastructure
+
 - **Neon Database**: Serverless PostgreSQL hosting
 - **Replit**: Development and deployment platform
 - **WebSocket Support**: For real-time features
 
 ### API Integrations
+
 - **ProPublica Congress API**: Congressional data and voting records
 - **Google Civic Information API**: Election and candidate information
 - **Data.gov APIs**: Government election data
@@ -93,6 +103,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **OpenStates API**: State legislature data
 
 ### Development Tools
+
 - **Drizzle Kit**: Database schema management and migrations
 - **Vite**: Frontend build tool and development server
 - **ESBuild**: Backend JavaScript bundling
@@ -101,11 +112,13 @@ This is a comprehensive election tracking and candidate management platform buil
 ## Deployment Strategy
 
 ### Development Environment
+
 - **Local Development**: Vite dev server with hot reload
 - **Database**: Neon development database with connection pooling
 - **Environment**: Node.js 20 with ES modules support
 
 ### Production Deployment
+
 - **Platform**: Replit autoscale deployment
 - **Build Process**: Vite build for frontend, ESBuild for backend
 - **Database**: Neon production database with optimized connection pooling
@@ -113,6 +126,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Backup**: Automated daily backups with 30-day retention
 
 ### Security Considerations
+
 - Environment variables for all API keys and secrets
 - CORS configuration for secure cross-origin requests
 - Rate limiting to prevent abuse
@@ -120,6 +134,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - SQL injection prevention through parameterized queries
 
 ### Performance Optimization
+
 - Database query optimization with proper indexing
 - Multi-layer caching strategy (memory + database)
 - Connection pooling for database efficiency
@@ -129,6 +144,7 @@ This is a comprehensive election tracking and candidate management platform buil
 ## Recent Changes
 
 ### July 23, 2025 - 2026 Midterm Election Data Integration & System Optimization
+
 - **2026 Midterm Data**: Integrated comprehensive election seat totals covering 545-550 significant offices
 - **Congressional Elections**: Added all 435 House seats + 35 Senate seats (33 Class 2 + 2 special elections)
 - **Gubernatorial Races**: Documented 39 governor elections (36 states + 3 territories) with incumbent analysis
@@ -137,6 +153,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Critical Bug Fixes**: Resolved all 4 major issues - Congressional search, candidate comparison, Global Observatory crashes, and API authentication
 
 ### July 23, 2025 - GitHub Integration & Project Completion
+
 - **GitHub Repository**: Prepared complete project for GitHub with comprehensive documentation
 - **Documentation Suite**: Added README.md, CONTRIBUTING.md, LICENSE, and DEPLOYMENT.md
 - **Project Structure**: Organized all files for public repository distribution
@@ -144,6 +161,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Michigan Election Integration**: Added 9 real candidates with verified credentials
 
 ### July 22, 2025 - System Fixes & API Configuration
+
 - **TypeScript Compilation**: Fixed all storage system compilation errors and duplicate function implementations
 - **Database Schema**: Added missing electionCycles and campaignAccounts tables to complete schema
 - **Query Optimization**: Resolved database query type issues and improved performance
@@ -151,6 +169,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Platform Stability**: System running stably with 587+ elections and Google Civic API integration
 
 ### June 17, 2025 - Interactive Polling Trend Visualization & Data Accuracy
+
 - **Polling Data Accuracy System**: Implemented comprehensive solution distinguishing static database values from live polling data
 - **Interactive Polling Charts**: Created full visualization system with line/area charts, time range filters, and trend analysis
 - **Data Source Indicators**: Added visual indicators (yellow for static data, green for live data) with source tracking
@@ -158,6 +177,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **Dropdown Fixes**: Resolved UI component issues in Global Dashboard using proper shadcn Select components
 
 ### June 16, 2025 - Data Collection & UI Improvements
+
 - **OpenFEC Integration**: Added authentic campaign finance data collection from Federal Election Commission
 - **Firecrawl Service**: Implemented web scraping for official election sources and news monitoring
 - **Browser Automation**: Integrated Puppeteer, Playwright, and Selenium for advanced data collection
@@ -165,6 +185,7 @@ This is a comprehensive election tracking and candidate management platform buil
 - **API Endpoints**: Added comprehensive endpoints for election data scraping, candidate enrichment, and news monitoring
 
 ### Data Collection Capabilities
+
 - Campaign finance data from OpenFEC API for federal candidates
 - Web scraping from official state election websites
 - Real-time news monitoring from trusted sources

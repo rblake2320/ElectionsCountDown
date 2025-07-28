@@ -40,21 +40,27 @@ export default function CongressAdminPage() {
     total: members.length,
     house: members.filter(m => m.chamber === 'House').length,
     senate: members.filter(m => m.chamber === 'Senate').length,
-    partyBreakdown: members.reduce((acc, member) => {
-      const party = member.party || 'Unknown';
-      acc[party] = (acc[party] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>),
-    stateIssues: []
+    partyBreakdown: members.reduce(
+      (acc, member) => {
+        const party = member.party || 'Unknown';
+        acc[party] = (acc[party] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    ),
+    stateIssues: [],
   };
 
   // Check for state issues
   const senateByState = members
     .filter(m => m.chamber === 'Senate')
-    .reduce((acc, senator) => {
-      acc[senator.state] = (acc[senator.state] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    .reduce(
+      (acc, senator) => {
+        acc[senator.state] = (acc[senator.state] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   Object.entries(senateByState).forEach(([state, count]) => {
     if (count !== 2) {
@@ -67,15 +73,16 @@ export default function CongressAdminPage() {
     mutationFn: () => fetch('/api/congress/import', { method: 'POST' }).then(res => res.json()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/members'] });
-    }
+    },
   });
 
   // Perplexity analysis mutation
   const perplexityMutation = useMutation({
-    mutationFn: () => fetch('/api/congress/find-missing', { method: 'POST' }).then(res => res.json()),
-    onSuccess: (data) => {
+    mutationFn: () =>
+      fetch('/api/congress/find-missing', { method: 'POST' }).then(res => res.json()),
+    onSuccess: data => {
       setPerplexityResult(data);
-    }
+    },
   });
 
   const handlePerplexityAnalysis = async () => {
@@ -102,15 +109,17 @@ export default function CongressAdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Congressional Data Management</h1>
         <div className="flex gap-2">
-          <Button 
+          <Button
             onClick={() => importMutation.mutate()}
             disabled={importMutation.isPending}
             variant="outline"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${importMutation.isPending ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${importMutation.isPending ? 'animate-spin' : ''}`}
+            />
             Re-import Data
           </Button>
-          <Button 
+          <Button
             onClick={handlePerplexityAnalysis}
             disabled={isAnalyzing || perplexityMutation.isPending}
           >
@@ -154,7 +163,9 @@ export default function CongressAdminPage() {
           <CardContent>
             <div className="text-2xl font-bold">{stats.senate}</div>
             <p className="text-xs text-muted-foreground">
-              Expected: 100 ({stats.senate > 100 ? `${stats.senate - 100} extra` : `${100 - stats.senate} missing`})
+              Expected: 100 (
+              {stats.senate > 100 ? `${stats.senate - 100} extra` : `${100 - stats.senate} missing`}
+              )
             </p>
           </CardContent>
         </Card>
@@ -168,7 +179,9 @@ export default function CongressAdminPage() {
             <div className="font-medium">Data Issues Detected:</div>
             <ul className="mt-2 space-y-1">
               {stats.stateIssues.map((issue, index) => (
-                <li key={index} className="text-sm">• {issue}</li>
+                <li key={index} className="text-sm">
+                  • {issue}
+                </li>
               ))}
             </ul>
           </AlertDescription>
@@ -201,11 +214,9 @@ export default function CongressAdminPage() {
             {perplexityResult.success ? (
               <div>
                 <div className="prose max-w-none">
-                  <div className="whitespace-pre-wrap text-sm">
-                    {perplexityResult.data}
-                  </div>
+                  <div className="whitespace-pre-wrap text-sm">{perplexityResult.data}</div>
                 </div>
-                
+
                 {perplexityResult.citations && perplexityResult.citations.length > 0 && (
                   <div className="mt-4">
                     <Separator />
@@ -213,9 +224,9 @@ export default function CongressAdminPage() {
                     <ul className="space-y-1">
                       {perplexityResult.citations.map((citation: string, index: number) => (
                         <li key={index} className="text-sm">
-                          <a 
-                            href={citation} 
-                            target="_blank" 
+                          <a
+                            href={citation}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
@@ -230,9 +241,7 @@ export default function CongressAdminPage() {
             ) : (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Error: {perplexityResult.error}
-                </AlertDescription>
+                <AlertDescription>Error: {perplexityResult.error}</AlertDescription>
               </Alert>
             )}
           </CardContent>

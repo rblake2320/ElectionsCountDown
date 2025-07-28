@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Flag, Clock, Users } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar, Flag, Clock, Users } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 interface ElectionCycle {
   id: number;
@@ -22,8 +28,12 @@ interface VersionSwitcherProps {
   compact?: boolean;
 }
 
-export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }: VersionSwitcherProps) {
-  const [selectedCycle, setSelectedCycle] = useState(currentCycle || "2026-midterm");
+export function VersionSwitcher({
+  currentCycle,
+  onCycleChange,
+  compact = false,
+}: VersionSwitcherProps) {
+  const [selectedCycle, setSelectedCycle] = useState(currentCycle || '2026-midterm');
 
   const { data: cycles = [], isLoading } = useQuery({
     queryKey: ['/api/election-cycles'],
@@ -57,11 +67,15 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {cycles.map((cycle) => (
+            {cycles.map(cycle => (
               <SelectItem key={cycle.id} value={cycle.slug}>
                 <div className="flex items-center gap-2">
                   <span>{cycle.name}</span>
-                  {cycle.isActive && <Badge variant="default" className="text-xs">Current</Badge>}
+                  {cycle.isActive && (
+                    <Badge variant="default" className="text-xs">
+                      Current
+                    </Badge>
+                  )}
                 </div>
               </SelectItem>
             ))}
@@ -78,9 +92,7 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
           <Flag className="h-5 w-5" />
           Election Cycle
         </CardTitle>
-        <CardDescription>
-          Switch between different election tracking periods
-        </CardDescription>
+        <CardDescription>Switch between different election tracking periods</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Select value={selectedCycle} onValueChange={handleCycleChange}>
@@ -88,13 +100,15 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {cycles.map((cycle) => (
+            {cycles.map(cycle => (
               <SelectItem key={cycle.id} value={cycle.slug}>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{cycle.name}</span>
                     {cycle.isActive && (
-                      <Badge variant="default" className="text-xs">Current</Badge>
+                      <Badge variant="default" className="text-xs">
+                        Current
+                      </Badge>
                     )}
                     {!cycle.isActive && (
                       <Badge variant="outline" className="text-xs">
@@ -114,16 +128,14 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>
-                {new Date(selectedCycleData.startDate).toLocaleDateString()} - {' '}
+                {new Date(selectedCycleData.startDate).toLocaleDateString()} -{' '}
                 {new Date(selectedCycleData.endDate).toLocaleDateString()}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>
-                {selectedCycleData.isActive ? 'Currently Active' : 'Tracking Available'}
-              </span>
+              <span>{selectedCycleData.isActive ? 'Currently Active' : 'Tracking Available'}</span>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">

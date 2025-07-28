@@ -19,7 +19,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       'Standard policy positions',
       'Data attribution tracking',
       'Public profile view',
-      'Email support'
+      'Email support',
     ],
     premium: [
       'All Basic features',
@@ -27,7 +27,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       'Priority data verification',
       'Campaign performance metrics',
       'Social media integration',
-      'Priority support'
+      'Priority support',
     ],
     enterprise: [
       'All Premium features',
@@ -35,8 +35,8 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       'API access for integrations',
       'Custom branding options',
       'Dedicated account manager',
-      'Phone support'
-    ]
+      'Phone support',
+    ],
   };
 
   return (
@@ -48,9 +48,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
             <Shield className="h-5 w-5" />
             Account Information
           </CardTitle>
-          <CardDescription>
-            Your campaign portal account details
-          </CardDescription>
+          <CardDescription>Your campaign portal account details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -69,7 +67,15 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
             <div>
               <Label className="text-sm font-medium">Subscription Tier</Label>
               <div className="flex items-center gap-2">
-                <Badge variant={candidate.subscriptionTier === 'premium' ? 'default' : candidate.subscriptionTier === 'enterprise' ? 'default' : 'secondary'}>
+                <Badge
+                  variant={
+                    candidate.subscriptionTier === 'premium'
+                      ? 'default'
+                      : candidate.subscriptionTier === 'enterprise'
+                        ? 'default'
+                        : 'secondary'
+                  }
+                >
                   {candidate.subscriptionTier}
                 </Badge>
                 {candidate.subscriptionTier === 'basic' && (
@@ -103,13 +109,13 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Basic Plan */}
-            <div className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'basic' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`}>
+            <div
+              className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'basic' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`}
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Shield className="h-5 w-5 text-gray-500" />
                 <h3 className="font-semibold">Basic</h3>
-                {candidate.subscriptionTier === 'basic' && (
-                  <Badge variant="default">Current</Badge>
-                )}
+                {candidate.subscriptionTier === 'basic' && <Badge variant="default">Current</Badge>}
               </div>
               <ul className="space-y-1 text-sm">
                 {subscriptionFeatures.basic.map((feature, index) => (
@@ -127,7 +133,9 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
             </div>
 
             {/* Premium Plan */}
-            <div className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'premium' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`}>
+            <div
+              className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'premium' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`}
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="h-5 w-5 text-blue-500" />
                 <h3 className="font-semibold">Premium</h3>
@@ -156,7 +164,9 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
             </div>
 
             {/* Enterprise Plan */}
-            <div className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'enterprise' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10' : ''}`}>
+            <div
+              className={`p-4 border rounded-lg ${candidate.subscriptionTier === 'enterprise' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/10' : ''}`}
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Crown className="h-5 w-5 text-yellow-500" />
                 <h3 className="font-semibold">Enterprise</h3>
@@ -186,9 +196,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       <Card>
         <CardHeader>
           <CardTitle>Security Settings</CardTitle>
-          <CardDescription>
-            Manage your account security and access
-          </CardDescription>
+          <CardDescription>Manage your account security and access</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
@@ -198,11 +206,9 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
                 Change your account password
               </p>
             </div>
-            <Button variant="outline">
-              Change Password
-            </Button>
+            <Button variant="outline">Change Password</Button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium">Two-Factor Authentication</h4>
@@ -210,9 +216,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
                 Add an extra layer of security
               </p>
             </div>
-            <Button variant="outline">
-              Enable 2FA
-            </Button>
+            <Button variant="outline">Enable 2FA</Button>
           </div>
 
           <div className="flex items-center justify-between">
@@ -233,15 +237,14 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       <Card>
         <CardHeader>
           <CardTitle>Data & Privacy</CardTitle>
-          <CardDescription>
-            Control your data and privacy settings
-          </CardDescription>
+          <CardDescription>Control your data and privacy settings</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Your candidate data is used to improve voter information accuracy. You control what information is public through your profile settings.
+              Your candidate data is used to improve voter information accuracy. You control what
+              information is public through your profile settings.
             </AlertDescription>
           </Alert>
 
@@ -252,9 +255,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
                 Download a copy of your data
               </p>
             </div>
-            <Button variant="outline">
-              Export Data
-            </Button>
+            <Button variant="outline">Export Data</Button>
           </div>
 
           <div className="flex items-center justify-between">
@@ -264,9 +265,7 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
                 Control what information is visible to voters
               </p>
             </div>
-            <Button variant="outline">
-              Privacy Settings
-            </Button>
+            <Button variant="outline">Privacy Settings</Button>
           </div>
         </CardContent>
       </Card>
@@ -275,16 +274,18 @@ export default function CandidateSettings({ auth }: CandidateSettingsProps) {
       <Card>
         <CardHeader>
           <CardTitle>Support & Contact</CardTitle>
-          <CardDescription>
-            Get help with your campaign portal
-          </CardDescription>
+          <CardDescription>Get help with your campaign portal</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Button variant="outline" className="flex items-center gap-2">
               📧 Email Support
             </Button>
-            <Button variant="outline" className="flex items-center gap-2" disabled={candidate.subscriptionTier === 'basic'}>
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              disabled={candidate.subscriptionTier === 'basic'}
+            >
               📞 {candidate.subscriptionTier === 'basic' ? 'Premium Required' : 'Phone Support'}
             </Button>
             <Button variant="outline" className="flex items-center gap-2">

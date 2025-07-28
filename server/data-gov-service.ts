@@ -1,4 +1,9 @@
-import { type Election, type InsertElection, type Candidate, type InsertCandidate } from "@shared/schema";
+import {
+  type Election,
+  type InsertElection,
+  type Candidate,
+  type InsertCandidate,
+} from '@shared/schema';
 
 export interface DataGovElectionResponse {
   // Define based on actual data.gov election API response structure
@@ -18,7 +23,7 @@ export class DataGovService {
 
   private async makeRequest(endpoint: string, params: Record<string, string> = {}): Promise<any> {
     const url = new URL(endpoint, this.baseUrl);
-    
+
     // Add API key and other parameters
     url.searchParams.set('api_key', this.apiKey);
     Object.entries(params).forEach(([key, value]) => {
@@ -26,11 +31,11 @@ export class DataGovService {
     });
 
     const response = await fetch(url.toString());
-    
+
     if (!response.ok) {
       throw new Error(`Data.gov API error: ${response.status} ${response.statusText}`);
     }
-    
+
     return response.json();
   }
 
@@ -42,7 +47,7 @@ export class DataGovService {
       if (year) params.year = year;
 
       const data = await this.makeRequest('elections/upcoming', params);
-      
+
       // Transform data.gov response to our Election format
       return this.transformElectionsData(data);
     } catch (error) {
@@ -101,23 +106,23 @@ export class DataGovService {
 
   private mapElectionType(type: string): string {
     const typeMap: Record<string, string> = {
-      'primary': 'primary',
-      'general': 'general',
-      'special': 'special',
-      'runoff': 'general',
-      'recall': 'special',
+      primary: 'primary',
+      general: 'general',
+      special: 'special',
+      runoff: 'general',
+      recall: 'special',
     };
     return typeMap[type?.toLowerCase()] || 'general';
   }
 
   private mapElectionLevel(level: string): string {
     const levelMap: Record<string, string> = {
-      'federal': 'federal',
-      'state': 'state',
-      'local': 'local',
-      'county': 'local',
-      'municipal': 'local',
-      'city': 'local',
+      federal: 'federal',
+      state: 'state',
+      local: 'local',
+      county: 'local',
+      municipal: 'local',
+      city: 'local',
     };
     return levelMap[level?.toLowerCase()] || 'local';
   }
@@ -128,15 +133,15 @@ let dataGovService: DataGovService | null = null;
 
 export function getDataGovService(): DataGovService | null {
   const apiKey = process.env.DATA_GOV_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('DATA_GOV_API_KEY not found in environment variables');
     return null;
   }
-  
+
   if (!dataGovService) {
     dataGovService = new DataGovService(apiKey);
   }
-  
+
   return dataGovService;
 }
