@@ -1,5 +1,5 @@
-import fetch from 'node-fetch';
-import { cacheService } from './cache-service';
+import fetch from "node-fetch";
+import { cacheService } from "./cache-service";
 
 interface CandidateData {
   id: string;
@@ -42,42 +42,55 @@ export class CivicAggregatorService {
 
   private validateApiKeys() {
     const missingKeys = [];
-    if (!this.propublicaKey) missingKeys.push('PROPUBLICA_API_KEY');
-    if (!this.googleCivicKey) missingKeys.push('GOOGLE_CIVIC_API_KEY');
-    if (!this.openFecKey) missingKeys.push('OPENFEC_API_KEY');
-    if (!this.openStatesKey) missingKeys.push('OPENSTATES_API_KEY');
-    if (!this.voteSmartKey) missingKeys.push('VOTESMART_API_KEY');
+    if (!this.propublicaKey) missingKeys.push("PROPUBLICA_API_KEY");
+    if (!this.googleCivicKey) missingKeys.push("GOOGLE_CIVIC_API_KEY");
+    if (!this.openFecKey) missingKeys.push("OPENFEC_API_KEY");
+    if (!this.openStatesKey) missingKeys.push("OPENSTATES_API_KEY");
+    if (!this.voteSmartKey) missingKeys.push("VOTESMART_API_KEY");
 
     // Log working APIs
     if (this.openStatesKey) {
-      console.log('OpenStates API configured (500 requests/day, 1 req/sec limit)');
+      console.log(
+        "OpenStates API configured (500 requests/day, 1 req/sec limit)",
+      );
     }
 
     if (missingKeys.length > 0) {
-      console.warn(`Missing API keys: ${missingKeys.join(', ')}. Some features may be limited.`);
+      console.warn(
+        `Missing API keys: ${missingKeys.join(", ")}. Some features may be limited.`,
+      );
     }
   }
 
-  async getComprehensiveCandidateData(candidateIds: string[], electionId: string): Promise<CandidateData[]> {
-    const cacheKey = `civic-agg-${candidateIds.join('-')}-${electionId}`;
-    
+  async getComprehensiveCandidateData(
+    candidateIds: string[],
+    electionId: string,
+  ): Promise<CandidateData[]> {
+    const cacheKey = `civic-agg-${candidateIds.join("-")}-${electionId}`;
+
     const candidateData = await Promise.allSettled(
-      candidateIds.map(id => this.aggregateCandidateData(id, electionId))
+      candidateIds.map((id) => this.aggregateCandidateData(id, electionId)),
     );
 
     const results = candidateData
-      .filter((result): result is PromiseFulfilledResult<CandidateData> => result.status === 'fulfilled')
-      .map(result => result.value);
+      .filter(
+        (result): result is PromiseFulfilledResult<CandidateData> =>
+          result.status === "fulfilled",
+      )
+      .map((result) => result.value);
 
     return results;
   }
 
-  private async aggregateCandidateData(candidateId: string, electionId: string): Promise<CandidateData> {
+  private async aggregateCandidateData(
+    candidateId: string,
+    electionId: string,
+  ): Promise<CandidateData> {
     const baseData: CandidateData = {
       id: candidateId,
-      name: '',
-      party: '',
-      office: ''
+      name: "",
+      party: "",
+      office: "",
     };
 
     // Run all API calls in parallel
@@ -86,38 +99,40 @@ export class CivicAggregatorService {
       fecData,
       voteSmartData,
       openStatesData,
-      pollingData
+      pollingData,
     ] = await Promise.allSettled([
       this.fetchPropublicaData(candidateId),
       this.fetchFECData(candidateId),
       this.fetchVoteSmartData(candidateId),
       this.fetchOpenStatesData(candidateId),
-      this.fetchPollingData(candidateId)
+      this.fetchPollingData(candidateId),
     ]);
 
     // Merge successful results
-    if (propublicaData.status === 'fulfilled' && propublicaData.value) {
+    if (propublicaData.status === "fulfilled" && propublicaData.value) {
       baseData.propublicaData = propublicaData.value;
-      baseData.name = propublicaData.value.first_name + ' ' + propublicaData.value.last_name;
+      baseData.name =
+        propublicaData.value.first_name + " " + propublicaData.value.last_name;
       baseData.party = propublicaData.value.party;
-      baseData.office = propublicaData.value.roles?.[0]?.title || 'Representative';
+      baseData.office =
+        propublicaData.value.roles?.[0]?.title || "Representative";
       baseData.state = propublicaData.value.roles?.[0]?.state;
       baseData.district = propublicaData.value.roles?.[0]?.district;
     }
 
-    if (fecData.status === 'fulfilled' && fecData.value) {
+    if (fecData.status === "fulfilled" && fecData.value) {
       baseData.fecData = fecData.value;
     }
 
-    if (voteSmartData.status === 'fulfilled' && voteSmartData.value) {
+    if (voteSmartData.status === "fulfilled" && voteSmartData.value) {
       baseData.voteSmartData = voteSmartData.value;
     }
 
-    if (openStatesData.status === 'fulfilled' && openStatesData.value) {
+    if (openStatesData.status === "fulfilled" && openStatesData.value) {
       baseData.openStatesData = openStatesData.value;
     }
 
-    if (pollingData.status === 'fulfilled' && pollingData.value) {
+    if (pollingData.status === "fulfilled" && pollingData.value) {
       baseData.pollingData = pollingData.value;
     }
 
@@ -128,17 +143,21 @@ export class CivicAggregatorService {
     if (!this.propublicaKey) return null;
 
     try {
-      const response = await fetch(`https://api.propublica.org/congress/v1/members/${candidateId}.json`, {
-        headers: {
-          'X-API-Key': this.propublicaKey
-        }
-      });
+      const response = await fetch(
+        `https://api.propublica.org/congress/v1/members/${candidateId}.json`,
+        {
+          headers: {
+            "X-API-Key": this.propublicaKey,
+          },
+        },
+      );
 
-      if (!response.ok) throw new Error(`ProPublica API error: ${response.status}`);
-      const data = await response.json() as any;
+      if (!response.ok)
+        throw new Error(`ProPublica API error: ${response.status}`);
+      const data = (await response.json()) as any;
       return data.results?.[0];
     } catch (error) {
-      console.error('ProPublica API error:', error);
+      console.error("ProPublica API error:", error);
       return null;
     }
   }
@@ -147,12 +166,15 @@ export class CivicAggregatorService {
     if (!this.openFecKey) return null;
 
     try {
-      const response = await fetch(`https://api.open.fec.gov/v1/candidates/search/?api_key=${this.openFecKey}&candidate_id=${candidateId}&per_page=1`);
-      if (!response.ok) throw new Error(`OpenFEC API error: ${response.status}`);
-      const data = await response.json() as any;
+      const response = await fetch(
+        `https://api.open.fec.gov/v1/candidates/search/?api_key=${this.openFecKey}&candidate_id=${candidateId}&per_page=1`,
+      );
+      if (!response.ok)
+        throw new Error(`OpenFEC API error: ${response.status}`);
+      const data = (await response.json()) as any;
       return data.results?.[0];
     } catch (error) {
-      console.error('OpenFEC API error:', error);
+      console.error("OpenFEC API error:", error);
       return null;
     }
   }
@@ -161,12 +183,15 @@ export class CivicAggregatorService {
     if (!this.voteSmartKey) return null;
 
     try {
-      const response = await fetch(`https://api.votesmart.org/CandidateBio.getDetailedBio?key=${this.voteSmartKey}&candidateId=${candidateId}&o=JSON`);
-      if (!response.ok) throw new Error(`VoteSmart API error: ${response.status}`);
-      const data = await response.json() as any;
+      const response = await fetch(
+        `https://api.votesmart.org/CandidateBio.getDetailedBio?key=${this.voteSmartKey}&candidateId=${candidateId}&o=JSON`,
+      );
+      if (!response.ok)
+        throw new Error(`VoteSmart API error: ${response.status}`);
+      const data = (await response.json()) as any;
       return data.bio;
     } catch (error) {
-      console.error('VoteSmart API error:', error);
+      console.error("VoteSmart API error:", error);
       return null;
     }
   }
@@ -176,24 +201,28 @@ export class CivicAggregatorService {
 
     try {
       // First try to get person by ID
-      const response = await fetch(`https://v3.openstates.org/people/${candidateId}?apikey=${this.openStatesKey}`);
-      
+      const response = await fetch(
+        `https://v3.openstates.org/people/${candidateId}?apikey=${this.openStatesKey}`,
+      );
+
       if (!response.ok) {
         // If direct lookup fails, search by name
-        const searchResponse = await fetch(`https://v3.openstates.org/people?apikey=${this.openStatesKey}&jurisdiction=us&name=${candidateId}&per_page=1`);
-        
+        const searchResponse = await fetch(
+          `https://v3.openstates.org/people?apikey=${this.openStatesKey}&jurisdiction=us&name=${candidateId}&per_page=1`,
+        );
+
         if (searchResponse.ok) {
-          const searchData = await searchResponse.json() as any;
+          const searchData = (await searchResponse.json()) as any;
           return searchData.results?.[0];
         }
-        
+
         throw new Error(`OpenStates API error: ${response.status}`);
       }
-      
-      const data = await response.json() as any;
+
+      const data = (await response.json()) as any;
       return data;
     } catch (error) {
-      console.error('OpenStates API error:', error);
+      console.error("OpenStates API error:", error);
       return null;
     }
   }
@@ -201,25 +230,30 @@ export class CivicAggregatorService {
   private async fetchPollingData(candidateId: string): Promise<any> {
     try {
       // FiveThirtyEight polling data from GitHub raw files
-      const response = await fetch('https://raw.githubusercontent.com/fivethirtyeight/data/master/polls/polls.csv');
-      if (!response.ok) throw new Error(`FiveThirtyEight data error: ${response.status}`);
-      
+      const response = await fetch(
+        "https://raw.githubusercontent.com/fivethirtyeight/data/master/polls/polls.csv",
+      );
+      if (!response.ok)
+        throw new Error(`FiveThirtyEight data error: ${response.status}`);
+
       const csvData = await response.text();
       // Simple CSV parsing - in production, use a proper CSV parser
-      const lines = csvData.split('\n');
-      const polls = lines.slice(1).map(line => {
-        const values = line.split(',');
+      const lines = csvData.split("\n");
+      const polls = lines.slice(1).map((line) => {
+        const values = line.split(",");
         return {
           pollster: values[0],
           date: values[1],
           candidate: values[2],
-          pct: parseFloat(values[3]) || 0
+          pct: parseFloat(values[3]) || 0,
         };
       });
 
-      return polls.filter(poll => poll.candidate?.toLowerCase().includes(candidateId.toLowerCase()));
+      return polls.filter((poll) =>
+        poll.candidate?.toLowerCase().includes(candidateId.toLowerCase()),
+      );
     } catch (error) {
-      console.error('Polling data error:', error);
+      console.error("Polling data error:", error);
       return null;
     }
   }
@@ -228,35 +262,50 @@ export class CivicAggregatorService {
     if (!this.googleCivicKey) return null;
 
     try {
-      const response = await fetch(`https://civicinfo.googleapis.com/civicinfo/v2/voterinfo?key=${this.googleCivicKey}&address=${encodeURIComponent(address)}`);
-      if (!response.ok) throw new Error(`Google Civic API error: ${response.status}`);
+      const response = await fetch(
+        `https://civicinfo.googleapis.com/civicinfo/v2/voterinfo?key=${this.googleCivicKey}&address=${encodeURIComponent(address)}`,
+      );
+      if (!response.ok)
+        throw new Error(`Google Civic API error: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('Google Civic API error:', error);
+      console.error("Google Civic API error:", error);
       return null;
     }
   }
 
-  async fetchInternationalData(candidateName: string, country: string): Promise<any> {
-    if (country.toLowerCase() === 'uk' || country.toLowerCase() === 'united kingdom') {
+  async fetchInternationalData(
+    candidateName: string,
+    country: string,
+  ): Promise<any> {
+    if (
+      country.toLowerCase() === "uk" ||
+      country.toLowerCase() === "united kingdom"
+    ) {
       return this.fetchUKParliamentData(candidateName);
     }
-    
+
     return this.fetchWikidataGlobal(candidateName, country);
   }
 
   private async fetchUKParliamentData(candidateName: string): Promise<any> {
     try {
-      const response = await fetch(`https://members-api.parliament.uk/api/Members/Search?Name=${encodeURIComponent(candidateName)}`);
-      if (!response.ok) throw new Error(`UK Parliament API error: ${response.status}`);
+      const response = await fetch(
+        `https://members-api.parliament.uk/api/Members/Search?Name=${encodeURIComponent(candidateName)}`,
+      );
+      if (!response.ok)
+        throw new Error(`UK Parliament API error: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('UK Parliament API error:', error);
+      console.error("UK Parliament API error:", error);
       return null;
     }
   }
 
-  private async fetchWikidataGlobal(candidateName: string, country: string): Promise<any> {
+  private async fetchWikidataGlobal(
+    candidateName: string,
+    country: string,
+  ): Promise<any> {
     try {
       const sparqlQuery = `
         SELECT ?person ?personLabel ?partyLabel ?positionLabel WHERE {
@@ -272,65 +321,80 @@ export class CivicAggregatorService {
         LIMIT 5
       `;
 
-      const response = await fetch('https://query.wikidata.org/sparql', {
-        method: 'POST',
+      const response = await fetch("https://query.wikidata.org/sparql", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
+          "Content-Type": "application/x-www-form-urlencoded",
+          Accept: "application/json",
         },
-        body: `query=${encodeURIComponent(sparqlQuery)}`
+        body: `query=${encodeURIComponent(sparqlQuery)}`,
       });
 
-      if (!response.ok) throw new Error(`Wikidata SPARQL error: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`Wikidata SPARQL error: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('Wikidata SPARQL error:', error);
+      console.error("Wikidata SPARQL error:", error);
       return null;
     }
   }
 
-  async comparePolicies(candidateIds: string[], policyCategories: string[]): Promise<PolicyComparison[]> {
-    const candidateData = await this.getComprehensiveCandidateData(candidateIds, 'comparison');
-    
-    return policyCategories.map(category => ({
+  async comparePolicies(
+    candidateIds: string[],
+    policyCategories: string[],
+  ): Promise<PolicyComparison[]> {
+    const candidateData = await this.getComprehensiveCandidateData(
+      candidateIds,
+      "comparison",
+    );
+
+    return policyCategories.map((category) => ({
       category,
-      positions: candidateData.map(candidate => ({
+      positions: candidateData.map((candidate) => ({
         candidateId: candidate.id,
         candidateName: candidate.name,
         position: this.extractPolicyPosition(candidate, category),
         details: this.extractPolicyDetails(candidate, category),
         source: this.getBestSourceForPolicy(candidate, category),
-        confidence: this.calculateConfidenceScore(candidate, category)
-      }))
+        confidence: this.calculateConfidenceScore(candidate, category),
+      })),
     }));
   }
 
-  private extractPolicyPosition(candidate: CandidateData, category: string): string {
+  private extractPolicyPosition(
+    candidate: CandidateData,
+    category: string,
+  ): string {
     // Extract policy positions from various data sources
     if (candidate.voteSmartData?.positions) {
-      const position = candidate.voteSmartData.positions.find((p: any) => 
-        p.category?.toLowerCase().includes(category.toLowerCase())
+      const position = candidate.voteSmartData.positions.find((p: any) =>
+        p.category?.toLowerCase().includes(category.toLowerCase()),
       );
-      if (position) return position.stance || 'Position available';
+      if (position) return position.stance || "Position available";
     }
 
     if (candidate.propublicaData?.votes) {
       // Analyze voting record for policy inference
       const relevantVotes = candidate.propublicaData.votes.filter((vote: any) =>
-        vote.description?.toLowerCase().includes(category.toLowerCase())
+        vote.description?.toLowerCase().includes(category.toLowerCase()),
       );
       if (relevantVotes.length > 0) {
-        const supportVotes = relevantVotes.filter((v: any) => v.position === 'Yes').length;
+        const supportVotes = relevantVotes.filter(
+          (v: any) => v.position === "Yes",
+        ).length;
         const totalVotes = relevantVotes.length;
         const supportRate = (supportVotes / totalVotes) * 100;
         return `${supportRate.toFixed(0)}% support based on voting record`;
       }
     }
 
-    return 'Position not available from current sources';
+    return "Position not available from current sources";
   }
 
-  private extractPolicyDetails(candidate: CandidateData, category: string): string {
+  private extractPolicyDetails(
+    candidate: CandidateData,
+    category: string,
+  ): string {
     // Combine details from multiple sources
     const details = [];
 
@@ -339,29 +403,39 @@ export class CivicAggregatorService {
     }
 
     if (candidate.propublicaData?.committees) {
-      const relevantCommittees = candidate.propublicaData.committees.filter((c: any) =>
-        c.name?.toLowerCase().includes(category.toLowerCase())
+      const relevantCommittees = candidate.propublicaData.committees.filter(
+        (c: any) => c.name?.toLowerCase().includes(category.toLowerCase()),
       );
       if (relevantCommittees.length > 0) {
-        details.push(`Committee experience: ${relevantCommittees.map((c: any) => c.name).join(', ')}`);
+        details.push(
+          `Committee experience: ${relevantCommittees.map((c: any) => c.name).join(", ")}`,
+        );
       }
     }
 
     if (candidate.fecData?.total_receipts) {
-      details.push(`Campaign funding: $${candidate.fecData.total_receipts.toLocaleString()}`);
+      details.push(
+        `Campaign funding: $${candidate.fecData.total_receipts.toLocaleString()}`,
+      );
     }
 
-    return details.join(' | ') || 'No additional details available';
+    return details.join(" | ") || "No additional details available";
   }
 
-  private getBestSourceForPolicy(candidate: CandidateData, category: string): string {
-    if (candidate.voteSmartData?.positions) return 'VoteSmart.org';
-    if (candidate.propublicaData?.votes) return 'ProPublica Congress API';
-    if (candidate.openStatesData?.bills) return 'Open States';
-    return 'Multiple government sources';
+  private getBestSourceForPolicy(
+    candidate: CandidateData,
+    category: string,
+  ): string {
+    if (candidate.voteSmartData?.positions) return "VoteSmart.org";
+    if (candidate.propublicaData?.votes) return "ProPublica Congress API";
+    if (candidate.openStatesData?.bills) return "Open States";
+    return "Multiple government sources";
   }
 
-  private calculateConfidenceScore(candidate: CandidateData, category: string): number {
+  private calculateConfidenceScore(
+    candidate: CandidateData,
+    category: string,
+  ): number {
     let score = 0;
 
     if (candidate.voteSmartData?.positions) score += 0.4;
@@ -379,14 +453,14 @@ export class CivicAggregatorService {
         openFEC: !!this.openFecKey,
         googleCivic: !!this.googleCivicKey,
         openStates: !!this.openStatesKey,
-        voteSmart: !!this.voteSmartKey
+        voteSmart: !!this.voteSmartKey,
       },
       internationalSupport: {
         ukParliament: true,
         wikidata: true,
-        euParlGov: false // Would require additional setup
+        euParlGov: false, // Would require additional setup
       },
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
   }
 }

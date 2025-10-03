@@ -1,43 +1,48 @@
 import { db } from "./db";
-import { 
-  candidates, 
-  candidateSubscriptions, 
-  candidatePositions, 
-  candidateQA, 
-  campaignContent, 
+import {
+  candidates,
+  candidateSubscriptions,
+  candidatePositions,
+  candidateQA,
+  campaignContent,
   voterInteractions,
-  realTimePolling 
+  realTimePolling,
 } from "@shared/schema";
 import { eq, and, desc, sql, gte, lte, count, avg } from "drizzle-orm";
-import type { 
-  InsertCandidatePosition, 
-  InsertCandidateQA, 
+import type {
+  InsertCandidatePosition,
+  InsertCandidateQA,
   InsertCampaignContent,
   InsertVoterInteraction,
-  InsertRealTimePolling
+  InsertRealTimePolling,
 } from "@shared/schema";
 
 export class CandidateManagementService {
-  
   // Candidate Profile Management
   async getCandidateProfile(candidateId: number) {
     const [profile] = await db
       .select({
         candidate: candidates,
-        subscription: candidateSubscriptions
+        subscription: candidateSubscriptions,
       })
       .from(candidates)
-      .leftJoin(candidateSubscriptions, eq(candidates.id, candidateSubscriptions.candidateId))
+      .leftJoin(
+        candidateSubscriptions,
+        eq(candidates.id, candidateSubscriptions.candidateId),
+      )
       .where(eq(candidates.id, candidateId));
 
     if (!profile) {
-      throw new Error('Candidate not found');
+      throw new Error("Candidate not found");
     }
 
     return profile;
   }
 
-  async updateCandidateProfile(candidateId: number, updates: Partial<typeof candidates.$inferInsert>) {
+  async updateCandidateProfile(
+    candidateId: number,
+    updates: Partial<typeof candidates.$inferInsert>,
+  ) {
     const [updated] = await db
       .update(candidates)
       .set({ ...updates, updatedAt: new Date() })
@@ -57,14 +62,20 @@ export class CandidateManagementService {
     return created;
   }
 
-  async updatePosition(candidateId: number, positionId: number, updates: Partial<InsertCandidatePosition>) {
+  async updatePosition(
+    candidateId: number,
+    positionId: number,
+    updates: Partial<InsertCandidatePosition>,
+  ) {
     const [updated] = await db
       .update(candidatePositions)
       .set({ ...updates, lastUpdated: new Date() })
-      .where(and(
-        eq(candidatePositions.id, positionId),
-        eq(candidatePositions.candidateId, candidateId)
-      ))
+      .where(
+        and(
+          eq(candidatePositions.id, positionId),
+          eq(candidatePositions.candidateId, candidateId),
+        ),
+      )
       .returning();
 
     return updated;
@@ -72,7 +83,7 @@ export class CandidateManagementService {
 
   async getPositions(candidateId: number, category?: string) {
     const conditions = [eq(candidatePositions.candidateId, candidateId)];
-    
+
     if (category) {
       conditions.push(eq(candidatePositions.category, category));
     }
@@ -87,10 +98,12 @@ export class CandidateManagementService {
   async deletePosition(candidateId: number, positionId: number) {
     const [deleted] = await db
       .delete(candidatePositions)
-      .where(and(
-        eq(candidatePositions.id, positionId),
-        eq(candidatePositions.candidateId, candidateId)
-      ))
+      .where(
+        and(
+          eq(candidatePositions.id, positionId),
+          eq(candidatePositions.candidateId, candidateId),
+        ),
+      )
       .returning();
 
     return deleted;
@@ -106,22 +119,28 @@ export class CandidateManagementService {
     return created;
   }
 
-  async updateQA(candidateId: number, qaId: number, updates: Partial<InsertCandidateQA>) {
+  async updateQA(
+    candidateId: number,
+    qaId: number,
+    updates: Partial<InsertCandidateQA>,
+  ) {
     const [updated] = await db
       .update(candidateQA)
       .set({ ...updates, updatedAt: new Date() })
-      .where(and(
-        eq(candidateQA.id, qaId),
-        eq(candidateQA.candidateId, candidateId)
-      ))
+      .where(
+        and(eq(candidateQA.id, qaId), eq(candidateQA.candidateId, candidateId)),
+      )
       .returning();
 
     return updated;
   }
 
-  async getQAs(candidateId: number, filters?: { category?: string; isPublic?: boolean; isPriority?: boolean }) {
+  async getQAs(
+    candidateId: number,
+    filters?: { category?: string; isPublic?: boolean; isPriority?: boolean },
+  ) {
     const conditions = [eq(candidateQA.candidateId, candidateId)];
-    
+
     if (filters?.category) {
       conditions.push(eq(candidateQA.category, filters.category));
     }
@@ -142,10 +161,9 @@ export class CandidateManagementService {
   async deleteQA(candidateId: number, qaId: number) {
     const [deleted] = await db
       .delete(candidateQA)
-      .where(and(
-        eq(candidateQA.id, qaId),
-        eq(candidateQA.candidateId, candidateId)
-      ))
+      .where(
+        and(eq(candidateQA.id, qaId), eq(candidateQA.candidateId, candidateId)),
+      )
       .returning();
 
     return deleted;
@@ -161,22 +179,31 @@ export class CandidateManagementService {
     return created;
   }
 
-  async updateContent(candidateId: number, contentId: number, updates: Partial<InsertCampaignContent>) {
+  async updateContent(
+    candidateId: number,
+    contentId: number,
+    updates: Partial<InsertCampaignContent>,
+  ) {
     const [updated] = await db
       .update(campaignContent)
       .set({ ...updates, updatedAt: new Date() })
-      .where(and(
-        eq(campaignContent.id, contentId),
-        eq(campaignContent.candidateId, candidateId)
-      ))
+      .where(
+        and(
+          eq(campaignContent.id, contentId),
+          eq(campaignContent.candidateId, candidateId),
+        ),
+      )
       .returning();
 
     return updated;
   }
 
-  async getContent(candidateId: number, filters?: { contentType?: string; isPublished?: boolean }) {
+  async getContent(
+    candidateId: number,
+    filters?: { contentType?: string; isPublished?: boolean },
+  ) {
     const conditions = [eq(campaignContent.candidateId, candidateId)];
-    
+
     if (filters?.contentType) {
       conditions.push(eq(campaignContent.contentType, filters.contentType));
     }
@@ -194,15 +221,17 @@ export class CandidateManagementService {
   async publishContent(candidateId: number, contentId: number) {
     const [published] = await db
       .update(campaignContent)
-      .set({ 
-        isPublished: true, 
+      .set({
+        isPublished: true,
         publishDate: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
-      .where(and(
-        eq(campaignContent.id, contentId),
-        eq(campaignContent.candidateId, candidateId)
-      ))
+      .where(
+        and(
+          eq(campaignContent.id, contentId),
+          eq(campaignContent.candidateId, candidateId),
+        ),
+      )
       .returning();
 
     return published;
@@ -211,37 +240,46 @@ export class CandidateManagementService {
   async deleteContent(candidateId: number, contentId: number) {
     const [deleted] = await db
       .delete(campaignContent)
-      .where(and(
-        eq(campaignContent.id, contentId),
-        eq(campaignContent.candidateId, candidateId)
-      ))
+      .where(
+        and(
+          eq(campaignContent.id, contentId),
+          eq(campaignContent.candidateId, candidateId),
+        ),
+      )
       .returning();
 
     return deleted;
   }
 
   // Analytics and Insights
-  async getCandidateAnalytics(candidateId: number, timeframe: '24h' | '7d' | '30d' | '90d' = '7d') {
+  async getCandidateAnalytics(
+    candidateId: number,
+    timeframe: "24h" | "7d" | "30d" | "90d" = "7d",
+  ) {
     const timeframeDays = {
-      '24h': 1,
-      '7d': 7,
-      '30d': 30,
-      '90d': 90
+      "24h": 1,
+      "7d": 7,
+      "30d": 30,
+      "90d": 90,
     };
 
-    const startDate = new Date(Date.now() - timeframeDays[timeframe] * 24 * 60 * 60 * 1000);
+    const startDate = new Date(
+      Date.now() - timeframeDays[timeframe] * 24 * 60 * 60 * 1000,
+    );
 
     // Get interaction metrics
     const interactions = await db
       .select({
         interactionType: voterInteractions.interactionType,
-        count: count()
+        count: count(),
       })
       .from(voterInteractions)
-      .where(and(
-        eq(voterInteractions.candidateId, candidateId),
-        gte(voterInteractions.createdAt, startDate)
-      ))
+      .where(
+        and(
+          eq(voterInteractions.candidateId, candidateId),
+          gte(voterInteractions.createdAt, startDate),
+        ),
+      )
       .groupBy(voterInteractions.interactionType);
 
     // Get content performance
@@ -250,14 +288,16 @@ export class CandidateManagementService {
         contentType: campaignContent.contentType,
         totalViews: sql<number>`sum(${campaignContent.views})`,
         avgEngagement: avg(campaignContent.engagementScore),
-        publishedCount: count()
+        publishedCount: count(),
       })
       .from(campaignContent)
-      .where(and(
-        eq(campaignContent.candidateId, candidateId),
-        eq(campaignContent.isPublished, true),
-        gte(campaignContent.createdAt, startDate)
-      ))
+      .where(
+        and(
+          eq(campaignContent.candidateId, candidateId),
+          eq(campaignContent.isPublished, true),
+          gte(campaignContent.createdAt, startDate),
+        ),
+      )
       .groupBy(campaignContent.contentType);
 
     // Get Q&A performance
@@ -266,27 +306,32 @@ export class CandidateManagementService {
         totalQuestions: count(),
         totalViews: sql<number>`sum(${candidateQA.views})`,
         totalUpvotes: sql<number>`sum(${candidateQA.upvotes})`,
-        avgUpvotes: avg(candidateQA.upvotes)
+        avgUpvotes: avg(candidateQA.upvotes),
       })
       .from(candidateQA)
-      .where(and(
-        eq(candidateQA.candidateId, candidateId),
-        gte(candidateQA.createdAt, startDate)
-      ));
+      .where(
+        and(
+          eq(candidateQA.candidateId, candidateId),
+          gte(candidateQA.createdAt, startDate),
+        ),
+      );
 
     return {
       timeframe,
-      interactions: interactions.reduce((acc, curr) => {
-        acc[curr.interactionType] = curr.count;
-        return acc;
-      }, {} as Record<string, number>),
+      interactions: interactions.reduce(
+        (acc, curr) => {
+          acc[curr.interactionType] = curr.count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       contentMetrics,
       qaMetrics: qaMetrics[0] || {
         totalQuestions: 0,
         totalViews: 0,
         totalUpvotes: 0,
-        avgUpvotes: 0
-      }
+        avgUpvotes: 0,
+      },
     };
   }
 
@@ -297,16 +342,21 @@ export class CandidateManagementService {
     const trends = await db
       .select()
       .from(realTimePolling)
-      .where(and(
-        eq(realTimePolling.candidateId, candidateId),
-        gte(realTimePolling.pollDate, startDate)
-      ))
+      .where(
+        and(
+          eq(realTimePolling.candidateId, candidateId),
+          gte(realTimePolling.pollDate, startDate),
+        ),
+      )
       .orderBy(desc(realTimePolling.pollDate));
 
     return trends;
   }
 
-  async createPollingData(candidateId: number, pollingData: InsertRealTimePolling) {
+  async createPollingData(
+    candidateId: number,
+    pollingData: InsertRealTimePolling,
+  ) {
     const [created] = await db
       .insert(realTimePolling)
       .values({ ...pollingData, candidateId })
@@ -323,12 +373,12 @@ export class CandidateManagementService {
       .returning();
 
     // Update content views if applicable
-    if (interaction.contentId && interaction.interactionType === 'view') {
+    if (interaction.contentId && interaction.interactionType === "view") {
       await db
         .update(campaignContent)
-        .set({ 
+        .set({
           views: sql`${campaignContent.views} + 1`,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(campaignContent.id, interaction.contentId));
     }
@@ -341,10 +391,12 @@ export class CandidateManagementService {
     const [subscription] = await db
       .select()
       .from(candidateSubscriptions)
-      .where(and(
-        eq(candidateSubscriptions.candidateId, candidateId),
-        eq(candidateSubscriptions.isActive, true)
-      ))
+      .where(
+        and(
+          eq(candidateSubscriptions.candidateId, candidateId),
+          eq(candidateSubscriptions.isActive, true),
+        ),
+      )
       .orderBy(desc(candidateSubscriptions.createdAt));
 
     return subscription;
@@ -357,16 +409,16 @@ export class CandidateManagementService {
       .from(candidates)
       .where(eq(candidates.id, candidateId));
 
-    const analytics = await this.getCandidateAnalytics(candidateId, '7d');
+    const analytics = await this.getCandidateAnalytics(candidateId, "7d");
     const subscription = await this.getSubscriptionStatus(candidateId);
     const recentPolling = await this.getPollingTrends(candidateId, 7);
-    
+
     // Get latest Q&A metrics
     const [qaStats] = await db
       .select({
         totalQAs: count(),
         publicQAs: sql<number>`sum(case when ${candidateQA.isPublic} then 1 else 0 end)`,
-        priorityQAs: sql<number>`sum(case when ${candidateQA.isPriority} then 1 else 0 end)`
+        priorityQAs: sql<number>`sum(case when ${candidateQA.isPriority} then 1 else 0 end)`,
       })
       .from(candidateQA)
       .where(eq(candidateQA.candidateId, candidateId));
@@ -375,7 +427,7 @@ export class CandidateManagementService {
     const positionCategories = await db
       .select({
         category: candidatePositions.category,
-        count: count()
+        count: count(),
       })
       .from(candidatePositions)
       .where(eq(candidatePositions.candidateId, candidateId))
@@ -388,15 +440,19 @@ export class CandidateManagementService {
       qaStats,
       positionCategories,
       recentPolling: recentPolling.slice(0, 5), // Last 5 polling entries
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 
   // Search and discovery helpers
-  async searchContent(candidateId: number, query: string, contentType?: string) {
+  async searchContent(
+    candidateId: number,
+    query: string,
+    contentType?: string,
+  ) {
     const conditions = [
       eq(campaignContent.candidateId, candidateId),
-      sql`(${campaignContent.title} ILIKE ${'%' + query + '%'} OR ${campaignContent.content} ILIKE ${'%' + query + '%'})`
+      sql`(${campaignContent.title} ILIKE ${"%" + query + "%"} OR ${campaignContent.content} ILIKE ${"%" + query + "%"})`,
     ];
 
     if (contentType) {
@@ -414,10 +470,12 @@ export class CandidateManagementService {
     return await db
       .select()
       .from(candidateQA)
-      .where(and(
-        eq(candidateQA.candidateId, candidateId),
-        sql`(${candidateQA.question} ILIKE ${'%' + query + '%'} OR ${candidateQA.answer} ILIKE ${'%' + query + '%'})`
-      ))
+      .where(
+        and(
+          eq(candidateQA.candidateId, candidateId),
+          sql`(${candidateQA.question} ILIKE ${"%" + query + "%"} OR ${candidateQA.answer} ILIKE ${"%" + query + "%"})`,
+        ),
+      )
       .orderBy(desc(candidateQA.updatedAt));
   }
 }

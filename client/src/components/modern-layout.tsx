@@ -7,13 +7,19 @@ interface ModernLayoutProps {
   className?: string;
 }
 
-export function ModernLayout({ children, sidebar, className }: ModernLayoutProps) {
+export function ModernLayout({
+  children,
+  sidebar,
+  className,
+}: ModernLayoutProps) {
   return (
-    <div className={cn(
-      "min-h-screen bg-background text-foreground font-sans antialiased",
-      "flex flex-col lg:flex-row",
-      className
-    )}>
+    <div
+      className={cn(
+        "min-h-screen bg-background text-foreground font-sans antialiased",
+        "flex flex-col lg:flex-row",
+        className,
+      )}
+    >
       {/* Sidebar */}
       {sidebar && (
         <aside className="w-full lg:w-80 lg:min-h-screen border-r border-border bg-card/50 backdrop-blur-sm">
@@ -22,24 +28,22 @@ export function ModernLayout({ children, sidebar, className }: ModernLayoutProps
           </div>
         </aside>
       )}
-      
+
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen">
         <div className="flex-1 overflow-y-auto">
-          <div className="w-full max-w-none">
-            {children}
-          </div>
+          <div className="w-full max-w-none">{children}</div>
         </div>
       </main>
     </div>
   );
 }
 
-export function ModernCard({ 
-  children, 
+export function ModernCard({
+  children,
   className,
   hover = true,
-  ...props 
+  ...props
 }: {
   children: ReactNode;
   className?: string;
@@ -51,7 +55,7 @@ export function ModernCard({
         "relative rounded-2xl border border-border-subtle bg-surface-0/80 backdrop-blur-xs",
         "shadow-lg transition-all duration-200",
         hover && "hover:shadow-2xl hover:scale-[1.02]",
-        className
+        className,
       )}
       {...props}
     >
@@ -60,11 +64,11 @@ export function ModernCard({
   );
 }
 
-export function ModernHeader({ 
-  title, 
-  subtitle, 
+export function ModernHeader({
+  title,
+  subtitle,
   actions,
-  className 
+  className,
 }: {
   title: string;
   subtitle?: string;
@@ -77,17 +81,9 @@ export function ModernHeader({
         <h1 className="text-2xl font-semibold tracking-tight text-app-fg">
           {title}
         </h1>
-        {subtitle && (
-          <p className="text-sm text-text-muted">
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className="text-sm text-text-muted">{subtitle}</p>}
       </div>
-      {actions && (
-        <div className="flex items-center gap-3">
-          {actions}
-        </div>
-      )}
+      {actions && <div className="flex items-center gap-3">{actions}</div>}
     </div>
   );
 }

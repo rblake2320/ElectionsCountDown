@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 interface User {
   id: string;
@@ -29,24 +29,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch('/api/auth/user');
+      const response = await fetch("/api/auth/user");
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
       }
     } catch (error) {
-      console.log('Not authenticated');
+      console.log("Not authenticated");
     } finally {
       setIsLoading(false);
     }
   };
 
   const login = () => {
-    window.location.href = '/api/login';
+    window.location.href = "/api/login";
   };
 
   const logout = () => {
-    window.location.href = '/api/logout';
+    window.location.href = "/api/logout";
   };
 
   const value = {
@@ -57,17 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

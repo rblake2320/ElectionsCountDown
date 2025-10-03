@@ -3,7 +3,17 @@ import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Settings, Bell, Grid3X3, List, Loader2, Users, User, LogOut } from "lucide-react";
+import {
+  Search,
+  Settings,
+  Bell,
+  Grid3X3,
+  List,
+  Loader2,
+  Users,
+  User,
+  LogOut,
+} from "lucide-react";
 import FilterSidebar from "@/components/filter-sidebar-new";
 import { ElectionCard } from "@/components/election-card";
 import { VoterInfoLookup } from "@/components/voter-info-lookup";
@@ -14,7 +24,12 @@ import { VersionSwitcher } from "@/components/version-switcher";
 import { useElections, useElectionStats } from "@/hooks/use-elections";
 import { useAuth } from "@/hooks/use-auth";
 import { type ElectionFilters } from "@shared/schema";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -26,26 +41,35 @@ export default function Home() {
     timeRange: undefined,
     party: undefined,
     electionType: undefined,
-    search: undefined
+    search: undefined,
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, isAuthenticated, isLoading: authLoading, login, logout } = useAuth();
-  
-  const queryFilters = useMemo(() => ({
-    state: filters.state,
-    type: filters.type,
-    level: filters.level,
-    timeframe: filters.timeframe,
-    timeRange: filters.timeRange,
-    electionType: filters.electionType,
-    party: filters.party,
-    search: searchQuery || undefined,
-  }), [filters, searchQuery]);
-  
+  const {
+    user,
+    isAuthenticated,
+    isLoading: authLoading,
+    login,
+    logout,
+  } = useAuth();
+
+  const queryFilters = useMemo(
+    () => ({
+      state: filters.state,
+      type: filters.type,
+      level: filters.level,
+      timeframe: filters.timeframe,
+      timeRange: filters.timeRange,
+      electionType: filters.electionType,
+      party: filters.party,
+      search: searchQuery || undefined,
+    }),
+    [filters, searchQuery],
+  );
+
   const { data: elections = [], isLoading, error } = useElections(queryFilters);
-  
+
   const { data: stats } = useElectionStats();
 
   const handleSearchChange = (value: string) => {
@@ -68,8 +92,12 @@ export default function Home() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-destructive mb-2">Error Loading Elections</h2>
-          <p className="text-muted-foreground">Unable to load election data. Please try again later.</p>
+          <h2 className="text-2xl font-bold text-destructive mb-2">
+            Error Loading Elections
+          </h2>
+          <p className="text-muted-foreground">
+            Unable to load election data. Please try again later.
+          </p>
         </div>
       </div>
     );
@@ -89,11 +117,13 @@ export default function Home() {
                 <h1 className="text-xl font-bold">ElectionTracker</h1>
               </div>
               <div className="hidden md:block bg-muted px-3 py-1 rounded-full">
-                <span className="text-sm font-medium text-muted-foreground">Live Dashboard</span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Live Dashboard
+                </span>
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -113,13 +143,13 @@ export default function Home() {
               <Button variant="ghost" size="sm">
                 <Bell className="h-4 w-4" />
               </Button>
-              
+
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm">
                       <User className="h-4 w-4 mr-1" />
-                      {user.email?.split('@')[0] || 'User'}
+                      {user.email?.split("@")[0] || "User"}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -130,8 +160,8 @@ export default function Home() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setShowAuthModal(true)}
                 >
@@ -139,7 +169,7 @@ export default function Home() {
                   Sign In
                 </Button>
               )}
-              
+
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
@@ -150,11 +180,10 @@ export default function Home() {
 
       <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col lg:flex-row gap-6 w-full">
-          
           {/* Filter Sidebar */}
           <aside className="w-full lg:w-80 space-y-6 flex-shrink-0">
             <VersionSwitcher compact={false} />
-            <FilterSidebar 
+            <FilterSidebar
               filters={filters}
               onFiltersChange={handleFiltersChange}
             />
@@ -171,11 +200,9 @@ export default function Home() {
                 <div>
                   <h2 className="text-2xl font-bold">Upcoming Elections</h2>
                   <p className="text-muted-foreground">
-                    {isLoading ? (
-                      "Loading elections..."
-                    ) : (
-                      `Showing ${elections.length} of ${stats?.total || 0} elections`
-                    )}
+                    {isLoading
+                      ? "Loading elections..."
+                      : `Showing ${elections.length} of ${stats?.total || 0} elections`}
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -197,26 +224,26 @@ export default function Home() {
                   </Button>
                 </div>
               </div>
-              
+
               {/* Active Filters Display */}
               {activeFiltersCount > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {filters.timeframe && (
                     <Badge variant="secondary" className="gap-1">
                       Time: {filters.timeframe}
-                      <button 
-                        onClick={() => removeFilter('timeframe')}
+                      <button
+                        onClick={() => removeFilter("timeframe")}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         ×
                       </button>
                     </Badge>
                   )}
-                  {filters.state && filters.state !== 'all' && (
+                  {filters.state && filters.state !== "all" && (
                     <Badge variant="secondary" className="gap-1">
                       State: {filters.state}
-                      <button 
-                        onClick={() => removeFilter('state')}
+                      <button
+                        onClick={() => removeFilter("state")}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         ×
@@ -226,8 +253,8 @@ export default function Home() {
                   {filters.type && (
                     <Badge variant="secondary" className="gap-1">
                       Type: {filters.type}
-                      <button 
-                        onClick={() => removeFilter('type')}
+                      <button
+                        onClick={() => removeFilter("type")}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         ×
@@ -237,8 +264,8 @@ export default function Home() {
                   {filters.level && (
                     <Badge variant="secondary" className="gap-1">
                       Level: {filters.level}
-                      <button 
-                        onClick={() => removeFilter('level')}
+                      <button
+                        onClick={() => removeFilter("level")}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         ×
@@ -248,8 +275,8 @@ export default function Home() {
                   {filters.party && (
                     <Badge variant="secondary" className="gap-1">
                       Party: {filters.party}
-                      <button 
-                        onClick={() => removeFilter('party')}
+                      <button
+                        onClick={() => removeFilter("party")}
                         className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                       >
                         ×
@@ -268,47 +295,65 @@ export default function Home() {
               </div>
             ) : elections.length === 0 ? (
               <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">No Elections Found</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  No Elections Found
+                </h3>
                 <p className="text-muted-foreground mb-4">
-                  Try adjusting your filters or search criteria to find elections.
+                  Try adjusting your filters or search criteria to find
+                  elections.
                 </p>
-                <Button onClick={() => setFilters({
-                  state: undefined,
-                  type: undefined,
-                  level: undefined,
-                  timeframe: undefined,
-                  timeRange: undefined,
-                  party: undefined,
-                  electionType: undefined,
-                  search: undefined
-                })}>Clear All Filters</Button>
+                <Button
+                  onClick={() =>
+                    setFilters({
+                      state: undefined,
+                      type: undefined,
+                      level: undefined,
+                      timeframe: undefined,
+                      timeRange: undefined,
+                      party: undefined,
+                      electionType: undefined,
+                      search: undefined,
+                    })
+                  }
+                >
+                  Clear All Filters
+                </Button>
               </div>
             ) : (
-              <div className={cn(
-                "w-full",
-                viewMode === "grid" 
-                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr"
-                  : "space-y-4 flex flex-col"
-              )}>
+              <div
+                className={cn(
+                  "w-full",
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr"
+                    : "space-y-4 flex flex-col",
+                )}
+              >
                 {elections.map((election) => (
-                  <ElectionCard key={election.id} election={election} viewMode={viewMode} />
+                  <ElectionCard
+                    key={election.id}
+                    election={election}
+                    viewMode={viewMode}
+                  />
                 ))}
               </div>
             )}
 
             {/* Load More */}
-            {elections.length > 0 && stats && elections.length < stats.total && (
-              <div className="text-center py-8">
-                <Button variant="outline">
-                  Load More Elections ({stats.total - elections.length} remaining)
-                </Button>
-              </div>
-            )}
+            {elections.length > 0 &&
+              stats &&
+              elections.length < stats.total && (
+                <div className="text-center py-8">
+                  <Button variant="outline">
+                    Load More Elections ({stats.total - elections.length}{" "}
+                    remaining)
+                  </Button>
+                </div>
+              )}
           </main>
         </div>
       </div>
-      
-      <AuthModal 
+
+      <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onAuth={login}

@@ -31,9 +31,11 @@ export function VoterInfoLookup() {
 
   const voterInfoMutation = useMutation({
     mutationFn: async (searchAddress: string) => {
-      const response = await fetch(`/api/voter-info?address=${encodeURIComponent(searchAddress)}`);
+      const response = await fetch(
+        `/api/voter-info?address=${encodeURIComponent(searchAddress)}`,
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch voter information');
+        throw new Error("Failed to fetch voter information");
       }
       return response.json();
     },
@@ -41,7 +43,7 @@ export function VoterInfoLookup() {
       setVoterInfo(data);
     },
     onError: (error) => {
-      console.error('Error fetching voter info:', error);
+      console.error("Error fetching voter info:", error);
     },
   });
 
@@ -52,7 +54,7 @@ export function VoterInfoLookup() {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -65,7 +67,8 @@ export function VoterInfoLookup() {
           Voter Information Lookup
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Enter your address to find elections and candidates specific to your location
+          Enter your address to find elections and candidates specific to your
+          location
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -77,8 +80,8 @@ export function VoterInfoLookup() {
             onKeyPress={handleKeyPress}
             disabled={voterInfoMutation.isPending}
           />
-          <Button 
-            onClick={handleSearch} 
+          <Button
+            onClick={handleSearch}
             disabled={!address.trim() || voterInfoMutation.isPending}
           >
             {voterInfoMutation.isPending ? (
@@ -93,7 +96,8 @@ export function VoterInfoLookup() {
           <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
             <AlertCircle className="h-4 w-4" />
             <span className="text-sm">
-              Unable to find voter information for this address. Please check the address and try again.
+              Unable to find voter information for this address. Please check
+              the address and try again.
             </span>
           </div>
         )}
@@ -101,11 +105,18 @@ export function VoterInfoLookup() {
         {voterInfo && voterInfo.election && (
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">{voterInfo.election.title || 'Election Information'}</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">
+                {voterInfo.election.title || "Election Information"}
+              </h3>
               <div className="text-sm text-blue-700">
-                <p>Date: {voterInfo.election.date ? new Date(voterInfo.election.date).toLocaleDateString() : 'Date TBD'}</p>
-                <p>Location: {voterInfo.election.location || 'Location TBD'}</p>
-                <p>State: {voterInfo.election.state || 'State TBD'}</p>
+                <p>
+                  Date:{" "}
+                  {voterInfo.election.date
+                    ? new Date(voterInfo.election.date).toLocaleDateString()
+                    : "Date TBD"}
+                </p>
+                <p>Location: {voterInfo.election.location || "Location TBD"}</p>
+                <p>State: {voterInfo.election.state || "State TBD"}</p>
               </div>
             </div>
 
@@ -118,7 +129,10 @@ export function VoterInfoLookup() {
                       <h5 className="font-medium mb-2">{contest.office}</h5>
                       <div className="space-y-2">
                         {contest.candidates.map((candidate, candidateIndex) => (
-                          <div key={candidateIndex} className="flex items-center justify-between">
+                          <div
+                            key={candidateIndex}
+                            className="flex items-center justify-between"
+                          >
                             <div className="flex items-center gap-2">
                               <span>{candidate.name}</span>
                               <Badge variant="outline">{candidate.party}</Badge>

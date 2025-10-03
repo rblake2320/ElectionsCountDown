@@ -1,7 +1,7 @@
-import { db } from './db';
-import { 
-  interactionLogs, 
-  engagementMetrics, 
+import { db } from "./db";
+import {
+  interactionLogs,
+  engagementMetrics,
   userPreferences,
   userDemographics,
   nonVoterTracking,
@@ -9,9 +9,9 @@ import {
   type InsertEngagementMetrics,
   type InsertUserPreferences,
   type InsertUserDemographics,
-  type InsertNonVoterTracking
-} from '@shared/schema';
-import { eq } from 'drizzle-orm';
+  type InsertNonVoterTracking,
+} from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 export class AnalyticsService {
   // Track user interactions with GDPR compliance
@@ -24,7 +24,7 @@ export class AnalyticsService {
 
       await db.insert(interactionLogs).values(data);
     } catch (error) {
-      console.error('Error logging interaction:', error);
+      console.error("Error logging interaction:", error);
     }
   }
 
@@ -33,12 +33,15 @@ export class AnalyticsService {
     try {
       await db.insert(engagementMetrics).values(data);
     } catch (error) {
-      console.error('Error recording engagement:', error);
+      console.error("Error recording engagement:", error);
     }
   }
 
   // Save user preferences with consent tracking
-  async updateUserPreferences(userId: number, preferences: Partial<InsertUserPreferences>): Promise<void> {
+  async updateUserPreferences(
+    userId: number,
+    preferences: Partial<InsertUserPreferences>,
+  ): Promise<void> {
     try {
       const existingPrefs = await db
         .select()
@@ -51,22 +54,23 @@ export class AnalyticsService {
           .set({ ...preferences, updatedAt: new Date() })
           .where(eq(userPreferences.userId, userId));
       } else {
-        await db
-          .insert(userPreferences)
-          .values({ 
-            userId, 
-            ...preferences,
-            consentGiven: true,
-            consentDate: new Date()
-          });
+        await db.insert(userPreferences).values({
+          userId,
+          ...preferences,
+          consentGiven: true,
+          consentDate: new Date(),
+        });
       }
     } catch (error) {
-      console.error('Error updating user preferences:', error);
+      console.error("Error updating user preferences:", error);
     }
   }
 
   // Save user demographics data
-  async updateUserDemographics(userId: number, demographics: Partial<InsertUserDemographics>): Promise<void> {
+  async updateUserDemographics(
+    userId: number,
+    demographics: Partial<InsertUserDemographics>,
+  ): Promise<void> {
     try {
       const existing = await db
         .select()
@@ -79,17 +83,18 @@ export class AnalyticsService {
           .set({ ...demographics, updatedAt: new Date() })
           .where(eq(userDemographics.userId, userId));
       } else {
-        await db
-          .insert(userDemographics)
-          .values({ userId, ...demographics });
+        await db.insert(userDemographics).values({ userId, ...demographics });
       }
     } catch (error) {
-      console.error('Error updating user demographics:', error);
+      console.error("Error updating user demographics:", error);
     }
   }
 
   // Track non-voter engagement
-  async updateNonVoterTracking(userId: number, data: Partial<InsertNonVoterTracking>): Promise<void> {
+  async updateNonVoterTracking(
+    userId: number,
+    data: Partial<InsertNonVoterTracking>,
+  ): Promise<void> {
     try {
       const existing = await db
         .select()
@@ -102,12 +107,10 @@ export class AnalyticsService {
           .set({ ...data, updatedAt: new Date() })
           .where(eq(nonVoterTracking.userId, userId));
       } else {
-        await db
-          .insert(nonVoterTracking)
-          .values({ userId, ...data });
+        await db.insert(nonVoterTracking).values({ userId, ...data });
       }
     } catch (error) {
-      console.error('Error updating non-voter tracking:', error);
+      console.error("Error updating non-voter tracking:", error);
     }
   }
 
@@ -120,25 +123,25 @@ export class AnalyticsService {
         totalUsers: 0,
         averageTimeOnPage: 0,
         mostViewedElections: [],
-        peakUsageTimes: []
+        peakUsageTimes: [],
       };
     } catch (error) {
-      console.error('Error getting engagement insights:', error);
+      console.error("Error getting engagement insights:", error);
       return null;
     }
   }
 
   // GDPR compliance: anonymize IP addresses
   private anonymizeIpAddress(ip: string): string {
-    const parts = ip.split('.');
+    const parts = ip.split(".");
     if (parts.length === 4) {
       // Replace last octet with 0 for IPv4
       return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
     }
     // For IPv6, keep only first 64 bits
-    if (ip.includes(':')) {
-      const segments = ip.split(':');
-      return segments.slice(0, 4).join(':') + '::';
+    if (ip.includes(":")) {
+      const segments = ip.split(":");
+      return segments.slice(0, 4).join(":") + "::";
     }
     return ip;
   }
@@ -165,10 +168,10 @@ export class AnalyticsService {
         preferences: preferences || null,
         demographics: demographics || null,
         nonVoterData: nonVoter || null,
-        exportDate: new Date().toISOString()
+        exportDate: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('Error exporting user data:', error);
+      console.error("Error exporting user data:", error);
       return null;
     }
   }
@@ -181,12 +184,14 @@ export class AnalyticsService {
         db.delete(userDemographics).where(eq(userDemographics.userId, userId)),
         db.delete(nonVoterTracking).where(eq(nonVoterTracking.userId, userId)),
         db.delete(interactionLogs).where(eq(interactionLogs.userId, userId)),
-        db.delete(engagementMetrics).where(eq(engagementMetrics.userId, userId))
+        db
+          .delete(engagementMetrics)
+          .where(eq(engagementMetrics.userId, userId)),
       ]);
-      
+
       return true;
     } catch (error) {
-      console.error('Error deleting user data:', error);
+      console.error("Error deleting user data:", error);
       return false;
     }
   }

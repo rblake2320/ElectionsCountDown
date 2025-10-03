@@ -1,26 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
-import { type Election, type Candidate, type ElectionFilters } from "@shared/schema";
+import {
+  type Election,
+  type Candidate,
+  type ElectionFilters,
+} from "@shared/schema";
 
 export function useElections(filters?: ElectionFilters) {
   return useQuery({
-    queryKey: ['/api/elections', JSON.stringify(filters)],
+    queryKey: ["/api/elections", JSON.stringify(filters)],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
+          if (value !== undefined && value !== null && value !== "") {
             if (Array.isArray(value)) {
-              value.forEach(v => params.append(key, v));
+              value.forEach((v) => params.append(key, v));
             } else {
               params.append(key, value.toString());
             }
           }
         });
       }
-      
+
       const response = await fetch(`/api/elections?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch elections');
+        throw new Error("Failed to fetch elections");
       }
       return response.json() as Promise<Election[]>;
     },
@@ -33,11 +37,11 @@ export function useElections(filters?: ElectionFilters) {
 
 export function useElection(id: number) {
   return useQuery({
-    queryKey: ['/api/elections', id],
+    queryKey: ["/api/elections", id],
     queryFn: async () => {
       const response = await fetch(`/api/elections/${id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch election');
+        throw new Error("Failed to fetch election");
       }
       return response.json() as Promise<Election>;
     },
@@ -47,11 +51,11 @@ export function useElection(id: number) {
 
 export function useCandidates(electionId: number) {
   return useQuery({
-    queryKey: ['/api/elections', electionId, 'candidates'],
+    queryKey: ["/api/elections", electionId, "candidates"],
     queryFn: async () => {
       const response = await fetch(`/api/elections/${electionId}/candidates`);
       if (!response.ok) {
-        throw new Error('Failed to fetch candidates');
+        throw new Error("Failed to fetch candidates");
       }
       return response.json() as Promise<Candidate[]>;
     },
@@ -65,11 +69,11 @@ export function useCandidates(electionId: number) {
 
 export function useElectionResults(electionId: number) {
   return useQuery({
-    queryKey: ['/api/elections', electionId, 'results'],
+    queryKey: ["/api/elections", electionId, "results"],
     queryFn: async () => {
       const response = await fetch(`/api/elections/${electionId}/results`);
       if (!response.ok) {
-        throw new Error('Failed to fetch election results');
+        throw new Error("Failed to fetch election results");
       }
       return response.json();
     },
@@ -83,11 +87,11 @@ export function useElectionResults(electionId: number) {
 
 export function useElectionStats() {
   return useQuery({
-    queryKey: ['/api/stats'],
+    queryKey: ["/api/stats"],
     queryFn: async () => {
-      const response = await fetch('/api/stats');
+      const response = await fetch("/api/stats");
       if (!response.ok) {
-        throw new Error('Failed to fetch election stats');
+        throw new Error("Failed to fetch election stats");
       }
       return response.json() as Promise<{
         total: number;

@@ -3,9 +3,23 @@ import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Calendar, MapPin, Users, Trophy, TrendingUp, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Users,
+  Trophy,
+  TrendingUp,
+  BarChart3,
+} from "lucide-react";
 import { format } from "date-fns";
 import { CountdownTimer } from "@/components/countdown-timer";
 import { CandidateComparisonWizard } from "@/components/candidate-comparison-wizard";
@@ -24,9 +38,13 @@ export default function ElectionDetails() {
     enabled: !!electionId,
   });
 
-  const { data: candidates = [], isLoading: candidatesLoading } = useCandidates(electionId);
+  const { data: candidates = [], isLoading: candidatesLoading } =
+    useCandidates(electionId);
 
-  const { data: pollingData, isLoading: pollingLoading } = usePollingTrends(electionId, "90");
+  const { data: pollingData, isLoading: pollingLoading } = usePollingTrends(
+    electionId,
+    "90",
+  );
 
   if (electionLoading || candidatesLoading) {
     return (
@@ -63,7 +81,7 @@ export default function ElectionDetails() {
 
   const electionDate = new Date(election.date);
   const isUpcoming = electionDate > new Date();
-  const hasResults = candidates.some(c => c.votePercentage !== null);
+  const hasResults = candidates.some((c) => c.votePercentage !== null);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -101,15 +119,23 @@ export default function ElectionDetails() {
         <CardContent className="pt-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Badge variant={isUpcoming ? "secondary" : hasResults ? "default" : "outline"}>
-                {isUpcoming ? "Upcoming" : hasResults ? "Results Available" : "Past Election"}
+              <Badge
+                variant={
+                  isUpcoming ? "secondary" : hasResults ? "default" : "outline"
+                }
+              >
+                {isUpcoming
+                  ? "Upcoming"
+                  : hasResults
+                    ? "Results Available"
+                    : "Past Election"}
               </Badge>
               {election.type && (
                 <Badge variant="outline">{election.type}</Badge>
               )}
             </div>
             {isUpcoming && (
-              <CountdownTimer 
+              <CountdownTimer
                 targetDate={election.date}
                 className="text-sm font-medium"
               />
@@ -119,7 +145,11 @@ export default function ElectionDetails() {
       </Card>
 
       {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="polling">Polling Trends</TabsTrigger>
@@ -142,7 +172,10 @@ export default function ElectionDetails() {
             <CardContent>
               <div className="space-y-4">
                 {candidates.map((candidate) => (
-                  <div key={candidate.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={candidate.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-3">
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white">
@@ -222,9 +255,11 @@ export default function ElectionDetails() {
                         {candidate.description}
                       </p>
                     )}
-                    
+
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Current Support:</span>
+                      <span className="text-sm font-medium">
+                        Current Support:
+                      </span>
                       <div className="flex items-center gap-2">
                         {candidate.votePercentage && (
                           <Badge variant="default">
@@ -241,7 +276,7 @@ export default function ElectionDetails() {
 
                     {candidate.website && (
                       <div>
-                        <a 
+                        <a
                           href={candidate.website}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -281,7 +316,8 @@ export default function ElectionDetails() {
                 <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Advanced election analysis coming soon</p>
                 <p className="text-sm mt-2">
-                  This will include AI-powered insights, voting patterns, and predictive analytics
+                  This will include AI-powered insights, voting patterns, and
+                  predictive analytics
                 </p>
               </div>
             </CardContent>

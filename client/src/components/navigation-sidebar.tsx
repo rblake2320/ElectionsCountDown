@@ -1,6 +1,16 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Home, Users, Building2, BarChart3, Radio, Globe, Database, Calendar, Shield } from "lucide-react";
+import {
+  Home,
+  Users,
+  Building2,
+  BarChart3,
+  Radio,
+  Globe,
+  Database,
+  Calendar,
+  Shield,
+} from "lucide-react";
 
 const navigationItems = [
   { label: "Elections", path: "/", icon: Home },
@@ -26,7 +36,7 @@ export function NavigationSidebar() {
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
-          
+
           return (
             <Link
               key={item.path}
@@ -34,9 +44,9 @@ export function NavigationSidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-all duration-200",
                 "hover:bg-accent hover:text-accent-foreground",
-                isActive 
-                  ? "bg-primary text-primary-foreground shadow-sm" 
-                  : "text-muted-foreground hover:text-foreground"
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4 flex-shrink-0" />

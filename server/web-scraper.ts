@@ -1,6 +1,6 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
-import fetch from 'node-fetch';
-import * as cheerio from 'cheerio';
+import puppeteer, { Browser, Page } from "puppeteer";
+import fetch from "node-fetch";
+import * as cheerio from "cheerio";
 
 export interface ScrapedElectionData {
   title: string;
@@ -26,16 +26,20 @@ export class ElectionWebScraper {
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     try {
       this.browser = await puppeteer.launch({
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+        ],
       });
       this.isInitialized = true;
-      console.log('Election web scraper initialized successfully');
+      console.log("Election web scraper initialized successfully");
     } catch (error) {
-      console.error('Failed to initialize web scraper:', error);
+      console.error("Failed to initialize web scraper:", error);
       throw error;
     }
   }
@@ -47,26 +51,43 @@ export class ElectionWebScraper {
 
     try {
       const page = await this.browser!.newPage();
-      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
-      
+      await page.setUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      );
+
       // Navigate to the election results page
-      await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-      
+      await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+
       // Extract election data
       const electionData = await page.evaluate(() => {
         const extractText = (selector: string): string => {
           const element = document.querySelector(selector);
-          return element?.textContent?.trim() || '';
+          return element?.textContent?.trim() || "";
         };
 
         // Common selectors for election sites
-        const titleSelectors = ['h1', '.election-title', '.race-title', '[data-election-title]'];
-        const dateSelectors = ['.election-date', '.date', '[data-date]', '.race-date'];
-        const locationSelectors = ['.location', '.district', '.constituency', '[data-location]'];
-        
-        let title = '';
-        let date = '';
-        let location = '';
+        const titleSelectors = [
+          "h1",
+          ".election-title",
+          ".race-title",
+          "[data-election-title]",
+        ];
+        const dateSelectors = [
+          ".election-date",
+          ".date",
+          "[data-date]",
+          ".race-date",
+        ];
+        const locationSelectors = [
+          ".location",
+          ".district",
+          ".constituency",
+          "[data-location]",
+        ];
+
+        let title = "";
+        let date = "";
+        let location = "";
 
         for (const selector of titleSelectors) {
           title = extractText(selector);
@@ -84,21 +105,42 @@ export class ElectionWebScraper {
         }
 
         // Extract candidate results if available
-        const candidates: Array<{name: string, party: string, votes?: number, percentage?: number}> = [];
-        const candidateRows = document.querySelectorAll('.candidate, .result-row, tr[data-candidate]');
-        
-        candidateRows.forEach(row => {
-          const nameEl = row.querySelector('.name, .candidate-name, td:first-child');
-          const partyEl = row.querySelector('.party, .candidate-party, .affiliation');
-          const votesEl = row.querySelector('.votes, .vote-count, .total-votes');
-          const percentEl = row.querySelector('.percentage, .percent, .vote-percent');
+        const candidates: Array<{
+          name: string;
+          party: string;
+          votes?: number;
+          percentage?: number;
+        }> = [];
+        const candidateRows = document.querySelectorAll(
+          ".candidate, .result-row, tr[data-candidate]",
+        );
+
+        candidateRows.forEach((row) => {
+          const nameEl = row.querySelector(
+            ".name, .candidate-name, td:first-child",
+          );
+          const partyEl = row.querySelector(
+            ".party, .candidate-party, .affiliation",
+          );
+          const votesEl = row.querySelector(
+            ".votes, .vote-count, .total-votes",
+          );
+          const percentEl = row.querySelector(
+            ".percentage, .percent, .vote-percent",
+          );
 
           if (nameEl?.textContent?.trim()) {
             candidates.push({
               name: nameEl.textContent.trim(),
-              party: partyEl?.textContent?.trim() || 'Unknown',
-              votes: votesEl?.textContent ? parseInt(votesEl.textContent.replace(/[^\d]/g, '') || '0') : undefined,
-              percentage: percentEl?.textContent ? parseFloat(percentEl.textContent.replace(/[^\d.]/g, '') || '0') : undefined
+              party: partyEl?.textContent?.trim() || "Unknown",
+              votes: votesEl?.textContent
+                ? parseInt(votesEl.textContent.replace(/[^\d]/g, "") || "0")
+                : undefined,
+              percentage: percentEl?.textContent
+                ? parseFloat(
+                    percentEl.textContent.replace(/[^\d.]/g, "") || "0",
+                  )
+                : undefined,
             });
           }
         });
@@ -115,21 +157,24 @@ export class ElectionWebScraper {
       // Determine election type and level from title and URL
       const type = this.determineElectionType(electionData.title, url);
       const level = this.determineElectionLevel(electionData.title, url);
-      const state = this.extractState(electionData.title, electionData.location, url);
+      const state = this.extractState(
+        electionData.title,
+        electionData.location,
+        url,
+      );
 
       return {
         title: electionData.title,
         date: electionData.date || new Date().toISOString(),
-        location: electionData.location || 'Unknown',
+        location: electionData.location || "Unknown",
         state,
         type,
         level,
         description: `Real-time election data from ${url}`,
         candidates: electionData.candidates,
         resultsComplete: electionData.candidates.length > 0,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       };
-
     } catch (error) {
       console.error(`Failed to scrape election site ${url}:`, error);
       return null;
@@ -145,23 +190,23 @@ export class ElectionWebScraper {
       const elections: ScrapedElectionData[] = [];
 
       // Parse election listings from common feed formats
-      $('.election-item, .race-item, .contest').each((_, element) => {
+      $(".election-item, .race-item, .contest").each((_, element) => {
         const $el = $(element);
-        
-        const title = $el.find('.title, .name, h3, h4').first().text().trim();
-        const date = $el.find('.date, .election-date').first().text().trim();
-        const location = $el.find('.location, .district').first().text().trim();
+
+        const title = $el.find(".title, .name, h3, h4").first().text().trim();
+        const date = $el.find(".date, .election-date").first().text().trim();
+        const location = $el.find(".location, .district").first().text().trim();
 
         if (title) {
           elections.push({
             title,
             date: date || new Date().toISOString(),
-            location: location || 'Unknown',
+            location: location || "Unknown",
             state: this.extractState(title, location, feedUrl),
             type: this.determineElectionType(title, feedUrl),
             level: this.determineElectionLevel(title, feedUrl),
             description: `Election data from feed: ${feedUrl}`,
-            lastUpdated: new Date()
+            lastUpdated: new Date(),
           });
         }
       });
@@ -173,7 +218,9 @@ export class ElectionWebScraper {
     }
   }
 
-  async monitorElectionResults(urls: string[]): Promise<Map<string, ScrapedElectionData>> {
+  async monitorElectionResults(
+    urls: string[],
+  ): Promise<Map<string, ScrapedElectionData>> {
     const results = new Map<string, ScrapedElectionData>();
 
     await Promise.allSettled(
@@ -182,7 +229,7 @@ export class ElectionWebScraper {
         if (data) {
           results.set(url, data);
         }
-      })
+      }),
     );
 
     return results;
@@ -192,48 +239,103 @@ export class ElectionWebScraper {
     const titleLower = title.toLowerCase();
     const urlLower = url.toLowerCase();
 
-    if (titleLower.includes('primary') || urlLower.includes('primary')) return 'Primary';
-    if (titleLower.includes('special') || urlLower.includes('special')) return 'Special';
-    if (titleLower.includes('runoff') || urlLower.includes('runoff')) return 'Runoff';
-    return 'General';
+    if (titleLower.includes("primary") || urlLower.includes("primary"))
+      return "Primary";
+    if (titleLower.includes("special") || urlLower.includes("special"))
+      return "Special";
+    if (titleLower.includes("runoff") || urlLower.includes("runoff"))
+      return "Runoff";
+    return "General";
   }
 
   private determineElectionLevel(title: string, url: string): string {
     const titleLower = title.toLowerCase();
     const urlLower = url.toLowerCase();
 
-    if (titleLower.includes('congress') || titleLower.includes('senate') || 
-        titleLower.includes('house') || urlLower.includes('federal')) return 'Federal';
-    if (titleLower.includes('governor') || titleLower.includes('state') || 
-        titleLower.includes('legislature')) return 'State';
-    return 'Local';
+    if (
+      titleLower.includes("congress") ||
+      titleLower.includes("senate") ||
+      titleLower.includes("house") ||
+      urlLower.includes("federal")
+    )
+      return "Federal";
+    if (
+      titleLower.includes("governor") ||
+      titleLower.includes("state") ||
+      titleLower.includes("legislature")
+    )
+      return "State";
+    return "Local";
   }
 
   private extractState(title: string, location: string, url: string): string {
     // State abbreviation mapping
     const stateAbbreviations: { [key: string]: string } = {
-      'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
-      'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
-      'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
-      'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
-      'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
-      'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
-      'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
-      'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-      'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
-      'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
+      Alabama: "AL",
+      Alaska: "AK",
+      Arizona: "AZ",
+      Arkansas: "AR",
+      California: "CA",
+      Colorado: "CO",
+      Connecticut: "CT",
+      Delaware: "DE",
+      Florida: "FL",
+      Georgia: "GA",
+      Hawaii: "HI",
+      Idaho: "ID",
+      Illinois: "IL",
+      Indiana: "IN",
+      Iowa: "IA",
+      Kansas: "KS",
+      Kentucky: "KY",
+      Louisiana: "LA",
+      Maine: "ME",
+      Maryland: "MD",
+      Massachusetts: "MA",
+      Michigan: "MI",
+      Minnesota: "MN",
+      Mississippi: "MS",
+      Missouri: "MO",
+      Montana: "MT",
+      Nebraska: "NE",
+      Nevada: "NV",
+      "New Hampshire": "NH",
+      "New Jersey": "NJ",
+      "New Mexico": "NM",
+      "New York": "NY",
+      "North Carolina": "NC",
+      "North Dakota": "ND",
+      Ohio: "OH",
+      Oklahoma: "OK",
+      Oregon: "OR",
+      Pennsylvania: "PA",
+      "Rhode Island": "RI",
+      "South Carolina": "SC",
+      "South Dakota": "SD",
+      Tennessee: "TN",
+      Texas: "TX",
+      Utah: "UT",
+      Vermont: "VT",
+      Virginia: "VA",
+      Washington: "WA",
+      "West Virginia": "WV",
+      Wisconsin: "WI",
+      Wyoming: "WY",
     };
 
     const text = `${title} ${location} ${url}`.toLowerCase();
-    
+
     // Check for state names or abbreviations
     for (const [stateName, stateAbbr] of Object.entries(stateAbbreviations)) {
-      if (text.includes(stateName.toLowerCase()) || text.includes(stateAbbr.toLowerCase())) {
+      if (
+        text.includes(stateName.toLowerCase()) ||
+        text.includes(stateAbbr.toLowerCase())
+      ) {
         return stateAbbr;
       }
     }
 
-    return 'Unknown';
+    return "Unknown";
   }
 
   async destroy(): Promise<void> {

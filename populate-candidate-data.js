@@ -5,8 +5,8 @@
  * Fixes critical issue where elections have zero candidates
  */
 
-import { db } from './server/db.js';
-import { elections, candidates } from './shared/schema.js';
+import { db } from "./server/db.js";
+import { elections, candidates } from "./shared/schema.js";
 
 const sampleCandidates = [
   // Ohio Special Election - District 6 (ID: 199)
@@ -17,16 +17,16 @@ const sampleCandidates = [
     description: "Ohio State Senator and businessman",
     pollingSupport: 52,
     isIncumbent: false,
-    website: "https://michaelrulli.com"
+    website: "https://michaelrulli.com",
   },
   {
     electionId: 199,
-    name: "Michael Kripchak", 
+    name: "Michael Kripchak",
     party: "Democratic",
     description: "Local government official and community leader",
     pollingSupport: 45,
     isIncumbent: false,
-    website: null
+    website: null,
   },
   // Add candidates for other key elections
   {
@@ -36,16 +36,16 @@ const sampleCandidates = [
     description: "Former state representative",
     pollingSupport: 48,
     isIncumbent: false,
-    website: null
+    website: null,
   },
   {
     electionId: 200,
     name: "Robert Chen",
-    party: "Republican", 
+    party: "Republican",
     description: "Business owner and city council member",
     pollingSupport: 47,
     isIncumbent: false,
-    website: null
+    website: null,
   },
   {
     electionId: 201,
@@ -54,16 +54,16 @@ const sampleCandidates = [
     description: "Education advocate and former teacher",
     pollingSupport: 51,
     isIncumbent: true,
-    website: null
+    website: null,
   },
   {
     electionId: 201,
     name: "James Wilson",
     party: "Republican",
-    description: "Local attorney and community volunteer", 
+    description: "Local attorney and community volunteer",
     pollingSupport: 44,
     isIncumbent: false,
-    website: null
+    website: null,
   },
   {
     electionId: 202,
@@ -72,7 +72,7 @@ const sampleCandidates = [
     description: "Healthcare administrator",
     pollingSupport: 49,
     isIncumbent: false,
-    website: null
+    website: null,
   },
   {
     electionId: 202,
@@ -81,45 +81,46 @@ const sampleCandidates = [
     description: "Small business owner",
     pollingSupport: 46,
     isIncumbent: false,
-    website: null
-  }
+    website: null,
+  },
 ];
 
 async function populateCandidates() {
-  console.log('Populating candidate data to fix missing candidates issue...');
-  
+  console.log("Populating candidate data to fix missing candidates issue...");
+
   try {
     // Clear existing candidates to ensure clean data
     await db.delete(candidates);
-    console.log('Cleared existing candidate data');
-    
+    console.log("Cleared existing candidate data");
+
     // Insert sample candidates
     for (const candidate of sampleCandidates) {
       await db.insert(candidates).values(candidate);
     }
-    
+
     console.log(`Successfully inserted ${sampleCandidates.length} candidates`);
-    
+
     // Verify the data
     const candidateCount = await db.select().from(candidates);
     console.log(`Total candidates in database: ${candidateCount.length}`);
-    
+
     // Show candidates by election
     const electionsWithCandidates = await db
       .select({
         electionId: candidates.electionId,
-        count: 'COUNT(*)'
+        count: "COUNT(*)",
       })
       .from(candidates)
       .groupBy(candidates.electionId);
-    
-    console.log('Candidates per election:');
+
+    console.log("Candidates per election:");
     for (const result of electionsWithCandidates) {
-      console.log(`  Election ${result.electionId}: ${result.count} candidates`);
+      console.log(
+        `  Election ${result.electionId}: ${result.count} candidates`,
+      );
     }
-    
   } catch (error) {
-    console.error('Error populating candidates:', error);
+    console.error("Error populating candidates:", error);
   }
 }
 

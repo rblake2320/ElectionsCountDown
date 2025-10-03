@@ -1,26 +1,25 @@
-import { db } from './db';
-import { cacheService } from './cache-service';
-import { dataArchivalService } from './data-archival-service';
+import { db } from "./db";
+import { cacheService } from "./cache-service";
+import { dataArchivalService } from "./data-archival-service";
 
 export class DatabaseOptimizationService {
-  
   // Run database maintenance tasks
   async runMaintenance(): Promise<void> {
-    console.log('Starting database optimization maintenance...');
-    
+    console.log("Starting database optimization maintenance...");
+
     try {
       // Update table statistics for query planner
       await this.updateTableStatistics();
-      
+
       // Run archival process
       await dataArchivalService.runFullArchival();
-      
+
       // Vacuum and analyze tables
       await this.optimizeTables();
-      
-      console.log('Database optimization completed successfully');
+
+      console.log("Database optimization completed successfully");
     } catch (error) {
-      console.error('Error during database optimization:', error);
+      console.error("Error during database optimization:", error);
       throw error;
     }
   }
@@ -28,10 +27,15 @@ export class DatabaseOptimizationService {
   // Update table statistics for better query planning
   private async updateTableStatistics(): Promise<void> {
     const tables = [
-      'elections', 'users', 'user_sessions', 'watchlists', 
-      'interaction_logs', 'engagement_metrics', 'campaign_accounts'
+      "elections",
+      "users",
+      "user_sessions",
+      "watchlists",
+      "interaction_logs",
+      "engagement_metrics",
+      "campaign_accounts",
     ];
-    
+
     for (const table of tables) {
       try {
         await db.execute(`ANALYZE ${table}`);
@@ -45,9 +49,12 @@ export class DatabaseOptimizationService {
   // Optimize table storage and update statistics
   private async optimizeTables(): Promise<void> {
     const tables = [
-      'elections', 'interaction_logs', 'engagement_metrics', 'campaign_access_logs'
+      "elections",
+      "interaction_logs",
+      "engagement_metrics",
+      "campaign_access_logs",
     ];
-    
+
     for (const table of tables) {
       try {
         // Vacuum table to reclaim space
@@ -107,10 +114,10 @@ export class DatabaseOptimizationService {
         columnStats: metrics.rows,
         indexUsage: indexUsage.rows,
         tableStats: tableStats.rows,
-        cacheStats: cacheService.getCacheStats()
+        cacheStats: cacheService.getCacheStats(),
       };
     } catch (error) {
-      console.error('Error getting performance metrics:', error);
+      console.error("Error getting performance metrics:", error);
       return null;
     }
   }
@@ -133,37 +140,40 @@ export class DatabaseOptimizationService {
 
       return {
         slowQueries: slowQueries.rows || [],
-        recommendations: this.getOptimizationRecommendations()
+        recommendations: this.getOptimizationRecommendations(),
       };
     } catch (error) {
-      console.log('pg_stat_statements extension not available');
+      console.log("pg_stat_statements extension not available");
       return {
         slowQueries: [],
-        recommendations: this.getOptimizationRecommendations()
+        recommendations: this.getOptimizationRecommendations(),
       };
     }
   }
 
   private getOptimizationRecommendations(): string[] {
     return [
-      'All recommended indexes have been created for elections, users, and analytics tables',
-      'Partitioning implemented for time-series data (interaction_logs)',
-      'Caching system active with appropriate TTL values',
-      'Data archival process configured for 90+ day old analytics',
-      'Regular VACUUM and ANALYZE scheduled for table optimization'
+      "All recommended indexes have been created for elections, users, and analytics tables",
+      "Partitioning implemented for time-series data (interaction_logs)",
+      "Caching system active with appropriate TTL values",
+      "Data archival process configured for 90+ day old analytics",
+      "Regular VACUUM and ANALYZE scheduled for table optimization",
     ];
   }
 
   // Schedule regular maintenance (would be called by cron in production)
   scheduleMaintenanceTask(): NodeJS.Timeout {
     // Run maintenance every 6 hours
-    return setInterval(async () => {
-      try {
-        await this.runMaintenance();
-      } catch (error) {
-        console.error('Scheduled maintenance failed:', error);
-      }
-    }, 6 * 60 * 60 * 1000);
+    return setInterval(
+      async () => {
+        try {
+          await this.runMaintenance();
+        } catch (error) {
+          console.error("Scheduled maintenance failed:", error);
+        }
+      },
+      6 * 60 * 60 * 1000,
+    );
   }
 }
 

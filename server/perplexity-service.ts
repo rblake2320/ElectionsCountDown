@@ -25,37 +25,41 @@ export interface PerplexityResponse {
 
 export class PerplexityService {
   private apiKey: string;
-  private baseUrl = 'https://api.perplexity.ai/chat/completions';
+  private baseUrl = "https://api.perplexity.ai/chat/completions";
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
   }
 
-  private async makeRequest(messages: Array<{role: string, content: string}>): Promise<PerplexityResponse> {
+  private async makeRequest(
+    messages: Array<{ role: string; content: string }>,
+  ): Promise<PerplexityResponse> {
     const response = await fetch(this.baseUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: 'llama-3.1-sonar-small-128k-online',
+        model: "llama-3.1-sonar-small-128k-online",
         messages: messages,
         max_tokens: 1000,
         temperature: 0.2,
         top_p: 0.9,
         return_images: false,
         return_related_questions: false,
-        search_recency_filter: 'month',
+        search_recency_filter: "month",
         top_k: 0,
         stream: false,
         presence_penalty: 0,
-        frequency_penalty: 1
+        frequency_penalty: 1,
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Perplexity API error: ${response.status} ${response.statusText}`,
+      );
     }
 
     return response.json();
@@ -65,19 +69,20 @@ export class PerplexityService {
     try {
       const messages = [
         {
-          role: 'system',
-          content: 'You are an expert on U.S. elections. Provide comprehensive, accurate information about upcoming elections with specific dates, locations, and details. Focus on authentic, verifiable election data.'
+          role: "system",
+          content:
+            "You are an expert on U.S. elections. Provide comprehensive, accurate information about upcoming elections with specific dates, locations, and details. Focus on authentic, verifiable election data.",
         },
         {
-          role: 'user',
-          content: query
-        }
+          role: "user",
+          content: query,
+        },
       ];
 
       const response = await this.makeRequest(messages);
-      return response.choices[0]?.message?.content || '';
+      return response.choices[0]?.message?.content || "";
     } catch (error) {
-      console.error('Error searching elections with Perplexity:', error);
+      console.error("Error searching elections with Perplexity:", error);
       throw error;
     }
   }
@@ -97,22 +102,32 @@ export class PerplexityService {
     return this.searchElections(query);
   }
 
-  async searchSpecificElection(state: string, year: string, type?: string): Promise<string> {
-    const typeQuery = type ? ` ${type} elections` : ' elections';
+  async searchSpecificElection(
+    state: string,
+    year: string,
+    type?: string,
+  ): Promise<string> {
+    const typeQuery = type ? ` ${type} elections` : " elections";
     const query = `Find all ${year}${typeQuery} in ${state}, including federal, state, and local elections. Provide specific dates, locations, and offices being contested.`;
-    
+
     return this.searchElections(query);
   }
 
-  async searchCandidateInfo(candidateName: string, election: string): Promise<string> {
+  async searchCandidateInfo(
+    candidateName: string,
+    election: string,
+  ): Promise<string> {
     const query = `Find information about candidate ${candidateName} running in ${election}. Include party affiliation, background, campaign website, and key policy positions.`;
-    
+
     return this.searchElections(query);
   }
 
-  async verifyElectionDate(electionTitle: string, date: string): Promise<string> {
+  async verifyElectionDate(
+    electionTitle: string,
+    date: string,
+  ): Promise<string> {
     const query = `Verify the date and details for ${electionTitle} scheduled for ${date}. Confirm if this date is accurate and provide any additional context about this election.`;
-    
+
     return this.searchElections(query);
   }
 }
@@ -120,7 +135,7 @@ export class PerplexityService {
 export function getPerplexityService(): PerplexityService | null {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
-    console.warn('Perplexity API key not found');
+    console.warn("Perplexity API key not found");
     return null;
   }
   return new PerplexityService(apiKey);

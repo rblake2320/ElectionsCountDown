@@ -5,7 +5,13 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CalendarDays, MapPin, Building, Users, Filter, X } from "lucide-react";
 import { type ElectionFilters } from "@shared/schema";
 
@@ -25,50 +31,101 @@ const FILTER_GROUPS = {
 };
 
 const states = [
-  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
-  "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
-  "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi",
-  "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-  "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania",
-  "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
 ];
 
-export default function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) {
-  
+export default function FilterSidebar({
+  filters,
+  onFiltersChange,
+}: FilterSidebarProps) {
   const handleElectionTypeChange = (type: string, checked: boolean) => {
-    const currentTypes = Array.isArray(filters.electionType) ? [...filters.electionType] : [];
-    const newTypes = checked 
+    const currentTypes = Array.isArray(filters.electionType)
+      ? [...filters.electionType]
+      : [];
+    const newTypes = checked
       ? [...currentTypes, type]
-      : currentTypes.filter(t => t !== type);
-    
+      : currentTypes.filter((t) => t !== type);
+
     onFiltersChange({
       ...filters,
-      electionType: newTypes.length > 0 ? newTypes : undefined
+      electionType: newTypes.length > 0 ? newTypes : undefined,
     });
   };
 
   const handleLevelChange = (level: string, checked: boolean) => {
-    const currentLevels = Array.isArray(filters.level) ? [...filters.level] : [];
-    const newLevels = checked 
+    const currentLevels = Array.isArray(filters.level)
+      ? [...filters.level]
+      : [];
+    const newLevels = checked
       ? [...currentLevels, level]
-      : currentLevels.filter(l => l !== level);
-    
+      : currentLevels.filter((l) => l !== level);
+
     onFiltersChange({
       ...filters,
-      level: newLevels.length > 0 ? newLevels : undefined
+      level: newLevels.length > 0 ? newLevels : undefined,
     });
   };
 
   const handlePartyChange = (party: string, checked: boolean) => {
-    const currentParties = Array.isArray(filters.party) ? [...filters.party] : [];
-    const newParties = checked 
+    const currentParties = Array.isArray(filters.party)
+      ? [...filters.party]
+      : [];
+    const newParties = checked
       ? [...currentParties, party]
-      : currentParties.filter(p => p !== party);
-    
+      : currentParties.filter((p) => p !== party);
+
     onFiltersChange({
       ...filters,
-      party: newParties.length > 0 ? newParties : undefined
+      party: newParties.length > 0 ? newParties : undefined,
     });
   };
 
@@ -81,12 +138,14 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
       timeRange: undefined,
       party: undefined,
       electionType: undefined,
-      search: undefined
+      search: undefined,
     });
   };
 
   const isElectionTypeChecked = (type: string): boolean => {
-    return Array.isArray(filters.electionType) ? filters.electionType.includes(type) : false;
+    return Array.isArray(filters.electionType)
+      ? filters.electionType.includes(type)
+      : false;
   };
 
   const isLevelChecked = (level: string): boolean => {
@@ -105,9 +164,9 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
             <Filter className="w-5 h-5" />
             Filters
           </h2>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={clearFilters}
             className="text-xs h-8 px-3 text-muted-foreground hover:text-foreground"
           >
@@ -125,9 +184,15 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={filters.state || "all"} onValueChange={(value) => 
-              onFiltersChange({ ...filters, state: value === "all" ? undefined : value })
-            }>
+            <Select
+              value={filters.state || "all"}
+              onValueChange={(value) =>
+                onFiltersChange({
+                  ...filters,
+                  state: value === "all" ? undefined : value,
+                })
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All States" />
               </SelectTrigger>
@@ -154,13 +219,15 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
           <CardContent className="space-y-2">
             {FILTER_GROUPS.electionType.map((type) => (
               <div key={type} className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id={`election-type-${type}`}
                   checked={isElectionTypeChecked(type)}
-                  onCheckedChange={(checked) => handleElectionTypeChange(type, checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handleElectionTypeChange(type, checked as boolean)
+                  }
                 />
-                <label 
-                  htmlFor={`election-type-${type}`} 
+                <label
+                  htmlFor={`election-type-${type}`}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
                   {type} Elections
@@ -181,13 +248,15 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
           <CardContent className="space-y-2">
             {FILTER_GROUPS.level.map((level) => (
               <div key={level} className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id={`level-${level}`}
                   checked={isLevelChecked(level)}
-                  onCheckedChange={(checked) => handleLevelChange(level, checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handleLevelChange(level, checked as boolean)
+                  }
                 />
-                <label 
-                  htmlFor={`level-${level}`} 
+                <label
+                  htmlFor={`level-${level}`}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
                   {level}
@@ -206,9 +275,15 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={filters.timeframe || "all"} onValueChange={(value) => 
-              onFiltersChange({ ...filters, timeframe: value === "all" ? undefined : value })
-            }>
+            <Select
+              value={filters.timeframe || "all"}
+              onValueChange={(value) =>
+                onFiltersChange({
+                  ...filters,
+                  timeframe: value === "all" ? undefined : value,
+                })
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="All Time" />
               </SelectTrigger>
@@ -234,13 +309,15 @@ export default function FilterSidebar({ filters, onFiltersChange }: FilterSideba
           <CardContent className="space-y-2">
             {FILTER_GROUPS.party.map((party) => (
               <div key={party} className="flex items-center space-x-2">
-                <Checkbox 
+                <Checkbox
                   id={`party-${party}`}
                   checked={isPartyChecked(party)}
-                  onCheckedChange={(checked) => handlePartyChange(party, checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    handlePartyChange(party, checked as boolean)
+                  }
                 />
-                <label 
-                  htmlFor={`party-${party}`} 
+                <label
+                  htmlFor={`party-${party}`}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
                   {party}

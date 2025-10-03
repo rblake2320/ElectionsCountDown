@@ -7,37 +7,40 @@ const app = express();
 // Essential security middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   // Security headers
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
   // CORS configuration
   const origin = req.headers.origin;
-  const allowedOrigins = [
-    'http://localhost:5000',
-    'https://localhost:5000'
-  ];
-  
+  const allowedOrigins = ["http://localhost:5000", "https://localhost:5000"];
+
   if (process.env.REPLIT_DOMAINS) {
-    const replitDomains = process.env.REPLIT_DOMAINS.split(',');
-    replitDomains.forEach(domain => {
+    const replitDomains = process.env.REPLIT_DOMAINS.split(",");
+    replitDomains.forEach((domain) => {
       allowedOrigins.push(`https://${domain.trim()}`);
     });
   }
-  
+
   if (!origin || allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin || '*');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader("Access-Control-Allow-Origin", origin || "*");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS",
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    );
   }
-  
-  if (req.method === 'OPTIONS') {
+
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
-  
+
   next();
 });
 
@@ -98,11 +101,14 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    },
+  );
 })();

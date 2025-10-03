@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -11,12 +11,12 @@
   --color-success: #10b981;
   --color-error: #ef4444;
   --color-surface-0: #ffffff;
-  --color-surface-1: rgba(255,255,255,0.6);
+  --color-surface-1: rgba(255, 255, 255, 0.6);
   --color-bg: #f8fafc;
   --color-fg: #1f2937;
   --color-muted: #6b7280;
-  --color-border: rgba(0,0,0,0.1);
-  
+  --color-border: rgba(0, 0, 0, 0.1);
+
   /* App-specific variables referenced in App.tsx */
   --app-bg: var(--color-bg);
   --app-fg: var(--color-fg);
@@ -29,12 +29,12 @@
   --color-success: #34d399;
   --color-error: #f87171;
   --color-surface-0: #18181b;
-  --color-surface-1: rgba(39,39,42,0.8);
+  --color-surface-1: rgba(39, 39, 42, 0.8);
   --color-bg: #09090b;
   --color-fg: #e5e7eb;
   --color-muted: #9ca3af;
-  --color-border: rgba(255,255,255,0.1);
-  
+  --color-border: rgba(255, 255, 255, 0.1);
+
   /* App-specific variables for dark theme */
   --app-bg: var(--color-bg);
   --app-fg: var(--color-fg);
@@ -89,16 +89,28 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    font-feature-settings: 'cv11', 'ss01';
-    font-variation-settings: 'opsz' 32;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      "Oxygen",
+      "Ubuntu",
+      "Cantarell",
+      "Fira Sans",
+      "Droid Sans",
+      "Helvetica Neue",
+      sans-serif;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" 32;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   /* Perfect alignment utilities */
   .line-clamp-2 {
     display: -webkit-box;
@@ -106,7 +118,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
+
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -117,7 +129,8 @@
 
 /* Custom styles for countdown animations */
 @keyframes pulse-urgent {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

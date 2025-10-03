@@ -1,4 +1,9 @@
-import { type Election, type InsertElection, type Candidate, type InsertCandidate } from "@shared/schema";
+import {
+  type Election,
+  type InsertElection,
+  type Candidate,
+  type InsertCandidate,
+} from "@shared/schema";
 
 export interface DataGovElectionResponse {
   // Define based on actual data.gov election API response structure
@@ -10,27 +15,32 @@ export interface DataGovElectionResponse {
 
 export class DataGovService {
   private apiKey: string;
-  private baseUrl = 'https://api.data.gov/';
+  private baseUrl = "https://api.data.gov/";
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
   }
 
-  private async makeRequest(endpoint: string, params: Record<string, string> = {}): Promise<any> {
+  private async makeRequest(
+    endpoint: string,
+    params: Record<string, string> = {},
+  ): Promise<any> {
     const url = new URL(endpoint, this.baseUrl);
-    
+
     // Add API key and other parameters
-    url.searchParams.set('api_key', this.apiKey);
+    url.searchParams.set("api_key", this.apiKey);
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.set(key, value);
     });
 
     const response = await fetch(url.toString());
-    
+
     if (!response.ok) {
-      throw new Error(`Data.gov API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Data.gov API error: ${response.status} ${response.statusText}`,
+      );
     }
-    
+
     return response.json();
   }
 
@@ -41,12 +51,12 @@ export class DataGovService {
       if (state) params.state = state;
       if (year) params.year = year;
 
-      const data = await this.makeRequest('elections/upcoming', params);
-      
+      const data = await this.makeRequest("elections/upcoming", params);
+
       // Transform data.gov response to our Election format
       return this.transformElectionsData(data);
     } catch (error) {
-      console.error('Error fetching elections from data.gov:', error);
+      console.error("Error fetching elections from data.gov:", error);
       throw error;
     }
   }
@@ -56,7 +66,7 @@ export class DataGovService {
       const data = await this.makeRequest(`elections/${electionId}/candidates`);
       return this.transformCandidatesData(data);
     } catch (error) {
-      console.error('Error fetching candidates from data.gov:', error);
+      console.error("Error fetching candidates from data.gov:", error);
       throw error;
     }
   }
@@ -68,10 +78,10 @@ export class DataGovService {
 
     return data.results.map((item: any, index: number) => ({
       id: index + 1,
-      title: item.election_name || item.title || 'Unknown Election',
+      title: item.election_name || item.title || "Unknown Election",
       subtitle: item.description || null,
-      location: item.location || item.jurisdiction || 'Unknown',
-      state: item.state_code || item.state || 'Unknown',
+      location: item.location || item.jurisdiction || "Unknown",
+      state: item.state_code || item.state || "Unknown",
       date: new Date(item.election_date || item.date),
       type: this.mapElectionType(item.election_type || item.type),
       level: this.mapElectionLevel(item.level || item.jurisdiction_type),
@@ -89,8 +99,8 @@ export class DataGovService {
 
     return data.results.map((item: any, index: number) => ({
       id: index + 1,
-      name: item.candidate_name || item.name || 'Unknown Candidate',
-      party: item.party_code || item.party || 'Unknown',
+      name: item.candidate_name || item.name || "Unknown Candidate",
+      party: item.party_code || item.party || "Unknown",
       electionId: null, // Will be set when associating with election
       pollingSupport: item.polling_percentage || null,
       isIncumbent: item.is_incumbent || false,
@@ -101,25 +111,25 @@ export class DataGovService {
 
   private mapElectionType(type: string): string {
     const typeMap: Record<string, string> = {
-      'primary': 'primary',
-      'general': 'general',
-      'special': 'special',
-      'runoff': 'general',
-      'recall': 'special',
+      primary: "primary",
+      general: "general",
+      special: "special",
+      runoff: "general",
+      recall: "special",
     };
-    return typeMap[type?.toLowerCase()] || 'general';
+    return typeMap[type?.toLowerCase()] || "general";
   }
 
   private mapElectionLevel(level: string): string {
     const levelMap: Record<string, string> = {
-      'federal': 'federal',
-      'state': 'state',
-      'local': 'local',
-      'county': 'local',
-      'municipal': 'local',
-      'city': 'local',
+      federal: "federal",
+      state: "state",
+      local: "local",
+      county: "local",
+      municipal: "local",
+      city: "local",
     };
-    return levelMap[level?.toLowerCase()] || 'local';
+    return levelMap[level?.toLowerCase()] || "local";
   }
 }
 
@@ -128,15 +138,15 @@ let dataGovService: DataGovService | null = null;
 
 export function getDataGovService(): DataGovService | null {
   const apiKey = process.env.DATA_GOV_API_KEY;
-  
+
   if (!apiKey) {
-    console.warn('DATA_GOV_API_KEY not found in environment variables');
+    console.warn("DATA_GOV_API_KEY not found in environment variables");
     return null;
   }
-  
+
   if (!dataGovService) {
     dataGovService = new DataGovService(apiKey);
   }
-  
+
   return dataGovService;
 }

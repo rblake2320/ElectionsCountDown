@@ -1,7 +1,19 @@
 import { useState, useEffect } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Calendar, Flag, Clock, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -22,20 +34,27 @@ interface VersionSwitcherProps {
   compact?: boolean;
 }
 
-export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }: VersionSwitcherProps) {
-  const [selectedCycle, setSelectedCycle] = useState(currentCycle || "2026-midterm");
+export function VersionSwitcher({
+  currentCycle,
+  onCycleChange,
+  compact = false,
+}: VersionSwitcherProps) {
+  const [selectedCycle, setSelectedCycle] = useState(
+    currentCycle || "2026-midterm",
+  );
 
   const { data: cycles = [], isLoading } = useQuery({
-    queryKey: ['/api/election-cycles'],
+    queryKey: ["/api/election-cycles"],
     queryFn: async () => {
-      const response = await fetch('/api/election-cycles');
-      if (!response.ok) throw new Error('Failed to fetch election cycles');
+      const response = await fetch("/api/election-cycles");
+      if (!response.ok) throw new Error("Failed to fetch election cycles");
       return response.json() as ElectionCycle[];
     },
   });
 
-  const activeCycle = cycles.find(c => c.isActive) || cycles[0];
-  const selectedCycleData = cycles.find(c => c.slug === selectedCycle) || activeCycle;
+  const activeCycle = cycles.find((c) => c.isActive) || cycles[0];
+  const selectedCycleData =
+    cycles.find((c) => c.slug === selectedCycle) || activeCycle;
 
   useEffect(() => {
     if (activeCycle && !currentCycle) {
@@ -61,7 +80,11 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
               <SelectItem key={cycle.id} value={cycle.slug}>
                 <div className="flex items-center gap-2">
                   <span>{cycle.name}</span>
-                  {cycle.isActive && <Badge variant="default" className="text-xs">Current</Badge>}
+                  {cycle.isActive && (
+                    <Badge variant="default" className="text-xs">
+                      Current
+                    </Badge>
+                  )}
                 </div>
               </SelectItem>
             ))}
@@ -94,15 +117,21 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{cycle.name}</span>
                     {cycle.isActive && (
-                      <Badge variant="default" className="text-xs">Current</Badge>
+                      <Badge variant="default" className="text-xs">
+                        Current
+                      </Badge>
                     )}
                     {!cycle.isActive && (
                       <Badge variant="outline" className="text-xs">
-                        {cycle.type === 'presidential' ? 'Coming Soon' : 'Available'}
+                        {cycle.type === "presidential"
+                          ? "Coming Soon"
+                          : "Available"}
                       </Badge>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">{cycle.description}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {cycle.description}
+                  </span>
                 </div>
               </SelectItem>
             ))}
@@ -114,27 +143,32 @@ export function VersionSwitcher({ currentCycle, onCycleChange, compact = false }
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
               <span>
-                {new Date(selectedCycleData.startDate).toLocaleDateString()} - {' '}
+                {new Date(selectedCycleData.startDate).toLocaleDateString()} -{" "}
                 {new Date(selectedCycleData.endDate).toLocaleDateString()}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-muted-foreground">
               <Clock className="h-4 w-4" />
               <span>
-                {selectedCycleData.isActive ? 'Currently Active' : 'Tracking Available'}
+                {selectedCycleData.isActive
+                  ? "Currently Active"
+                  : "Tracking Available"}
               </span>
             </div>
 
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span className="capitalize">{selectedCycleData.type} Election Cycle</span>
+              <span className="capitalize">
+                {selectedCycleData.type} Election Cycle
+              </span>
             </div>
           </div>
         )}
 
         <div className="text-xs text-muted-foreground">
-          Your election tracking preferences and watchlist will be preserved across all cycles.
+          Your election tracking preferences and watchlist will be preserved
+          across all cycles.
         </div>
       </CardContent>
     </Card>

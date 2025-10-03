@@ -1,23 +1,39 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/hooks/use-toast';
-import { UserIcon, CheckCircle2, AlertCircle, TrendingUp, Shield, Globe, Users, FileText, Settings } from 'lucide-react';
-import { Link, useLocation } from 'wouter';
-import { apiRequest } from '@/lib/queryClient';
-import CandidateLogin from '@/components/candidate-login';
-import CandidateProfileForm from '@/components/candidate-profile-form';
-import CandidatePolicyForm from '@/components/candidate-policy-form';
-import CandidatePublicView from '@/components/candidate-public-view';
-import CandidateSettings from '@/components/candidate-settings';
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import {
+  UserIcon,
+  CheckCircle2,
+  AlertCircle,
+  TrendingUp,
+  Shield,
+  Globe,
+  Users,
+  FileText,
+  Settings,
+} from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
+import CandidateLogin from "@/components/candidate-login";
+import CandidateProfileForm from "@/components/candidate-profile-form";
+import CandidatePolicyForm from "@/components/candidate-policy-form";
+import CandidatePublicView from "@/components/candidate-public-view";
+import CandidateSettings from "@/components/candidate-settings";
 
 interface CandidateAuth {
   token: string;
@@ -84,84 +100,83 @@ interface CandidateProfile {
   keyAccomplishments?: string[];
 }
 
-
-
 export default function CandidatePortal() {
   const [location, setLocation] = useLocation();
   const [auth, setAuth] = useState<CandidateAuth | null>(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Check for authentication token on load
   useEffect(() => {
-    const token = localStorage.getItem('candidate_token');
-    const candidateData = localStorage.getItem('candidate_data');
-    
+    const token = localStorage.getItem("candidate_token");
+    const candidateData = localStorage.getItem("candidate_data");
+
     if (token && candidateData) {
       try {
         setAuth({
           token,
-          candidate: JSON.parse(candidateData)
+          candidate: JSON.parse(candidateData),
         });
       } catch (error) {
-        localStorage.removeItem('candidate_token');
-        localStorage.removeItem('candidate_data');
+        localStorage.removeItem("candidate_token");
+        localStorage.removeItem("candidate_data");
       }
     }
   }, []);
 
   // Get candidate profile with RAG data
   const { data: candidateProfile, isLoading } = useQuery({
-    queryKey: ['/api/candidate/profile'],
+    queryKey: ["/api/candidate/profile"],
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Get analytics data
   const { data: analytics } = useQuery({
-    queryKey: ['/api/candidate/analytics'],
+    queryKey: ["/api/candidate/analytics"],
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Get policy template
   const { data: policyTemplate } = useQuery({
-    queryKey: ['/api/candidate/policy-template'],
+    queryKey: ["/api/candidate/policy-template"],
     enabled: !!auth?.token,
     meta: {
       headers: {
-        'Authorization': `Bearer ${auth?.token}`
-      }
-    }
+        Authorization: `Bearer ${auth?.token}`,
+      },
+    },
   });
 
   // Profile update mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: Partial<CandidateProfile>) => {
-      return await apiRequest('/api/candidate/profile', {
-        method: 'PUT',
+      return await apiRequest("/api/candidate/profile", {
+        method: "PUT",
         headers: {
-          'Authorization': `Bearer ${auth?.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth?.token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(profileData),
       });
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/candidate/profile'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/candidate/analytics'] });
+      queryClient.invalidateQueries({ queryKey: ["/api/candidate/profile"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/candidate/analytics"] });
       toast({
         title: "Profile Updated",
-        description: data.message || "Your profile has been updated successfully.",
+        description:
+          data.message || "Your profile has been updated successfully.",
       });
     },
     onError: (error) => {
@@ -174,10 +189,10 @@ export default function CandidatePortal() {
   });
 
   const handleLogout = () => {
-    localStorage.removeItem('candidate_token');
-    localStorage.removeItem('candidate_data');
+    localStorage.removeItem("candidate_token");
+    localStorage.removeItem("candidate_data");
     setAuth(null);
-    setLocation('/candidate-portal/login');
+    setLocation("/candidate-portal/login");
   };
 
   // Show login form if not authenticated
@@ -191,7 +206,9 @@ export default function CandidatePortal() {
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading your campaign portal...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading your campaign portal...
+            </p>
           </div>
         </div>
       </div>
@@ -216,7 +233,13 @@ export default function CandidatePortal() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant={auth.candidate.subscriptionTier === 'premium' ? 'default' : 'secondary'}>
+              <Badge
+                variant={
+                  auth.candidate.subscriptionTier === "premium"
+                    ? "default"
+                    : "secondary"
+                }
+              >
                 {auth.candidate.subscriptionTier}
               </Badge>
               <Button variant="outline" onClick={handleLogout}>
@@ -228,7 +251,11 @@ export default function CandidatePortal() {
       </header>
 
       <div className="container mx-auto p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
@@ -242,7 +269,10 @@ export default function CandidatePortal() {
               <FileText className="h-4 w-4" />
               Policies
             </TabsTrigger>
-            <TabsTrigger value="public-view" className="flex items-center gap-2">
+            <TabsTrigger
+              value="public-view"
+              className="flex items-center gap-2"
+            >
               <Globe className="h-4 w-4" />
               Public View
             </TabsTrigger>
@@ -270,11 +300,22 @@ export default function CandidatePortal() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Progress</span>
-                      <span>{analytics?.analytics?.profileStats?.dataCompleteness || 0}%</span>
+                      <span>
+                        {analytics?.analytics?.profileStats?.dataCompleteness ||
+                          0}
+                        %
+                      </span>
                     </div>
-                    <Progress value={analytics?.analytics?.profileStats?.dataCompleteness || 0} />
+                    <Progress
+                      value={
+                        analytics?.analytics?.profileStats?.dataCompleteness ||
+                        0
+                      }
+                    />
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {analytics?.analytics?.profileStats?.completedFields || 0} of {analytics?.analytics?.profileStats?.totalFields || 25} fields completed
+                      {analytics?.analytics?.profileStats?.completedFields || 0}{" "}
+                      of {analytics?.analytics?.profileStats?.totalFields || 25}{" "}
+                      fields completed
                     </p>
                   </div>
                 </CardContent>
@@ -296,19 +337,22 @@ export default function CandidatePortal() {
                     <div className="flex justify-between text-sm">
                       <span>Candidate Supplied</span>
                       <span className="font-medium text-green-600">
-                        {analytics?.analytics?.sourceBreakdown?.candidate_supplied || 0}
+                        {analytics?.analytics?.sourceBreakdown
+                          ?.candidate_supplied || 0}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>AI Researched</span>
                       <span className="font-medium text-blue-600">
-                        {analytics?.analytics?.sourceBreakdown?.ai_research || 0}
+                        {analytics?.analytics?.sourceBreakdown?.ai_research ||
+                          0}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Verified External</span>
                       <span className="font-medium text-purple-600">
-                        {analytics?.analytics?.sourceBreakdown?.verified_external || 0}
+                        {analytics?.analytics?.sourceBreakdown
+                          ?.verified_external || 0}
                       </span>
                     </div>
                   </div>
@@ -328,11 +372,17 @@ export default function CandidatePortal() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Badge 
-                      variant={candidateProfile?.candidate?.verificationStatus === 'verified' ? 'default' : 'secondary'}
+                    <Badge
+                      variant={
+                        candidateProfile?.candidate?.verificationStatus ===
+                        "verified"
+                          ? "default"
+                          : "secondary"
+                      }
                       className="w-full justify-center"
                     >
-                      {candidateProfile?.candidate?.verificationStatus || 'Pending'}
+                      {candidateProfile?.candidate?.verificationStatus ||
+                        "Pending"}
                     </Badge>
                     <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                       Complete your profile to improve verification status
@@ -353,12 +403,14 @@ export default function CandidatePortal() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {analytics.analytics.recommendations.map((rec: string, index: number) => (
-                      <Alert key={index}>
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>{rec}</AlertDescription>
-                      </Alert>
-                    ))}
+                    {analytics.analytics.recommendations.map(
+                      (rec: string, index: number) => (
+                        <Alert key={index}>
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{rec}</AlertDescription>
+                        </Alert>
+                      ),
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -367,8 +419,8 @@ export default function CandidatePortal() {
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <CandidateProfileForm 
-              profile={candidateProfile?.candidate} 
+            <CandidateProfileForm
+              profile={candidateProfile?.candidate}
               onUpdate={updateProfileMutation.mutate}
               isLoading={updateProfileMutation.isPending}
             />
@@ -376,7 +428,7 @@ export default function CandidatePortal() {
 
           {/* Policies Tab */}
           <TabsContent value="policies" className="space-y-6">
-            <CandidatePolicyForm 
+            <CandidatePolicyForm
               profile={candidateProfile?.candidate}
               policyTemplate={policyTemplate?.categories}
               onUpdate={updateProfileMutation.mutate}
@@ -398,4 +450,3 @@ export default function CandidatePortal() {
     </div>
   );
 }
-

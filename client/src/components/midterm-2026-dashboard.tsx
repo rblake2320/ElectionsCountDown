@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Users, Building, MapPin, TrendingUp } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -36,7 +42,11 @@ interface MidtermData {
 }
 
 export function Midterm2026Dashboard() {
-  const { data: midtermData, isLoading, error } = useQuery<MidtermData>({
+  const {
+    data: midtermData,
+    isLoading,
+    error,
+  } = useQuery<MidtermData>({
     queryKey: ["/api/elections/2026/midterms"],
   });
 
@@ -109,11 +119,15 @@ export function Midterm2026Dashboard() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">House</span>
-                <span className="font-semibold">{categories.congress.house}</span>
+                <span className="font-semibold">
+                  {categories.congress.house}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Senate</span>
-                <span className="font-semibold">{categories.congress.senate}</span>
+                <span className="font-semibold">
+                  {categories.congress.senate}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -137,7 +151,9 @@ export function Midterm2026Dashboard() {
                 <span className="font-semibold">36</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Territories</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Territories
+                </span>
                 <span className="font-semibold">3</span>
               </div>
             </div>
@@ -200,7 +216,11 @@ export function Midterm2026Dashboard() {
                     {election.keyIssues.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-1">
                         {election.keyIssues.slice(0, 3).map((issue, i) => (
-                          <Badge key={i} variant="secondary" className="text-xs">
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {issue}
                           </Badge>
                         ))}

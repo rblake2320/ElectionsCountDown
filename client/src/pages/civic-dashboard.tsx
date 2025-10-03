@@ -1,20 +1,26 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  CheckCircle, 
-  XCircle, 
-  Database, 
-  Globe, 
+import {
+  CheckCircle,
+  XCircle,
+  Database,
+  Globe,
   Search,
   Users,
   BarChart3,
   MapPin,
-  Calendar
+  Calendar,
 } from "lucide-react";
 
 interface APIStatus {
@@ -47,9 +53,12 @@ interface PolicyComparison {
 
 export default function CivicDashboard() {
   const [candidateIds, setCandidateIds] = useState("H001075,S001193");
-  const [policyCategories, setPolicyCategories] = useState("Economy & Jobs,Healthcare,Education");
+  const [policyCategories, setPolicyCategories] = useState(
+    "Economy & Jobs,Healthcare,Education",
+  );
   const [address, setAddress] = useState("123 Main St, Columbus, OH 43215");
-  const [internationalCandidate, setInternationalCandidate] = useState("Boris Johnson");
+  const [internationalCandidate, setInternationalCandidate] =
+    useState("Boris Johnson");
   const [country, setCountry] = useState("UK");
 
   // Get civic aggregator status
@@ -64,7 +73,7 @@ export default function CivicDashboard() {
     queryFn: async () => {
       const params = new URLSearchParams({
         candidateIds,
-        policyCategories
+        policyCategories,
       });
       const response = await fetch(`/api/civic/compare?${params}`);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -86,35 +95,38 @@ export default function CivicDashboard() {
   });
 
   // International data query
-  const { data: internationalData, isLoading: isInternationalLoading } = useQuery({
-    queryKey: ["/api/civic/international", internationalCandidate, country],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        candidateName: internationalCandidate,
-        country
-      });
-      const response = await fetch(`/api/civic/international?${params}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    },
-    enabled: internationalCandidate.length > 0 && country.length > 0,
-  });
+  const { data: internationalData, isLoading: isInternationalLoading } =
+    useQuery({
+      queryKey: ["/api/civic/international", internationalCandidate, country],
+      queryFn: async () => {
+        const params = new URLSearchParams({
+          candidateName: internationalCandidate,
+          country,
+        });
+        const response = await fetch(`/api/civic/international?${params}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      },
+      enabled: internationalCandidate.length > 0 && country.length > 0,
+    });
 
-  const StatusIcon = ({ connected }: { connected: boolean }) => (
+  const StatusIcon = ({ connected }: { connected: boolean }) =>
     connected ? (
       <CheckCircle className="w-4 h-4 text-green-600" />
     ) : (
       <XCircle className="w-4 h-4 text-red-600" />
-    )
-  );
+    );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Civic Data Aggregator Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            Civic Data Aggregator Dashboard
+          </h1>
           <p className="text-text-muted">
-            Comprehensive election and candidate data from 100+ production-ready APIs
+            Comprehensive election and candidate data from 100+ production-ready
+            APIs
           </p>
         </div>
 
@@ -136,21 +148,26 @@ export default function CivicDashboard() {
                     Core U.S. APIs
                   </CardTitle>
                   <CardDescription>
-                    Primary data sources for candidate and legislative information
+                    Primary data sources for candidate and legislative
+                    information
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {status?.apis && Object.entries(status.apis).map(([api, connected]) => (
-                    <div key={api} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <StatusIcon connected={connected} />
-                        <span className="capitalize">{api}</span>
+                  {status?.apis &&
+                    Object.entries(status.apis).map(([api, connected]) => (
+                      <div
+                        key={api}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2">
+                          <StatusIcon connected={connected} />
+                          <span className="capitalize">{api}</span>
+                        </div>
+                        <Badge variant={connected ? "default" : "destructive"}>
+                          {connected ? "Connected" : "Disconnected"}
+                        </Badge>
                       </div>
-                      <Badge variant={connected ? "default" : "destructive"}>
-                        {connected ? "Connected" : "Disconnected"}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))}
                 </CardContent>
               </Card>
 
@@ -165,17 +182,25 @@ export default function CivicDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {status?.internationalSupport && Object.entries(status.internationalSupport).map(([source, supported]) => (
-                    <div key={source} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <StatusIcon connected={supported} />
-                        <span className="capitalize">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
-                      </div>
-                      <Badge variant={supported ? "default" : "secondary"}>
-                        {supported ? "Available" : "Planned"}
-                      </Badge>
-                    </div>
-                  ))}
+                  {status?.internationalSupport &&
+                    Object.entries(status.internationalSupport).map(
+                      ([source, supported]) => (
+                        <div
+                          key={source}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-2">
+                            <StatusIcon connected={supported} />
+                            <span className="capitalize">
+                              {source.replace(/([A-Z])/g, " $1").trim()}
+                            </span>
+                          </div>
+                          <Badge variant={supported ? "default" : "secondary"}>
+                            {supported ? "Available" : "Planned"}
+                          </Badge>
+                        </div>
+                      ),
+                    )}
                 </CardContent>
               </Card>
             </div>
@@ -184,7 +209,8 @@ export default function CivicDashboard() {
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center text-sm text-text-muted">
-                    Last updated: {new Date(status.lastUpdated).toLocaleString()}
+                    Last updated:{" "}
+                    {new Date(status.lastUpdated).toLocaleString()}
                   </div>
                 </CardContent>
               </Card>
@@ -199,13 +225,16 @@ export default function CivicDashboard() {
                   Multi-Source Policy Comparison
                 </CardTitle>
                 <CardDescription>
-                  Compare candidates using ProPublica, FEC, VoteSmart, and Open States data
+                  Compare candidates using ProPublica, FEC, VoteSmart, and Open
+                  States data
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Candidate IDs</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Candidate IDs
+                    </label>
                     <Input
                       value={candidateIds}
                       onChange={(e) => setCandidateIds(e.target.value)}
@@ -213,7 +242,9 @@ export default function CivicDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Policy Categories</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Policy Categories
+                    </label>
                     <Input
                       value={policyCategories}
                       onChange={(e) => setPolicyCategories(e.target.value)}
@@ -225,7 +256,9 @@ export default function CivicDashboard() {
                 {isPolicyLoading && (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mx-auto"></div>
-                    <p className="mt-2 text-sm text-text-muted">Gathering multi-source policy data...</p>
+                    <p className="mt-2 text-sm text-text-muted">
+                      Gathering multi-source policy data...
+                    </p>
                   </div>
                 )}
 
@@ -234,20 +267,32 @@ export default function CivicDashboard() {
                     {policyComparison.map((category) => (
                       <Card key={category.category}>
                         <CardHeader>
-                          <CardTitle className="text-lg">{category.category}</CardTitle>
+                          <CardTitle className="text-lg">
+                            {category.category}
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="space-y-3">
                             {category.positions.map((position) => (
-                              <div key={position.candidateId} className="border-l-4 border-brand-primary pl-4">
+                              <div
+                                key={position.candidateId}
+                                className="border-l-4 border-brand-primary pl-4"
+                              >
                                 <div className="flex items-center justify-between mb-1">
-                                  <h4 className="font-medium">{position.candidateName}</h4>
+                                  <h4 className="font-medium">
+                                    {position.candidateName}
+                                  </h4>
                                   <Badge variant="outline">
-                                    Confidence: {(position.confidence * 100).toFixed(0)}%
+                                    Confidence:{" "}
+                                    {(position.confidence * 100).toFixed(0)}%
                                   </Badge>
                                 </div>
-                                <p className="text-sm text-text-muted mb-1">{position.position}</p>
-                                <p className="text-xs text-text-muted">Source: {position.source}</p>
+                                <p className="text-sm text-text-muted mb-1">
+                                  {position.position}
+                                </p>
+                                <p className="text-xs text-text-muted">
+                                  Source: {position.source}
+                                </p>
                               </div>
                             ))}
                           </div>
@@ -273,7 +318,9 @@ export default function CivicDashboard() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Address</label>
+                  <label className="text-sm font-medium mb-2 block">
+                    Address
+                  </label>
                   <Input
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
@@ -314,15 +361,21 @@ export default function CivicDashboard() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Candidate Name</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Candidate Name
+                    </label>
                     <Input
                       value={internationalCandidate}
-                      onChange={(e) => setInternationalCandidate(e.target.value)}
+                      onChange={(e) =>
+                        setInternationalCandidate(e.target.value)
+                      }
                       placeholder="Boris Johnson"
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Country</label>
+                    <label className="text-sm font-medium mb-2 block">
+                      Country
+                    </label>
                     <Input
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
@@ -365,7 +418,8 @@ export default function CivicDashboard() {
                   </p>
                   <Badge className="mb-2">Free Tier</Badge>
                   <p className="text-xs">
-                    curl -H "X-API-Key:$KEY" https://api.propublica.org/congress/v1/members/H001075.json
+                    curl -H "X-API-Key:$KEY"
+                    https://api.propublica.org/congress/v1/members/H001075.json
                   </p>
                 </CardContent>
               </Card>
@@ -383,7 +437,8 @@ export default function CivicDashboard() {
                   </p>
                   <Badge className="mb-2">Free Tier</Badge>
                   <p className="text-xs">
-                    curl "https://api.open.fec.gov/v1/candidates/search?api_key=$KEY&q=sanders"
+                    curl
+                    "https://api.open.fec.gov/v1/candidates/search?api_key=$KEY&q=sanders"
                   </p>
                 </CardContent>
               </Card>
@@ -401,7 +456,8 @@ export default function CivicDashboard() {
                   </p>
                   <Badge className="mb-2">Free Tier</Badge>
                   <p className="text-xs">
-                    curl "https://civicinfo.googleapis.com/civicinfo/v2/elections?key=$KEY"
+                    curl
+                    "https://civicinfo.googleapis.com/civicinfo/v2/elections?key=$KEY"
                   </p>
                 </CardContent>
               </Card>

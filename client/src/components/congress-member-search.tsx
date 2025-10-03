@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Search, User, MapPin, Loader2, Plus } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Search, User, MapPin, Loader2, Plus } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface CongressMember {
   id: number;
@@ -19,14 +19,14 @@ interface CongressMember {
 }
 
 export function CongressMemberSearch() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Search existing members
   const { data: searchResults = [], isLoading: searchLoading } = useQuery({
-    queryKey: ['/api/members/search', searchTerm],
+    queryKey: ["/api/members/search", searchTerm],
     enabled: searchTerm.length >= 2,
   });
 
@@ -34,8 +34,8 @@ export function CongressMemberSearch() {
   const perplexitySearch = useMutation({
     mutationFn: async (name: string) => {
       return await apiRequest(`/api/congress/find-member`, {
-        method: 'POST',
-        body: { memberName: name }
+        method: "POST",
+        body: { memberName: name },
       });
     },
     onSuccess: (data) => {
@@ -45,12 +45,13 @@ export function CongressMemberSearch() {
           description: `${data.member.name} has been added to the database.`,
         });
         // Refresh the search results
-        queryClient.invalidateQueries({ queryKey: ['/api/members/search'] });
-        queryClient.invalidateQueries({ queryKey: ['/api/members'] });
+        queryClient.invalidateQueries({ queryKey: ["/api/members/search"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/members"] });
       } else {
         toast({
           title: "Member Not Found",
-          description: data.message || "Could not find this member in official records.",
+          description:
+            data.message || "Could not find this member in official records.",
           variant: "destructive",
         });
       }
@@ -76,10 +77,14 @@ export function CongressMemberSearch() {
 
   const getPartyColor = (party: string) => {
     switch (party?.toLowerCase()) {
-      case 'republican': return 'bg-red-100 text-red-800';
-      case 'democratic': return 'bg-blue-100 text-blue-800';
-      case 'independent': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "republican":
+        return "bg-red-100 text-red-800";
+      case "democratic":
+        return "bg-blue-100 text-blue-800";
+      case "independent":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -98,9 +103,9 @@ export function CongressMemberSearch() {
               placeholder="Enter member name (e.g., Nancy Pelosi, Ted Cruz)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <Button 
+            <Button
               onClick={handleSearch}
               disabled={searchTerm.length < 2 || searchLoading}
             >
@@ -128,12 +133,15 @@ export function CongressMemberSearch() {
                             <p className="font-medium">{member.name}</p>
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <MapPin className="h-3 w-3" />
-                              {member.state}{member.district ? `-${member.district}` : ''} • {member.chamber}
+                              {member.state}
+                              {member.district
+                                ? `-${member.district}`
+                                : ""} • {member.chamber}
                             </div>
                           </div>
                         </div>
                         <Badge className={getPartyColor(member.party)}>
-                          {member.party || 'Unknown'}
+                          {member.party || "Unknown"}
                         </Badge>
                       </div>
                     </Card>

@@ -1,4 +1,15 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, numeric, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+  varchar,
+  numeric,
+  index,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -86,14 +97,18 @@ export const users = pgTable("users", {
 export const watchlist = pgTable("watchlist", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Candidate Q&A and Position Management
 export const candidatePositions = pgTable("candidate_positions", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   category: text("category").notNull(), // Economy, Healthcare, Education, etc.
   position: text("position").notNull(),
   detailedStatement: text("detailed_statement"),
@@ -105,7 +120,9 @@ export const candidatePositions = pgTable("candidate_positions", {
 
 export const candidateQA = pgTable("candidate_qa", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   question: text("question").notNull(),
   answer: text("answer").notNull(),
   category: text("category"), // topic categorization
@@ -121,17 +138,19 @@ export const candidateQA = pgTable("candidate_qa", {
 // Candidate Authentication and Campaign Portal Management
 export const candidateAccounts = pgTable("candidate_accounts", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   email: varchar("email").unique().notNull(),
   passwordHash: varchar("password_hash").notNull(),
-  role: text("role").notNull().default('campaign_manager'), // 'candidate', 'campaign_manager', 'staff'
-  subscriptionTier: text("subscription_tier").notNull().default('basic'), // 'basic', 'premium', 'enterprise'
+  role: text("role").notNull().default("campaign_manager"), // 'candidate', 'campaign_manager', 'staff'
+  subscriptionTier: text("subscription_tier").notNull().default("basic"), // 'basic', 'premium', 'enterprise'
   isActive: boolean("is_active").default(true),
   emailVerified: boolean("email_verified").default(false),
   lastLogin: timestamp("last_login"),
   campaignName: text("campaign_name"),
   campaignTitle: text("campaign_title"), // "Campaign Manager for John Smith"
-  accessLevel: text("access_level").default('full'), // 'full', 'limited', 'view_only'
+  accessLevel: text("access_level").default("full"), // 'full', 'limited', 'view_only'
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -139,7 +158,9 @@ export const candidateAccounts = pgTable("candidate_accounts", {
 // Candidate-Supplied Information (RAG Source)
 export const candidateProfiles = pgTable("candidate_profiles", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   // Personal Information
   fullName: text("full_name"),
   preferredName: text("preferred_name"),
@@ -173,9 +194,11 @@ export const candidateProfiles = pgTable("candidate_profiles", {
   topPriorities: jsonb("top_priorities"), // Array of {priority, description}
   keyAccomplishments: jsonb("key_accomplishments"),
   // Data Source Tracking
-  lastUpdatedBy: integer("last_updated_by").references(() => candidateAccounts.id),
+  lastUpdatedBy: integer("last_updated_by").references(
+    () => candidateAccounts.id,
+  ),
   dataCompleteness: integer("data_completeness").default(0), // percentage 0-100
-  verificationStatus: text("verification_status").default('pending'), // 'pending', 'verified', 'needs_review'
+  verificationStatus: text("verification_status").default("pending"), // 'pending', 'verified', 'needs_review'
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -183,7 +206,9 @@ export const candidateProfiles = pgTable("candidate_profiles", {
 // Track data sources and attributions for transparency
 export const candidateDataSources = pgTable("candidate_data_sources", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   fieldName: text("field_name").notNull(), // which field this source applies to
   sourceType: text("source_type").notNull(), // 'candidate_supplied', 'ai_research', 'verified_external'
   sourceDescription: text("source_description"), // e.g., "Candidate Campaign Portal", "Perplexity AI Research", "Ballotpedia"
@@ -197,7 +222,9 @@ export const candidateDataSources = pgTable("candidate_data_sources", {
 export const voterInteractions = pgTable("voter_interactions", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id"), // can be anonymous
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   interactionType: text("interaction_type").notNull(), // 'view', 'like', 'share', 'question_ask', 'poll_response'
   electionId: integer("election_id").references(() => elections.id),
   contentId: integer("content_id"), // references to QA, position, etc.
@@ -211,8 +238,12 @@ export const voterInteractions = pgTable("voter_interactions", {
 
 export const realTimePolling = pgTable("real_time_polling", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   pollDate: timestamp("poll_date").defaultNow(),
   supportLevel: numeric("support_level", { precision: 5, scale: 2 }), // percentage
   confidence: numeric("confidence", { precision: 5, scale: 2 }), // confidence interval
@@ -226,7 +257,9 @@ export const realTimePolling = pgTable("real_time_polling", {
 // Campaign content management
 export const campaignContent = pgTable("campaign_content", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   contentType: text("content_type").notNull(), // 'announcement', 'policy', 'event', 'media'
   title: text("title").notNull(),
   content: text("content").notNull(),
@@ -234,7 +267,10 @@ export const campaignContent = pgTable("campaign_content", {
   isPublished: boolean("is_published").default(false),
   publishDate: timestamp("publish_date"),
   views: integer("views").default(0),
-  engagementScore: numeric("engagement_score", { precision: 5, scale: 2 }).default('0'),
+  engagementScore: numeric("engagement_score", {
+    precision: 5,
+    scale: 2,
+  }).default("0"),
   tags: text("tags").array(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -243,15 +279,17 @@ export const campaignContent = pgTable("campaign_content", {
 // Candidate subscription and payment tracking
 export const candidateSubscriptions = pgTable("candidate_subscriptions", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   subscriptionTier: text("subscription_tier").notNull(), // 'basic', 'premium', 'enterprise'
   startDate: timestamp("start_date").defaultNow(),
   endDate: timestamp("end_date"),
   isActive: boolean("is_active").default(true),
-  paymentStatus: text("payment_status").default('pending'), // 'pending', 'paid', 'overdue', 'cancelled'
+  paymentStatus: text("payment_status").default("pending"), // 'pending', 'paid', 'overdue', 'cancelled'
   features: jsonb("features"), // tier-specific feature access
   monthlyPrice: numeric("monthly_price", { precision: 10, scale: 2 }),
-  totalPaid: numeric("total_paid", { precision: 10, scale: 2 }).default('0'),
+  totalPaid: numeric("total_paid", { precision: 10, scale: 2 }).default("0"),
   lastPaymentDate: timestamp("last_payment_date"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -314,11 +352,15 @@ export const electionCycles = pgTable("election_cycles", {
 // Campaign accounts for the candidate portal
 export const campaignAccounts = pgTable("campaign_accounts", {
   id: serial("id").primaryKey(),
-  candidateId: integer("candidate_id").references(() => candidates.id).notNull(),
+  candidateId: integer("candidate_id")
+    .references(() => candidates.id)
+    .notNull(),
   apiKey: varchar("api_key", { length: 255 }).unique().notNull(),
   organizationName: varchar("organization_name", { length: 255 }).notNull(),
   contactEmail: varchar("contact_email", { length: 255 }).notNull(),
-  subscriptionTier: varchar("subscription_tier", { length: 50 }).default('basic'),
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).default(
+    "basic",
+  ),
   isActive: boolean("is_active").default(true),
   lastAccessedAt: timestamp("last_accessed_at"),
   totalApiCalls: integer("total_api_calls").default(0),
@@ -327,20 +369,21 @@ export const campaignAccounts = pgTable("campaign_accounts", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-
-
 // Relations
 export const electionsRelations = relations(elections, ({ many }) => ({
   candidates: many(candidates),
   results: many(electionResults),
 }));
 
-export const electionResultsRelations = relations(electionResults, ({ one }) => ({
-  election: one(elections, {
-    fields: [electionResults.electionId],
-    references: [elections.id],
+export const electionResultsRelations = relations(
+  electionResults,
+  ({ one }) => ({
+    election: one(elections, {
+      fields: [electionResults.electionId],
+      references: [elections.id],
+    }),
   }),
-}));
+);
 
 export const candidatesRelations = relations(candidates, ({ one }) => ({
   election: one(elections, {
@@ -361,28 +404,30 @@ export const watchlistRelations = relations(watchlist, ({ one }) => ({
 }));
 
 // Filter schema
-export const filterSchema = z.object({
-  state: z.string().optional(),
-  type: z.union([z.string(), z.array(z.string())]).optional(),
-  level: z.union([z.string(), z.array(z.string())]).optional(),
-  timeframe: z.string().optional(),
-  timeRange: z.string().optional(),
-  search: z.string().optional(),
-  party: z.union([z.string(), z.array(z.string())]).optional(),
-  electionType: z.union([z.string(), z.array(z.string())]).optional(),
-}).transform((data) => {
-  // Handle query string arrays being passed as comma-separated strings
-  return {
-    ...data,
-    state: data.state === 'all' ? undefined : data.state,
-    type: data.type === 'all' ? undefined : data.type,
-    level: data.level === 'all' ? undefined : data.level,
-    timeframe: data.timeframe === 'all' ? undefined : data.timeframe,
-    timeRange: data.timeRange === 'all' ? undefined : data.timeRange,
-    party: data.party === 'all' ? undefined : data.party,
-    electionType: data.electionType === 'all' ? undefined : data.electionType,
-  };
-});
+export const filterSchema = z
+  .object({
+    state: z.string().optional(),
+    type: z.union([z.string(), z.array(z.string())]).optional(),
+    level: z.union([z.string(), z.array(z.string())]).optional(),
+    timeframe: z.string().optional(),
+    timeRange: z.string().optional(),
+    search: z.string().optional(),
+    party: z.union([z.string(), z.array(z.string())]).optional(),
+    electionType: z.union([z.string(), z.array(z.string())]).optional(),
+  })
+  .transform((data) => {
+    // Handle query string arrays being passed as comma-separated strings
+    return {
+      ...data,
+      state: data.state === "all" ? undefined : data.state,
+      type: data.type === "all" ? undefined : data.type,
+      level: data.level === "all" ? undefined : data.level,
+      timeframe: data.timeframe === "all" ? undefined : data.timeframe,
+      timeRange: data.timeRange === "all" ? undefined : data.timeRange,
+      party: data.party === "all" ? undefined : data.party,
+      electionType: data.electionType === "all" ? undefined : data.electionType,
+    };
+  });
 
 // Insert schemas
 export const insertElectionSchema = createInsertSchema(elections).omit({
@@ -398,19 +443,25 @@ export const insertWatchlistSchema = createInsertSchema(watchlist).omit({
   createdAt: true,
 });
 
-export const insertCongressMemberSchema = createInsertSchema(congressMembers).omit({
+export const insertCongressMemberSchema = createInsertSchema(
+  congressMembers,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertElectionResultSchema = createInsertSchema(electionResults).omit({
+export const insertElectionResultSchema = createInsertSchema(
+  electionResults,
+).omit({
   id: true,
   lastUpdated: true,
 });
 
 // Candidate engagement schemas
-export const insertCandidatePositionSchema = createInsertSchema(candidatePositions).omit({
+export const insertCandidatePositionSchema = createInsertSchema(
+  candidatePositions,
+).omit({
   id: true,
   createdAt: true,
   lastUpdated: true,
@@ -422,23 +473,31 @@ export const insertCandidateQASchema = createInsertSchema(candidateQA).omit({
   updatedAt: true,
 });
 
-export const insertVoterInteractionSchema = createInsertSchema(voterInteractions).omit({
+export const insertVoterInteractionSchema = createInsertSchema(
+  voterInteractions,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertRealTimePollingSchema = createInsertSchema(realTimePolling).omit({
+export const insertRealTimePollingSchema = createInsertSchema(
+  realTimePolling,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertCampaignContentSchema = createInsertSchema(campaignContent).omit({
+export const insertCampaignContentSchema = createInsertSchema(
+  campaignContent,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertCandidateSubscriptionSchema = createInsertSchema(candidateSubscriptions).omit({
+export const insertCandidateSubscriptionSchema = createInsertSchema(
+  candidateSubscriptions,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -460,7 +519,7 @@ export interface DataAuthenticity {
   hasAuthenticVotes: boolean;
   lastDataVerification: string;
   pollingConfidence: number;
-  dataQuality: 'excellent' | 'good' | 'fair' | 'poor';
+  dataQuality: "excellent" | "good" | "fair" | "poor";
 }
 
 // Enhanced candidate type with authenticity data
@@ -481,18 +540,25 @@ export type CandidateProfile = typeof candidateProfiles.$inferSelect;
 export type InsertCandidateProfile = typeof candidateProfiles.$inferInsert;
 
 export type CandidateDataSource = typeof candidateDataSources.$inferSelect;
-export type InsertCandidateDataSource = typeof candidateDataSources.$inferInsert;
+export type InsertCandidateDataSource =
+  typeof candidateDataSources.$inferInsert;
 
 // Candidate engagement types
 export type CandidatePosition = typeof candidatePositions.$inferSelect;
-export type InsertCandidatePosition = z.infer<typeof insertCandidatePositionSchema>;
+export type InsertCandidatePosition = z.infer<
+  typeof insertCandidatePositionSchema
+>;
 export type CandidateQA = typeof candidateQA.$inferSelect;
 export type InsertCandidateQA = z.infer<typeof insertCandidateQASchema>;
 export type VoterInteraction = typeof voterInteractions.$inferSelect;
-export type InsertVoterInteraction = z.infer<typeof insertVoterInteractionSchema>;
+export type InsertVoterInteraction = z.infer<
+  typeof insertVoterInteractionSchema
+>;
 export type RealTimePolling = typeof realTimePolling.$inferSelect;
 export type InsertRealTimePolling = z.infer<typeof insertRealTimePollingSchema>;
 export type CampaignContent = typeof campaignContent.$inferSelect;
 export type InsertCampaignContent = z.infer<typeof insertCampaignContentSchema>;
 export type CandidateSubscription = typeof candidateSubscriptions.$inferSelect;
-export type InsertCandidateSubscription = z.infer<typeof insertCandidateSubscriptionSchema>;
+export type InsertCandidateSubscription = z.infer<
+  typeof insertCandidateSubscriptionSchema
+>;

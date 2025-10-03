@@ -2,9 +2,31 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Heart, Share2, Star, Users, Calendar, MapPin, Info, FileText, Trophy, TrendingUp } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Heart,
+  Share2,
+  Star,
+  Users,
+  Calendar,
+  MapPin,
+  Info,
+  FileText,
+  Trophy,
+  TrendingUp,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { CountdownTimer } from "@/components/countdown-timer";
@@ -32,26 +54,29 @@ const electionTypeColors = {
   primary: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
   general: "bg-green-500/20 text-green-700 dark:text-green-300",
   special: "bg-orange-500/20 text-orange-700 dark:text-orange-300",
-  runoff: "bg-purple-500/20 text-purple-700 dark:text-purple-300"
+  runoff: "bg-purple-500/20 text-purple-700 dark:text-purple-300",
 };
 
 const electionLevelColors = {
   federal: "bg-red-500/20 text-red-700 dark:text-red-300",
   state: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
   local: "bg-green-500/20 text-green-700 dark:text-green-300",
-  municipal: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-300"
+  municipal: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-300",
 };
 
 function formatElectionDate(date: string): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  return new Date(date).toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
-export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps) {
+export function ElectionCard({
+  election,
+  viewMode = "grid",
+}: ElectionCardProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const { toast } = useToast();
@@ -64,12 +89,17 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
     enabled: isAuthenticated,
   });
 
-  const isInWatchlist = Array.isArray(watchlist) && 
+  const isInWatchlist =
+    Array.isArray(watchlist) &&
     watchlist.some((item: any) => item.electionId === election.id);
 
   // Always fetch candidates for display on card
-  const { data: candidates = [], isLoading: candidatesLoading } = useCandidates(election.id);
-  const { data: electionResults } = useElectionResults(isDetailsOpen ? election.id : 0);
+  const { data: candidates = [], isLoading: candidatesLoading } = useCandidates(
+    election.id,
+  );
+  const { data: electionResults } = useElectionResults(
+    isDetailsOpen ? election.id : 0,
+  );
 
   // Election details query with aggressive caching
   const { data: electionDetails, isLoading: isLoadingDetails } = useQuery({
@@ -77,7 +107,7 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
     queryFn: async () => {
       const response = await fetch(`/api/election-details/${election.id}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch election details');
+        throw new Error("Failed to fetch election details");
       }
       return response.json() as Promise<ElectionDetailsResponse>;
     },
@@ -90,7 +120,8 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
 
   // Watchlist mutations
   const addToWatchlistMutation = useMutation({
-    mutationFn: () => apiRequest(`/api/watchlist`, "POST", { electionId: election.id }),
+    mutationFn: () =>
+      apiRequest(`/api/watchlist`, "POST", { electionId: election.id }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
       toast({
@@ -176,34 +207,48 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
   };
 
   // Calculate urgency color
-  const daysUntil = Math.ceil((new Date(election.date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-  const urgencyColor = daysUntil <= 7 ? "bg-brand-error" : 
-                      daysUntil <= 30 ? "bg-brand-accent" : 
-                      "bg-brand-primary";
+  const daysUntil = Math.ceil(
+    (new Date(election.date).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+  const urgencyColor =
+    daysUntil <= 7
+      ? "bg-brand-error"
+      : daysUntil <= 30
+        ? "bg-brand-accent"
+        : "bg-brand-primary";
 
   return (
-    <div className={cn(
-      "relative border border-border/50 bg-card shadow-sm rounded-lg",
-      "transition-all duration-200 hover:shadow-md hover:border-border flex flex-col h-full",
-      viewMode === "grid" ? "p-5 gap-4" : "p-4 gap-3 flex-row lg:flex-col"
-    )}>
+    <div
+      className={cn(
+        "relative border border-border/50 bg-card shadow-sm rounded-lg",
+        "transition-all duration-200 hover:shadow-md hover:border-border flex flex-col h-full",
+        viewMode === "grid" ? "p-5 gap-4" : "p-4 gap-3 flex-row lg:flex-col",
+      )}
+    >
       {/* Tag Row - Absolute positioned for grid, inline for list */}
-      <div className={cn(
-        "flex gap-2",
-        viewMode === "grid" ? "absolute top-3 left-3" : "flex-shrink-0"
-      )}>
-        <Badge 
+      <div
+        className={cn(
+          "flex gap-2",
+          viewMode === "grid" ? "absolute top-3 left-3" : "flex-shrink-0",
+        )}
+      >
+        <Badge
           className={cn(
             "px-2 py-0.5 text-xs font-medium rounded-full border-0",
-            electionTypeColors[election.type as keyof typeof electionTypeColors]
+            electionTypeColors[
+              election.type as keyof typeof electionTypeColors
+            ],
           )}
         >
           {election.type}
         </Badge>
-        <Badge 
+        <Badge
           className={cn(
             "px-2 py-0.5 text-xs font-medium rounded-full border-0",
-            electionLevelColors[election.level as keyof typeof electionLevelColors]
+            electionLevelColors[
+              election.level as keyof typeof electionLevelColors
+            ],
           )}
         >
           {election.level}
@@ -211,17 +256,23 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
       </div>
 
       {/* Urgency indicator */}
-      <div className={cn("absolute top-0 left-0 w-1 h-full rounded-l-2xl", urgencyColor)} />
+      <div
+        className={cn(
+          "absolute top-0 left-0 w-1 h-full rounded-l-2xl",
+          urgencyColor,
+        )}
+      />
 
       {/* Title & Meta - Responsive spacing */}
-      <header className={cn(
-        "space-y-2 flex-1",
-        viewMode === "grid" ? "mt-8" : ""
-      )}>
-        <h2 className={cn(
-          "font-semibold leading-tight text-foreground",
-          viewMode === "grid" ? "text-lg line-clamp-2" : "text-base"
-        )}>
+      <header
+        className={cn("space-y-2 flex-1", viewMode === "grid" ? "mt-8" : "")}
+      >
+        <h2
+          className={cn(
+            "font-semibold leading-tight text-foreground",
+            viewMode === "grid" ? "text-lg line-clamp-2" : "text-base",
+          )}
+        >
           {election.title}
         </h2>
         <div className="space-y-1">
@@ -230,7 +281,9 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             <Calendar className="w-3 h-3 flex-shrink-0" />
-            <span className="truncate">{formatElectionDate(election.date.toString())}</span>
+            <span className="truncate">
+              {formatElectionDate(election.date.toString())}
+            </span>
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1">
             <MapPin className="w-3 h-3 flex-shrink-0" />
@@ -242,9 +295,9 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
       {/* Countdown - Properly centered and aligned */}
       <div className="flex justify-center items-center py-3">
         <div className="text-center bg-gradient-to-br from-background/80 to-muted/50 rounded-lg p-3 border border-border/50">
-          <CountdownTimer 
-            targetDate={election.date.toString()} 
-            size={viewMode === "grid" ? "md" : "sm"} 
+          <CountdownTimer
+            targetDate={election.date.toString()}
+            size={viewMode === "grid" ? "md" : "sm"}
             showMilliseconds={viewMode === "grid"}
             className="text-foreground font-mono"
           />
@@ -260,7 +313,10 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-xs border border-gray-200 dark:border-gray-700 animate-pulse">
+              <div
+                key={index}
+                className="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-xs border border-gray-200 dark:border-gray-700 animate-pulse"
+              >
                 <div className="space-y-1">
                   <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
                   <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
@@ -284,15 +340,21 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
           </div>
           <div className="grid grid-cols-2 gap-2">
             {candidates.slice(0, 4).map((candidate: any) => (
-              <div key={candidate.id} className={cn(
-                "w-full p-2.5 rounded-lg bg-gradient-to-br from-background/90 to-muted/30 border transition-all hover:shadow-sm hover:border-border/80",
-                candidate.isWinner 
-                  ? "border-green-500/50 bg-green-500/10" 
-                  : "border-border/50"
-              )}>
+              <div
+                key={candidate.id}
+                className={cn(
+                  "w-full p-2.5 rounded-lg bg-gradient-to-br from-background/90 to-muted/30 border transition-all hover:shadow-sm hover:border-border/80",
+                  candidate.isWinner
+                    ? "border-green-500/50 bg-green-500/10"
+                    : "border-border/50",
+                )}
+              >
                 <div className="space-y-1">
                   <div className="flex items-center justify-between gap-1">
-                    <p className="text-xs font-medium text-foreground truncate flex-1" title={candidate.name}>
+                    <p
+                      className="text-xs font-medium text-foreground truncate flex-1"
+                      title={candidate.name}
+                    >
                       {candidate.name}
                     </p>
                     {candidate.isWinner && (
@@ -305,52 +367,64 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
                     </p>
                     <div className="flex items-center space-x-2">
                       {/* Only show percentages if they're from authentic sources */}
-                      {candidate.pollingSupport && candidate.dataAuthenticity?.hasAuthenticPolling && (
-                        <div className="flex items-center space-x-1">
-                          <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                            {candidate.pollingSupport}%
+                      {candidate.pollingSupport &&
+                        candidate.dataAuthenticity?.hasAuthenticPolling && (
+                          <div className="flex items-center space-x-1">
+                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                              {candidate.pollingSupport}%
+                            </span>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className={`w-2 h-2 rounded-full ${
+                                    candidate.lastPollingUpdate
+                                      ? "bg-green-500"
+                                      : "bg-red-500"
+                                  }`}
+                                />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">
+                                  {candidate.lastPollingUpdate
+                                    ? `Authentic polling data from ${candidate.pollingSource}`
+                                    : "No authentic polling data available"}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        )}
+                      {candidate.votePercentage &&
+                        candidate.dataAuthenticity?.hasAuthenticVotes && (
+                          <span className="text-xs font-medium text-green-600">
+                            {candidate.votePercentage}%
                           </span>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className={`w-2 h-2 rounded-full ${
-                                candidate.lastPollingUpdate 
-                                  ? 'bg-green-500' 
-                                  : 'bg-red-500'
-                              }`} />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                {candidate.lastPollingUpdate 
-                                  ? `Authentic polling data from ${candidate.pollingSource}` 
-                                  : 'No authentic polling data available'
-                                }
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </div>
-                      )}
-                      {candidate.votePercentage && candidate.dataAuthenticity?.hasAuthenticVotes && (
-                        <span className="text-xs font-medium text-green-600">
-                          {candidate.votePercentage}%
-                        </span>
-                      )}
+                        )}
                       {/* Show data quality indicator */}
                       {candidate.dataAuthenticity && (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className={`w-1.5 h-1.5 rounded-full ${
-                              candidate.dataAuthenticity.dataQuality === 'excellent' ? 'bg-green-500' :
-                              candidate.dataAuthenticity.dataQuality === 'good' ? 'bg-blue-500' :
-                              candidate.dataAuthenticity.dataQuality === 'fair' ? 'bg-yellow-500' :
-                              'bg-gray-500'
-                            }`} />
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                candidate.dataAuthenticity.dataQuality ===
+                                "excellent"
+                                  ? "bg-green-500"
+                                  : candidate.dataAuthenticity.dataQuality ===
+                                      "good"
+                                    ? "bg-blue-500"
+                                    : candidate.dataAuthenticity.dataQuality ===
+                                        "fair"
+                                      ? "bg-yellow-500"
+                                      : "bg-gray-500"
+                              }`}
+                            />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p className="text-xs">
-                              Data Quality: {candidate.dataAuthenticity.dataQuality}
-                              {candidate.dataAuthenticity.pollingConfidence > 0 && 
-                                ` (${Math.round(candidate.dataAuthenticity.pollingConfidence * 100)}% confidence)`
-                              }
+                              Data Quality:{" "}
+                              {candidate.dataAuthenticity.dataQuality}
+                              {candidate.dataAuthenticity.pollingConfidence >
+                                0 &&
+                                ` (${Math.round(candidate.dataAuthenticity.pollingConfidence * 100)}% confidence)`}
                             </p>
                           </TooltipContent>
                         </Tooltip>
@@ -363,7 +437,10 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
                     </p>
                   )}
                   {candidate.description && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1" title={candidate.description}>
+                    <p
+                      className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1"
+                      title={candidate.description}
+                    >
                       {candidate.description}
                     </p>
                   )}
@@ -391,11 +468,17 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-text-muted" />
-            <h4 className="text-sm font-medium text-app-fg">Offices on Ballot</h4>
+            <h4 className="text-sm font-medium text-app-fg">
+              Offices on Ballot
+            </h4>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {election.offices.map((office, index) => (
-              <Badge key={index} variant="outline" className="text-xs px-2 py-1 rounded-full border-border-subtle">
+              <Badge
+                key={index}
+                variant="outline"
+                className="text-xs px-2 py-1 rounded-full border-border-subtle"
+              >
                 {office}
               </Badge>
             ))}
@@ -410,13 +493,16 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
             variant="ghost"
             size="sm"
             onClick={toggleWatchlist}
-            disabled={addToWatchlistMutation.isPending || removeFromWatchlistMutation.isPending}
+            disabled={
+              addToWatchlistMutation.isPending ||
+              removeFromWatchlistMutation.isPending
+            }
             className={cn(
               "h-8 px-3 text-xs transition-all flex items-center gap-1.5",
               "hover:bg-primary/10",
-              isInWatchlist 
-                ? "text-red-600 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800" 
-                : "text-muted-foreground hover:text-foreground"
+              isInWatchlist
+                ? "text-red-600 bg-red-50 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800"
+                : "text-muted-foreground hover:text-foreground",
             )}
             title={isInWatchlist ? "Remove from watchlist" : "Add to watchlist"}
           >
@@ -425,15 +511,17 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
             ) : (
               <Heart className="h-3 w-3" />
             )}
-            <span className="text-xs">{isInWatchlist ? "Watching" : "Watch"}</span>
+            <span className="text-xs">
+              {isInWatchlist ? "Watching" : "Watch"}
+            </span>
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-1.5">
           {/* View Trends Button */}
           <Link href={`/elections/${election.id}`}>
-            <Button 
-              size="sm" 
+            <Button
+              size="sm"
               variant="outline"
               className="h-8 px-2.5 text-xs font-medium rounded-full flex-shrink-0"
             >
@@ -443,18 +531,20 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
           </Link>
 
           {/* Candidate Comparison Wizard */}
-          {candidates && Array.isArray(candidates) && candidates.length >= 2 && (
-            <CandidateComparisonWizard 
-              election={election} 
-              candidates={candidates as Candidate[]} 
-            />
-          )}
-          
+          {candidates &&
+            Array.isArray(candidates) &&
+            candidates.length >= 2 && (
+              <CandidateComparisonWizard
+                election={election}
+                candidates={candidates as Candidate[]}
+              />
+            )}
+
           {/* Details Dialog */}
           <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
             <DialogTrigger asChild>
-              <Button 
-                size="sm" 
+              <Button
+                size="sm"
                 className="h-8 px-2.5 text-xs font-medium rounded-full bg-primary hover:bg-primary/90 text-white flex-shrink-0"
               >
                 <Info className="h-3 w-3 mr-1" />
@@ -462,80 +552,100 @@ export function ElectionCard({ election, viewMode = "grid" }: ElectionCardProps)
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                {election.title} - Detailed Analysis
-              </DialogTitle>
-              <DialogDescription>
-                Comprehensive election information and AI-powered analysis
-              </DialogDescription>
-            </DialogHeader>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  {election.title} - Detailed Analysis
+                </DialogTitle>
+                <DialogDescription>
+                  Comprehensive election information and AI-powered analysis
+                </DialogDescription>
+              </DialogHeader>
 
-            <div className="space-y-6">
-              {/* Basic Election Info */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-muted-foreground">Date:</span>
-                  <span className="ml-2">{formatElectionDate(election.date)}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-muted-foreground">Type:</span>
-                  <span className="ml-2">{election.type}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-muted-foreground">Level:</span>
-                  <span className="ml-2">{election.level}</span>
-                </div>
-                <div>
-                  <span className="font-medium text-muted-foreground">State:</span>
-                  <span className="ml-2">{election.state}</span>
-                </div>
-              </div>
-
-              {/* AI Analysis Section */}
-              {isLoadingDetails ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="text-center space-y-2">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                    <p className="text-sm text-muted-foreground">Generating AI analysis...</p>
-                  </div>
-                </div>
-              ) : electionDetails ? (
-                <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Basic Election Info */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <h3 className="text-lg font-semibold mb-3 text-white">AI Analysis</h3>
-                    <div 
-                      className="text-white [&>*]:!text-white [&_p]:!text-white [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_h5]:!text-white [&_h6]:!text-white [&_strong]:!text-white [&_em]:!text-white [&_span]:!text-white [&_div]:!text-white [&_li]:!text-white [&_ul]:!text-white [&_ol]:!text-white"
-                      style={{ color: '#ffffff !important' }}
-                      dangerouslySetInnerHTML={{ 
-                        __html: (electionDetails as any).aiAnalysis?.replace(/\n/g, '<br>') || 'Analysis not available'
-                      }}
-                    />
+                    <span className="font-medium text-muted-foreground">
+                      Date:
+                    </span>
+                    <span className="ml-2">
+                      {formatElectionDate(election.date)}
+                    </span>
                   </div>
-                  
-                  {(electionDetails as any).sources?.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Sources</h4>
-                      <div className="space-y-1">
-                        {(electionDetails as any).sources.map((source: string, index: number) => (
-                          <a 
-                            key={index}
-                            href={source}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline block"
-                          >
-                            {source}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  <div>
+                    <span className="font-medium text-muted-foreground">
+                      Type:
+                    </span>
+                    <span className="ml-2">{election.type}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-muted-foreground">
+                      Level:
+                    </span>
+                    <span className="ml-2">{election.level}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-muted-foreground">
+                      State:
+                    </span>
+                    <span className="ml-2">{election.state}</span>
+                  </div>
                 </div>
-              ) : null}
-            </div>
-          </DialogContent>
+
+                {/* AI Analysis Section */}
+                {isLoadingDetails ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-sm text-muted-foreground">
+                        Generating AI analysis...
+                      </p>
+                    </div>
+                  </div>
+                ) : electionDetails ? (
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 text-white">
+                        AI Analysis
+                      </h3>
+                      <div
+                        className="text-white [&>*]:!text-white [&_p]:!text-white [&_h1]:!text-white [&_h2]:!text-white [&_h3]:!text-white [&_h4]:!text-white [&_h5]:!text-white [&_h6]:!text-white [&_strong]:!text-white [&_em]:!text-white [&_span]:!text-white [&_div]:!text-white [&_li]:!text-white [&_ul]:!text-white [&_ol]:!text-white"
+                        style={{ color: "#ffffff !important" }}
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            (electionDetails as any).aiAnalysis?.replace(
+                              /\n/g,
+                              "<br>",
+                            ) || "Analysis not available",
+                        }}
+                      />
+                    </div>
+
+                    {(electionDetails as any).sources?.length > 0 && (
+                      <div>
+                        <h4 className="font-medium mb-2">Sources</h4>
+                        <div className="space-y-1">
+                          {(electionDetails as any).sources.map(
+                            (source: string, index: number) => (
+                              <a
+                                key={index}
+                                href={source}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:underline block"
+                              >
+                                {source}
+                              </a>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            </DialogContent>
           </Dialog>
         </div>
       </footer>

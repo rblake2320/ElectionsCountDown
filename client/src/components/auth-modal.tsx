@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,9 +41,9 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/auth/${type}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -45,20 +51,21 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
+        throw new Error(data.error || "Authentication failed");
       }
 
       // Store token in localStorage
-      localStorage.setItem('authToken', data.token);
-      
+      localStorage.setItem("authToken", data.token);
+
       onAuth(data.user, data.token);
       onClose();
-      
+
       toast({
         title: "Success",
-        description: type === "signin" ? "Welcome back!" : "Account created successfully!",
+        description:
+          type === "signin" ? "Welcome back!" : "Account created successfully!",
       });
-      
+
       setFormData({ email: "", password: "" });
     } catch (error: any) {
       toast({
@@ -72,7 +79,7 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -81,16 +88,17 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
         <DialogHeader>
           <DialogTitle>Access Your Election Tracker</DialogTitle>
           <DialogDescription>
-            Sign in to save elections to your watchlist and track your viewing history
+            Sign in to save elections to your watchlist and track your viewing
+            history
           </DialogDescription>
         </DialogHeader>
-        
+
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="signin" className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="signin-email">Email</Label>
@@ -115,13 +123,15 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
                   type="password"
                   placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className="pl-10"
                 />
               </div>
             </div>
-            <Button 
-              onClick={() => handleSubmit("signin")} 
+            <Button
+              onClick={() => handleSubmit("signin")}
               disabled={isLoading}
               className="w-full"
             >
@@ -131,7 +141,7 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
               Sign In
             </Button>
           </TabsContent>
-          
+
           <TabsContent value="signup" className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="signup-email">Email</Label>
@@ -156,13 +166,15 @@ export function AuthModal({ isOpen, onClose, onAuth }: AuthModalProps) {
                   type="password"
                   placeholder="Create a password (min 6 characters)"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className="pl-10"
                 />
               </div>
             </div>
-            <Button 
-              onClick={() => handleSubmit("signup")} 
+            <Button
+              onClick={() => handleSubmit("signup")}
               disabled={isLoading}
               className="w-full"
             >

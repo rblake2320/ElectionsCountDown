@@ -1,12 +1,33 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe, Shield, Activity, AlertTriangle, CheckCircle, Clock, Users, BarChart3 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Globe,
+  Shield,
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Users,
+  BarChart3,
+} from "lucide-react";
 
 interface GlobalStatus {
   ideaConnected: boolean;
@@ -41,7 +62,7 @@ interface GlobalElection {
   electionType: string;
   date: string;
   title: string;
-  status: 'upcoming' | 'ongoing' | 'completed';
+  status: "upcoming" | "ongoing" | "completed";
   participatingParties: string[];
   voterTurnout?: number;
   source: string;
@@ -63,13 +84,16 @@ export default function GlobalDashboard() {
   const [selectedCountry, setSelectedCountry] = useState<string>("all");
 
   // Global system status
-  const { data: globalStatus, isLoading: statusLoading } = useQuery<GlobalStatus>({
-    queryKey: ["/api/global/status"],
-    refetchInterval: 30000,
-  });
+  const { data: globalStatus, isLoading: statusLoading } =
+    useQuery<GlobalStatus>({
+      queryKey: ["/api/global/status"],
+      refetchInterval: 30000,
+    });
 
   // Global elections data
-  const { data: globalElections, isLoading: electionsLoading } = useQuery<GlobalElection[]>({
+  const { data: globalElections, isLoading: electionsLoading } = useQuery<
+    GlobalElection[]
+  >({
     queryKey: ["/api/global/elections", selectedCountry],
     enabled: true,
   });
@@ -79,22 +103,30 @@ export default function GlobalDashboard() {
     queryKey: ["/api/global/legislative/all"],
   });
 
-  const getStatusColor = (connected: boolean) => 
+  const getStatusColor = (connected: boolean) =>
     connected ? "text-green-600" : "text-red-600";
 
-  const getStatusIcon = (connected: boolean) => 
-    connected ? <CheckCircle className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />;
+  const getStatusIcon = (connected: boolean) =>
+    connected ? (
+      <CheckCircle className="h-4 w-4" />
+    ) : (
+      <AlertTriangle className="h-4 w-4" />
+    );
 
   const getElectionStatusBadge = (status: string) => {
     const variants = {
       upcoming: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-      ongoing: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      completed: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+      ongoing:
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      completed:
+        "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
     };
     return variants[status as keyof typeof variants] || variants.upcoming;
   };
 
-  const countries = Array.from(new Set(globalElections?.map(e => e.country) || []));
+  const countries = Array.from(
+    new Set(globalElections?.map((e) => e.country) || []),
+  );
 
   return (
     <div className="p-6 space-y-6">
@@ -125,12 +157,15 @@ export default function GlobalDashboard() {
           <CardContent>
             <div className="flex items-center space-x-2">
               {getStatusIcon(globalStatus?.monitoring.isRunning || false)}
-              <span className={`font-medium ${getStatusColor(globalStatus?.monitoring.isRunning || false)}`}>
-                {globalStatus?.monitoring.isRunning ? 'Active' : 'Stopped'}
+              <span
+                className={`font-medium ${getStatusColor(globalStatus?.monitoring.isRunning || false)}`}
+              >
+                {globalStatus?.monitoring.isRunning ? "Active" : "Stopped"}
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {globalStatus?.monitoring.activeTargets || 0}/{globalStatus?.monitoring.targetCount || 0} targets
+              {globalStatus?.monitoring.activeTargets || 0}/
+              {globalStatus?.monitoring.targetCount || 0} targets
             </p>
           </CardContent>
         </Card>
@@ -163,9 +198,7 @@ export default function GlobalDashboard() {
             <div className="text-2xl font-bold text-green-600">
               {globalStatus?.compliance.regulations.length || 0}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Active regulations
-            </p>
+            <p className="text-xs text-muted-foreground">Active regulations</p>
           </CardContent>
         </Card>
 
@@ -200,19 +233,23 @@ export default function GlobalDashboard() {
             <CardHeader>
               <CardTitle>International Elections</CardTitle>
               <CardDescription>
-                Elections monitored through International IDEA and partner organizations
+                Elections monitored through International IDEA and partner
+                organizations
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 mb-4">
                 <label className="text-sm font-medium">Filter by Country</label>
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                <Select
+                  value={selectedCountry}
+                  onValueChange={setSelectedCountry}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All Countries" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Countries</SelectItem>
-                    {countries.map(country => (
+                    {countries.map((country) => (
                       <SelectItem key={country} value={country}>
                         {country}
                       </SelectItem>
@@ -235,22 +272,27 @@ export default function GlobalDashboard() {
                           <div className="flex-1">
                             <h3 className="font-medium">{election.title}</h3>
                             <p className="text-sm text-muted-foreground">
-                              {election.country} • {new Date(election.date).toLocaleDateString()}
+                              {election.country} •{" "}
+                              {new Date(election.date).toLocaleDateString()}
                             </p>
                           </div>
-                          <Badge className={getElectionStatusBadge(election.status)}>
+                          <Badge
+                            className={getElectionStatusBadge(election.status)}
+                          >
                             {election.status}
                           </Badge>
                         </div>
-                        
+
                         <div className="flex items-center space-x-4 text-sm">
                           <span>Type: {election.electionType}</span>
                           {election.voterTurnout && (
                             <span>Turnout: {election.voterTurnout}%</span>
                           )}
-                          <span>Parties: {election.participatingParties.length}</span>
+                          <span>
+                            Parties: {election.participatingParties.length}
+                          </span>
                         </div>
-                        
+
                         <div className="mt-2 text-xs text-muted-foreground">
                           Source: {election.source}
                         </div>
@@ -283,28 +325,46 @@ export default function GlobalDashboard() {
                   <span>International IDEA</span>
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(globalStatus?.ideaConnected || false)}
-                    <span className={getStatusColor(globalStatus?.ideaConnected || false)}>
-                      {globalStatus?.ideaConnected ? 'Connected' : 'Disconnected'}
+                    <span
+                      className={getStatusColor(
+                        globalStatus?.ideaConnected || false,
+                      )}
+                    >
+                      {globalStatus?.ideaConnected
+                        ? "Connected"
+                        : "Disconnected"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>ACE Electoral Network</span>
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(globalStatus?.aceNetworkConnected || false)}
-                    <span className={getStatusColor(globalStatus?.aceNetworkConnected || false)}>
-                      {globalStatus?.aceNetworkConnected ? 'Connected' : 'Disconnected'}
+                    <span
+                      className={getStatusColor(
+                        globalStatus?.aceNetworkConnected || false,
+                      )}
+                    >
+                      {globalStatus?.aceNetworkConnected
+                        ? "Connected"
+                        : "Disconnected"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>Ballotpedia</span>
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(globalStatus?.ballotpediaConnected || false)}
-                    <span className={getStatusColor(globalStatus?.ballotpediaConnected || false)}>
-                      {globalStatus?.ballotpediaConnected ? 'Connected' : 'Disconnected'}
+                    <span
+                      className={getStatusColor(
+                        globalStatus?.ballotpediaConnected || false,
+                      )}
+                    >
+                      {globalStatus?.ballotpediaConnected
+                        ? "Connected"
+                        : "Disconnected"}
                     </span>
                   </div>
                 </div>
@@ -323,12 +383,18 @@ export default function GlobalDashboard() {
                   <span>Open States API</span>
                   <div className="flex items-center space-x-2">
                     {getStatusIcon(globalStatus?.openStatesConnected || false)}
-                    <span className={getStatusColor(globalStatus?.openStatesConnected || false)}>
-                      {globalStatus?.openStatesConnected ? 'Connected' : 'Disconnected'}
+                    <span
+                      className={getStatusColor(
+                        globalStatus?.openStatesConnected || false,
+                      )}
+                    >
+                      {globalStatus?.openStatesConnected
+                        ? "Connected"
+                        : "Disconnected"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>ProPublica Congress</span>
                   <div className="flex items-center space-x-2">
@@ -336,7 +402,7 @@ export default function GlobalDashboard() {
                     <span className="text-green-600">Connected</span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span>VoteSmart</span>
                   <div className="flex items-center space-x-2">
@@ -363,7 +429,9 @@ export default function GlobalDashboard() {
                   {legislativeEvents.slice(0, 10).map((event) => (
                     <div key={event.id} className="border rounded-lg p-3">
                       <div className="flex items-start justify-between mb-1">
-                        <h4 className="font-medium text-sm">{event.data.name}</h4>
+                        <h4 className="font-medium text-sm">
+                          {event.data.name}
+                        </h4>
                         <Badge variant="outline">{event.state}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mb-2">
@@ -371,8 +439,12 @@ export default function GlobalDashboard() {
                       </p>
                       <div className="flex items-center space-x-4 text-xs text-muted-foreground">
                         <span>Type: {event.type}</span>
-                        <span>Date: {new Date(event.date).toLocaleDateString()}</span>
-                        {event.data.location && <span>Location: {event.data.location}</span>}
+                        <span>
+                          Date: {new Date(event.date).toLocaleDateString()}
+                        </span>
+                        {event.data.location && (
+                          <span>Location: {event.data.location}</span>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -392,18 +464,18 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Regulatory Compliance</CardTitle>
-                <CardDescription>
-                  Active compliance frameworks
-                </CardDescription>
+                <CardDescription>Active compliance frameworks</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {globalStatus?.compliance.regulations.map((regulation, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-sm">{regulation}</span>
-                    </div>
-                  ))}
+                  {globalStatus?.compliance.regulations.map(
+                    (regulation, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <span className="text-sm">{regulation}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -411,9 +483,7 @@ export default function GlobalDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Data Protection</CardTitle>
-                <CardDescription>
-                  Privacy and audit information
-                </CardDescription>
+                <CardDescription>Privacy and audit information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -422,21 +492,26 @@ export default function GlobalDashboard() {
                     {globalStatus?.compliance.auditLogCount || 0}
                   </div>
                 </div>
-                
+
                 <div>
-                  <div className="text-sm font-medium">Data Types Monitored</div>
+                  <div className="text-sm font-medium">
+                    Data Types Monitored
+                  </div>
                   <div className="text-2xl font-bold">
                     {globalStatus?.compliance.dataTypes.length || 0}
                   </div>
                 </div>
-                
+
                 <div>
-                  <div className="text-sm font-medium">Last Retention Cleanup</div>
+                  <div className="text-sm font-medium">
+                    Last Retention Cleanup
+                  </div>
                   <div className="text-sm text-muted-foreground">
-                    {globalStatus?.compliance.lastRetentionCleanup 
-                      ? new Date(globalStatus.compliance.lastRetentionCleanup).toLocaleDateString()
-                      : 'Not available'
-                    }
+                    {globalStatus?.compliance.lastRetentionCleanup
+                      ? new Date(
+                          globalStatus.compliance.lastRetentionCleanup,
+                        ).toLocaleDateString()
+                      : "Not available"}
                   </div>
                 </div>
               </CardContent>
@@ -446,8 +521,10 @@ export default function GlobalDashboard() {
           <Alert>
             <Shield className="h-4 w-4" />
             <AlertDescription>
-              All election data is processed in compliance with GDPR, CCPA, PIPEDA, LGPD, and international election monitoring standards. 
-              Automated compliance checks run continuously to ensure data protection requirements are met.
+              All election data is processed in compliance with GDPR, CCPA,
+              PIPEDA, LGPD, and international election monitoring standards.
+              Automated compliance checks run continuously to ensure data
+              protection requirements are met.
             </AlertDescription>
           </Alert>
         </TabsContent>

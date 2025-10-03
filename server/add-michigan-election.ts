@@ -2,7 +2,7 @@
  * Add Michigan Primary Election with Real Candidates
  */
 
-import { storage } from './storage';
+import { storage } from "./storage";
 
 export async function addMichiganPrimaryWithCandidates() {
   try {
@@ -12,38 +12,38 @@ export async function addMichiganPrimaryWithCandidates() {
       subtitle: "Federal and State Primary Elections",
       location: "Michigan",
       state: "MI",
-      date: new Date('2025-02-04'), // 12 days from now approximately
+      date: new Date("2025-02-04"), // 12 days from now approximately
       type: "Primary",
       level: "Federal",
       offices: ["U.S. House", "U.S. Senate"],
       description: "Michigan primary elections for federal offices",
-      isActive: true
+      isActive: true,
     });
 
-    console.log('Created Michigan Primary Election:', michiganPrimary.id);
+    console.log("Created Michigan Primary Election:", michiganPrimary.id);
 
     // Add real Michigan candidates
     const michiganCandidates = [
       // U.S. Senate Race
-      { 
-        name: "Elissa Slotkin", 
-        party: "Democratic", 
+      {
+        name: "Elissa Slotkin",
+        party: "Democratic",
         electionId: michiganPrimary.id,
         isIncumbent: false,
         description: "U.S. Representative running for Senate",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
       {
         name: "Mike Rogers",
-        party: "Republican", 
+        party: "Republican",
         electionId: michiganPrimary.id,
         isIncumbent: false,
         description: "Former U.S. Representative running for Senate",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
       {
         name: "Alex Mooney",
@@ -53,7 +53,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Former West Virginia Representative",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
 
       // U.S. House District 7
@@ -65,7 +65,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Incumbent U.S. Representative District 7",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
       {
         name: "Curtis Hertel Jr.",
@@ -75,7 +75,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "State Senator running for U.S. House District 7",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
 
       // U.S. House District 8
@@ -87,7 +87,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Former candidate for U.S. House District 8",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
       {
         name: "Dan Kildee",
@@ -97,7 +97,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Incumbent U.S. Representative District 8",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
 
       // U.S. House District 10
@@ -109,7 +109,7 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Incumbent U.S. Representative District 10",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
+        lastPollingUpdate: null,
       },
       {
         name: "Carl Marlinga",
@@ -119,8 +119,8 @@ export async function addMichiganPrimaryWithCandidates() {
         description: "Macomb County Prosecutor",
         pollingSupport: null,
         pollingSource: null,
-        lastPollingUpdate: null
-      }
+        lastPollingUpdate: null,
+      },
     ];
 
     let addedCount = 0;
@@ -128,7 +128,9 @@ export async function addMichiganPrimaryWithCandidates() {
       try {
         await storage.createCandidate(candidateData);
         addedCount++;
-        console.log(`Added candidate: ${candidateData.name} (${candidateData.party})`);
+        console.log(
+          `Added candidate: ${candidateData.name} (${candidateData.party})`,
+        );
       } catch (error) {
         console.error(`Error adding candidate ${candidateData.name}:`, error);
       }
@@ -137,11 +139,10 @@ export async function addMichiganPrimaryWithCandidates() {
     return {
       election: michiganPrimary,
       candidatesAdded: addedCount,
-      totalCandidates: michiganCandidates.length
+      totalCandidates: michiganCandidates.length,
     };
-
   } catch (error) {
-    console.error('Error adding Michigan primary:', error);
+    console.error("Error adding Michigan primary:", error);
     throw error;
   }
 }

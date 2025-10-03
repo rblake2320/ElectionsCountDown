@@ -1,4 +1,15 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, numeric, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+  varchar,
+  numeric,
+  index,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -56,8 +67,12 @@ export const users = pgTable("users", {
 // Watchlist for authenticated users
 export const watchlist = pgTable("watchlist", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  userId: varchar("user_id")
+    .references(() => users.id)
+    .notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -77,7 +92,7 @@ export const congressMembers = pgTable("congress_members", {
 
 // Filter schema
 export const filterSchema = z.object({
-  timeRange: z.enum(['week', 'month', 'quarter', 'year', 'all']).optional(),
+  timeRange: z.enum(["week", "month", "quarter", "year", "all"]).optional(),
   electionType: z.array(z.string()).optional(),
   level: z.array(z.string()).optional(),
   state: z.string().optional(),
@@ -126,7 +141,9 @@ export const insertWatchlistSchema = createInsertSchema(watchlist).omit({
   createdAt: true,
 });
 
-export const insertCongressMemberSchema = createInsertSchema(congressMembers).omit({
+export const insertCongressMemberSchema = createInsertSchema(
+  congressMembers,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,

@@ -30,11 +30,11 @@ interface LocationData {
 
 export class MapQuestService {
   private apiKey: string;
-  private baseUrl = 'http://www.mapquestapi.com/geocoding/v1';
+  private baseUrl = "http://www.mapquestapi.com/geocoding/v1";
 
   constructor() {
     if (!process.env.MAPQUEST_API_KEY) {
-      throw new Error('MAPQUEST_API_KEY environment variable is required');
+      throw new Error("MAPQUEST_API_KEY environment variable is required");
     }
     this.apiKey = process.env.MAPQUEST_API_KEY;
   }
@@ -43,20 +43,25 @@ export class MapQuestService {
     try {
       const encodedAddress = encodeURIComponent(address);
       const url = `${this.baseUrl}/address?key=${this.apiKey}&location=${encodedAddress}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`MapQuest API error: ${response.statusText}`);
       }
 
       const data: MapQuestGeocodeResponse = await response.json();
-      
-      if (!data.results || data.results.length === 0 || !data.results[0].locations || data.results[0].locations.length === 0) {
+
+      if (
+        !data.results ||
+        data.results.length === 0 ||
+        !data.results[0].locations ||
+        data.results[0].locations.length === 0
+      ) {
         return null;
       }
 
       const location = data.results[0].locations[0];
-      
+
       return {
         latitude: location.latLng.lat,
         longitude: location.latLng.lng,
@@ -65,31 +70,39 @@ export class MapQuestService {
         city: location.adminArea5,
         postalCode: location.postalCode,
         street: location.street,
-        quality: location.geocodeQuality
+        quality: location.geocodeQuality,
       };
     } catch (error) {
-      console.error('MapQuest geocoding error:', error);
+      console.error("MapQuest geocoding error:", error);
       return null;
     }
   }
 
-  async reverseGeocode(latitude: number, longitude: number): Promise<LocationData | null> {
+  async reverseGeocode(
+    latitude: number,
+    longitude: number,
+  ): Promise<LocationData | null> {
     try {
       const url = `${this.baseUrl}/reverse?key=${this.apiKey}&location=${latitude},${longitude}`;
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`MapQuest API error: ${response.statusText}`);
       }
 
       const data: MapQuestGeocodeResponse = await response.json();
-      
-      if (!data.results || data.results.length === 0 || !data.results[0].locations || data.results[0].locations.length === 0) {
+
+      if (
+        !data.results ||
+        data.results.length === 0 ||
+        !data.results[0].locations ||
+        data.results[0].locations.length === 0
+      ) {
         return null;
       }
 
       const location = data.results[0].locations[0];
-      
+
       return {
         latitude,
         longitude,
@@ -98,44 +111,58 @@ export class MapQuestService {
         city: location.adminArea5,
         postalCode: location.postalCode,
         street: location.street,
-        quality: location.geocodeQuality
+        quality: location.geocodeQuality,
       };
     } catch (error) {
-      console.error('MapQuest reverse geocoding error:', error);
+      console.error("MapQuest reverse geocoding error:", error);
       return null;
     }
   }
 
-  async validateAddress(address: string): Promise<{ isValid: boolean; suggestion?: string; location?: LocationData }> {
+  async validateAddress(
+    address: string,
+  ): Promise<{
+    isValid: boolean;
+    suggestion?: string;
+    location?: LocationData;
+  }> {
     try {
       const location = await this.geocodeAddress(address);
-      
+
       if (!location) {
         return { isValid: false };
       }
 
       // Consider high-quality geocodes as valid
-      const isValid = ['POINT', 'ADDRESS', 'INTERSECTION'].includes(location.quality);
-      
+      const isValid = ["POINT", "ADDRESS", "INTERSECTION"].includes(
+        location.quality,
+      );
+
       return {
         isValid,
-        suggestion: isValid ? undefined : `${location.street}, ${location.city}, ${location.state} ${location.postalCode}`,
-        location
+        suggestion: isValid
+          ? undefined
+          : `${location.street}, ${location.city}, ${location.state} ${location.postalCode}`,
+        location,
       };
     } catch (error) {
-      console.error('MapQuest address validation error:', error);
+      console.error("MapQuest address validation error:", error);
       return { isValid: false };
     }
   }
 
-  async findNearbyElections(latitude: number, longitude: number, radiusMiles: number = 50): Promise<LocationData[]> {
+  async findNearbyElections(
+    latitude: number,
+    longitude: number,
+    radiusMiles: number = 50,
+  ): Promise<LocationData[]> {
     try {
       // This would typically involve a spatial query against the elections database
       // For now, we'll return the reverse geocoded location
       const location = await this.reverseGeocode(latitude, longitude);
       return location ? [location] : [];
     } catch (error) {
-      console.error('MapQuest nearby elections error:', error);
+      console.error("MapQuest nearby elections error:", error);
       return [];
     }
   }

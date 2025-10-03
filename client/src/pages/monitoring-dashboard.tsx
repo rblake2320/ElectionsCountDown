@@ -1,23 +1,43 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, Square, Plus, Globe, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import {
+  Play,
+  Square,
+  Plus,
+  Globe,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 interface MonitoringTarget {
   url: string;
-  type: 'results' | 'feed' | 'api';
-  priority: 'high' | 'medium' | 'low';
+  type: "results" | "feed" | "api";
+  priority: "high" | "medium" | "low";
   state?: string;
   lastChecked?: string;
-  status: 'active' | 'inactive' | 'error';
+  status: "active" | "inactive" | "error";
 }
 
 interface MonitoringStatus {
@@ -30,23 +50,32 @@ interface MonitoringStatus {
 
 export default function MonitoringDashboard() {
   const [newTargetUrl, setNewTargetUrl] = useState("");
-  const [newTargetType, setNewTargetType] = useState<'results' | 'feed' | 'api'>('results');
-  const [newTargetPriority, setNewTargetPriority] = useState<'high' | 'medium' | 'low'>('medium');
+  const [newTargetType, setNewTargetType] = useState<
+    "results" | "feed" | "api"
+  >("results");
+  const [newTargetPriority, setNewTargetPriority] = useState<
+    "high" | "medium" | "low"
+  >("medium");
   const [newTargetState, setNewTargetState] = useState("");
   const [intervalMinutes, setIntervalMinutes] = useState(5);
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Get monitoring status
-  const { data: monitoringStatus, isLoading, error } = useQuery<MonitoringStatus>({
+  const {
+    data: monitoringStatus,
+    isLoading,
+    error,
+  } = useQuery<MonitoringStatus>({
     queryKey: ["/api/monitoring/status"],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Start monitoring mutation
   const startMonitoringMutation = useMutation({
-    mutationFn: () => apiRequest("/api/monitoring/start", "POST", { intervalMinutes }),
+    mutationFn: () =>
+      apiRequest("/api/monitoring/start", "POST", { intervalMinutes }),
     onSuccess: () => {
       toast({
         title: "Monitoring Started",
@@ -84,12 +113,13 @@ export default function MonitoringDashboard() {
 
   // Add monitoring target mutation
   const addTargetMutation = useMutation({
-    mutationFn: () => apiRequest("/api/monitoring/targets", "POST", {
-      url: newTargetUrl,
-      type: newTargetType,
-      priority: newTargetPriority,
-      state: newTargetState || undefined,
-    }),
+    mutationFn: () =>
+      apiRequest("/api/monitoring/targets", "POST", {
+        url: newTargetUrl,
+        type: newTargetType,
+        priority: newTargetPriority,
+        state: newTargetState || undefined,
+      }),
     onSuccess: () => {
       toast({
         title: "Target Added",
@@ -130,9 +160,9 @@ export default function MonitoringDashboard() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active':
+      case "active":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'error':
+      case "error":
         return <XCircle className="h-4 w-4 text-red-500" />;
       default:
         return <AlertCircle className="h-4 w-4 text-yellow-500" />;
@@ -141,14 +171,14 @@ export default function MonitoringDashboard() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'low':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case "high":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "low":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
     }
   };
 
@@ -185,8 +215,8 @@ export default function MonitoringDashboard() {
         </div>
         <div className="flex items-center space-x-2">
           {monitoringStatus?.isRunning ? (
-            <Button 
-              onClick={handleStopMonitoring} 
+            <Button
+              onClick={handleStopMonitoring}
               variant="destructive"
               disabled={stopMonitoringMutation.isPending}
             >
@@ -194,7 +224,7 @@ export default function MonitoringDashboard() {
               Stop Monitoring
             </Button>
           ) : (
-            <Button 
+            <Button
               onClick={handleStartMonitoring}
               disabled={startMonitoringMutation.isPending}
             >
@@ -215,12 +245,16 @@ export default function MonitoringDashboard() {
               {monitoringStatus?.isRunning ? (
                 <>
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-2xl font-bold text-green-600">Active</span>
+                  <span className="text-2xl font-bold text-green-600">
+                    Active
+                  </span>
                 </>
               ) : (
                 <>
                   <XCircle className="h-5 w-5 text-red-500" />
-                  <span className="text-2xl font-bold text-red-600">Stopped</span>
+                  <span className="text-2xl font-bold text-red-600">
+                    Stopped
+                  </span>
                 </>
               )}
             </div>
@@ -232,7 +266,9 @@ export default function MonitoringDashboard() {
             <CardTitle className="text-sm font-medium">Total Targets</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{monitoringStatus?.targetCount || 0}</div>
+            <div className="text-2xl font-bold">
+              {monitoringStatus?.targetCount || 0}
+            </div>
             <p className="text-xs text-muted-foreground">
               {monitoringStatus?.activeTargets || 0} active
             </p>
@@ -245,10 +281,9 @@ export default function MonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-sm">
-              {monitoringStatus?.lastChecked ? 
-                new Date(monitoringStatus.lastChecked).toLocaleString() : 
-                'Never'
-              }
+              {monitoringStatus?.lastChecked
+                ? new Date(monitoringStatus.lastChecked).toLocaleString()
+                : "Never"}
             </div>
           </CardContent>
         </Card>
@@ -270,34 +305,38 @@ export default function MonitoringDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {monitoringStatus?.targets && monitoringStatus.targets.length > 0 ? (
+              {monitoringStatus?.targets &&
+              monitoringStatus.targets.length > 0 ? (
                 <div className="space-y-3">
                   {monitoringStatus.targets.map((target, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           {getStatusIcon(target.status)}
-                          <span className="font-medium truncate">{target.url}</span>
+                          <span className="font-medium truncate">
+                            {target.url}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Badge variant="outline" className={getPriorityColor(target.priority)}>
+                          <Badge
+                            variant="outline"
+                            className={getPriorityColor(target.priority)}
+                          >
                             {target.priority}
                           </Badge>
-                          <Badge variant="outline">
-                            {target.type}
-                          </Badge>
+                          <Badge variant="outline">{target.type}</Badge>
                           {target.state && (
-                            <Badge variant="outline">
-                              {target.state}
-                            </Badge>
+                            <Badge variant="outline">{target.state}</Badge>
                           )}
                         </div>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {target.lastChecked ? 
-                          new Date(target.lastChecked).toLocaleTimeString() : 
-                          'Not checked'
-                        }
+                        {target.lastChecked
+                          ? new Date(target.lastChecked).toLocaleTimeString()
+                          : "Not checked"}
                       </div>
                     </div>
                   ))}
@@ -306,7 +345,9 @@ export default function MonitoringDashboard() {
                 <div className="text-center py-8 text-muted-foreground">
                   <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No monitoring targets configured</p>
-                  <p className="text-sm">Add targets to start monitoring election data</p>
+                  <p className="text-sm">
+                    Add targets to start monitoring election data
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -334,7 +375,12 @@ export default function MonitoringDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Type</label>
-                  <Select value={newTargetType} onValueChange={(value: 'results' | 'feed' | 'api') => setNewTargetType(value)}>
+                  <Select
+                    value={newTargetType}
+                    onValueChange={(value: "results" | "feed" | "api") =>
+                      setNewTargetType(value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -348,7 +394,12 @@ export default function MonitoringDashboard() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Priority</label>
-                  <Select value={newTargetPriority} onValueChange={(value: 'high' | 'medium' | 'low') => setNewTargetPriority(value)}>
+                  <Select
+                    value={newTargetPriority}
+                    onValueChange={(value: "high" | "medium" | "low") =>
+                      setNewTargetPriority(value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -370,8 +421,8 @@ export default function MonitoringDashboard() {
                 />
               </div>
 
-              <Button 
-                onClick={handleAddTarget} 
+              <Button
+                onClick={handleAddTarget}
                 className="w-full"
                 disabled={addTargetMutation.isPending}
               >
@@ -392,13 +443,17 @@ export default function MonitoringDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Check Interval (minutes)</label>
+                <label className="text-sm font-medium">
+                  Check Interval (minutes)
+                </label>
                 <Input
                   type="number"
                   min="1"
                   max="60"
                   value={intervalMinutes}
-                  onChange={(e) => setIntervalMinutes(parseInt(e.target.value) || 5)}
+                  onChange={(e) =>
+                    setIntervalMinutes(parseInt(e.target.value) || 5)
+                  }
                 />
                 <p className="text-xs text-muted-foreground">
                   How often to check monitoring targets for updates
@@ -408,8 +463,8 @@ export default function MonitoringDashboard() {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Lower intervals provide more real-time updates but use more resources. 
-                  Recommended: 5-15 minutes for most use cases.
+                  Lower intervals provide more real-time updates but use more
+                  resources. Recommended: 5-15 minutes for most use cases.
                 </AlertDescription>
               </Alert>
             </CardContent>

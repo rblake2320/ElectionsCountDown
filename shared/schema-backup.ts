@@ -1,4 +1,15 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, numeric, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  timestamp,
+  jsonb,
+  varchar,
+  numeric,
+  index,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -58,25 +69,19 @@ export type InsertCandidate = z.infer<typeof insertCandidateSchema>;
 
 // Filter types for the frontend
 export const filterSchema = z.object({
-  timeRange: z.enum(['week', 'month', 'quarter', 'year', 'all']).optional(),
-  electionType: z.union([
-    z.string(),
-    z.array(z.string())
-  ]).optional().transform(val =>
-    Array.isArray(val) ? val : val ? [val] : undefined
-  ),
-  level: z.union([
-    z.string(),
-    z.array(z.string())
-  ]).optional().transform(val =>
-    Array.isArray(val) ? val : val ? [val] : undefined
-  ),
-  party: z.union([
-    z.string(),
-    z.array(z.string())
-  ]).optional().transform(val =>
-    Array.isArray(val) ? val : val ? [val] : undefined
-  ),
+  timeRange: z.enum(["week", "month", "quarter", "year", "all"]).optional(),
+  electionType: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => (Array.isArray(val) ? val : val ? [val] : undefined)),
+  level: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => (Array.isArray(val) ? val : val ? [val] : undefined)),
+  party: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val) => (Array.isArray(val) ? val : val ? [val] : undefined)),
   state: z.string().optional(),
   search: z.string().optional(),
 });
@@ -88,7 +93,9 @@ export type ElectionFilters = z.infer<typeof filterSchema>;
 export const watchlists = pgTable("watchlists", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -161,15 +168,19 @@ export const insertWatchlistSchema = createInsertSchema(watchlists).omit({
   createdAt: true,
 });
 
-export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit({
-  id: true,
-  timestamp: true,
-});
+export const insertUserAnalyticsSchema = createInsertSchema(userAnalytics).omit(
+  {
+    id: true,
+    timestamp: true,
+  },
+);
 
-export const insertSearchHistorySchema = createInsertSchema(searchHistory).omit({
-  id: true,
-  timestamp: true,
-});
+export const insertSearchHistorySchema = createInsertSchema(searchHistory).omit(
+  {
+    id: true,
+    timestamp: true,
+  },
+);
 
 // User types
 export type User = typeof users.$inferSelect;
@@ -198,11 +209,13 @@ export const electionCycles = pgTable("election_cycles", {
 // Enhanced User Analytics
 export const userPreferences = pgTable("user_preferences", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   politicalAffiliation: varchar("political_affiliation", { length: 50 }),
   interests: text("interests").array(),
   notificationSettings: jsonb("notification_settings"),
-  privacyLevel: varchar("privacy_level", { length: 20 }).default('standard'), // 'minimal', 'standard', 'full'
+  privacyLevel: varchar("privacy_level", { length: 20 }).default("standard"), // 'minimal', 'standard', 'full'
   consentGiven: boolean("consent_given").default(false),
   consentDate: timestamp("consent_date"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -210,7 +223,9 @@ export const userPreferences = pgTable("user_preferences", {
 
 export const userDemographics = pgTable("user_demographics", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   ageRange: varchar("age_range", { length: 20 }),
   state: varchar("state", { length: 2 }),
   district: varchar("district", { length: 10 }),
@@ -239,7 +254,9 @@ export const engagementMetrics = pgTable("engagement_metrics", {
   timeOnPage: integer("time_on_page"), // seconds
   scrollDepth: integer("scroll_depth"), // percentage
   sharesCount: integer("shares_count").default(0),
-  electionCycleId: integer("election_cycle_id").references(() => electionCycles.id),
+  electionCycleId: integer("election_cycle_id").references(
+    () => electionCycles.id,
+  ),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -256,86 +273,119 @@ export const nonVoterTracking = pgTable("non_voter_tracking", {
 });
 
 // Relations for new tables
-export const electionCyclesRelations = relations(electionCycles, ({ many }) => ({
-  elections: many(elections),
-  engagementMetrics: many(engagementMetrics),
-}));
+export const electionCyclesRelations = relations(
+  electionCycles,
+  ({ many }) => ({
+    elections: many(elections),
+    engagementMetrics: many(engagementMetrics),
+  }),
+);
 
-export const userPreferencesRelations = relations(userPreferences, ({ one }) => ({
-  user: one(users, {
-    fields: [userPreferences.userId],
-    references: [users.id],
+export const userPreferencesRelations = relations(
+  userPreferences,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userPreferences.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const userDemographicsRelations = relations(userDemographics, ({ one }) => ({
-  user: one(users, {
-    fields: [userDemographics.userId],
-    references: [users.id],
+export const userDemographicsRelations = relations(
+  userDemographics,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userDemographics.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const interactionLogsRelations = relations(interactionLogs, ({ one }) => ({
-  user: one(users, {
-    fields: [interactionLogs.userId],
-    references: [users.id],
+export const interactionLogsRelations = relations(
+  interactionLogs,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [interactionLogs.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const engagementMetricsRelations = relations(engagementMetrics, ({ one }) => ({
-  user: one(users, {
-    fields: [engagementMetrics.userId],
-    references: [users.id],
+export const engagementMetricsRelations = relations(
+  engagementMetrics,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [engagementMetrics.userId],
+      references: [users.id],
+    }),
+    electionCycle: one(electionCycles, {
+      fields: [engagementMetrics.electionCycleId],
+      references: [electionCycles.id],
+    }),
   }),
-  electionCycle: one(electionCycles, {
-    fields: [engagementMetrics.electionCycleId],
-    references: [electionCycles.id],
-  }),
-}));
+);
 
-export const nonVoterTrackingRelations = relations(nonVoterTracking, ({ one }) => ({
-  user: one(users, {
-    fields: [nonVoterTracking.userId],
-    references: [users.id],
+export const nonVoterTrackingRelations = relations(
+  nonVoterTracking,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [nonVoterTracking.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
 // Update elections table to link with cycles
-export const electionsWithCycleRelations = relations(elections, ({ many, one }) => ({
-  candidates: many(candidates),
-  electionCycle: one(electionCycles, {
-    fields: [elections.id], // Will need to add electionCycleId to elections table
-    references: [electionCycles.id],
+export const electionsWithCycleRelations = relations(
+  elections,
+  ({ many, one }) => ({
+    candidates: many(candidates),
+    electionCycle: one(electionCycles, {
+      fields: [elections.id], // Will need to add electionCycleId to elections table
+      references: [electionCycles.id],
+    }),
   }),
-}));
+);
 
 // Insert schemas for new tables
-export const insertElectionCycleSchema = createInsertSchema(electionCycles).omit({
+export const insertElectionCycleSchema = createInsertSchema(
+  electionCycles,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertUserPreferencesSchema = createInsertSchema(userPreferences).omit({
+export const insertUserPreferencesSchema = createInsertSchema(
+  userPreferences,
+).omit({
   id: true,
   updatedAt: true,
 });
 
-export const insertUserDemographicsSchema = createInsertSchema(userDemographics).omit({
+export const insertUserDemographicsSchema = createInsertSchema(
+  userDemographics,
+).omit({
   id: true,
   updatedAt: true,
 });
 
-export const insertInteractionLogSchema = createInsertSchema(interactionLogs).omit({
+export const insertInteractionLogSchema = createInsertSchema(
+  interactionLogs,
+).omit({
   id: true,
   timestamp: true,
 });
 
-export const insertEngagementMetricsSchema = createInsertSchema(engagementMetrics).omit({
+export const insertEngagementMetricsSchema = createInsertSchema(
+  engagementMetrics,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertNonVoterTrackingSchema = createInsertSchema(nonVoterTracking).omit({
+export const insertNonVoterTrackingSchema = createInsertSchema(
+  nonVoterTracking,
+).omit({
   id: true,
   updatedAt: true,
 });
@@ -346,13 +396,19 @@ export type InsertElectionCycle = z.infer<typeof insertElectionCycleSchema>;
 export type UserPreferences = typeof userPreferences.$inferSelect;
 export type InsertUserPreferences = z.infer<typeof insertUserPreferencesSchema>;
 export type UserDemographics = typeof userDemographics.$inferSelect;
-export type InsertUserDemographics = z.infer<typeof insertUserDemographicsSchema>;
+export type InsertUserDemographics = z.infer<
+  typeof insertUserDemographicsSchema
+>;
 export type InteractionLog = typeof interactionLogs.$inferSelect;
 export type InsertInteractionLog = z.infer<typeof insertInteractionLogSchema>;
 export type EngagementMetrics = typeof engagementMetrics.$inferSelect;
-export type InsertEngagementMetrics = z.infer<typeof insertEngagementMetricsSchema>;
+export type InsertEngagementMetrics = z.infer<
+  typeof insertEngagementMetricsSchema
+>;
 export type NonVoterTracking = typeof nonVoterTracking.$inferSelect;
-export type InsertNonVoterTracking = z.infer<typeof insertNonVoterTrackingSchema>;
+export type InsertNonVoterTracking = z.infer<
+  typeof insertNonVoterTrackingSchema
+>;
 
 // Campaign Data Marketplace Tables
 export const campaignAccounts = pgTable("campaign_accounts", {
@@ -363,7 +419,9 @@ export const campaignAccounts = pgTable("campaign_accounts", {
   electionId: integer("election_id").references(() => elections.id),
   contactEmail: varchar("contact_email", { length: 255 }).notNull(),
   verifiedStatus: boolean("verified_status").default(false),
-  subscriptionTier: varchar("subscription_tier", { length: 50 }).default('basic'), // 'basic', 'pro', 'enterprise', 'custom'
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).default(
+    "basic",
+  ), // 'basic', 'pro', 'enterprise', 'custom'
   subscriptionStart: timestamp("subscription_start"),
   subscriptionEnd: timestamp("subscription_end"),
   apiKey: varchar("api_key", { length: 255 }).unique(),
@@ -373,7 +431,9 @@ export const campaignAccounts = pgTable("campaign_accounts", {
 
 export const campaignAccessLogs = pgTable("campaign_access_logs", {
   id: serial("id").primaryKey(),
-  campaignId: integer("campaign_id").references(() => campaignAccounts.id).notNull(),
+  campaignId: integer("campaign_id")
+    .references(() => campaignAccounts.id)
+    .notNull(),
   endpointAccessed: varchar("endpoint_accessed", { length: 255 }).notNull(),
   datasetType: varchar("dataset_type", { length: 100 }),
   cost: integer("cost"), // in cents
@@ -383,17 +443,21 @@ export const campaignAccessLogs = pgTable("campaign_access_logs", {
 
 export const dataPurchases = pgTable("data_purchases", {
   id: serial("id").primaryKey(),
-  campaignId: integer("campaign_id").references(() => campaignAccounts.id).notNull(),
+  campaignId: integer("campaign_id")
+    .references(() => campaignAccounts.id)
+    .notNull(),
   datasetType: varchar("dataset_type", { length: 100 }).notNull(),
   price: integer("price").notNull(), // in cents
   downloadDate: timestamp("download_date").defaultNow().notNull(),
   dataRange: varchar("data_range", { length: 100 }), // '30_days', '90_days', etc.
-  format: varchar("format", { length: 20 }).default('json'), // 'json', 'csv', 'xlsx'
+  format: varchar("format", { length: 20 }).default("json"), // 'json', 'csv', 'xlsx'
 });
 
 export const pollingResults = pgTable("polling_results", {
   id: serial("id").primaryKey(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   location: varchar("location", { length: 255 }).notNull(),
   demographic: jsonb("demographic"), // age, gender, party, etc.
   candidatePreferences: jsonb("candidate_preferences"),
@@ -417,7 +481,9 @@ export const userSegments = pgTable("user_segments", {
 export const geographicClusters = pgTable("geographic_clusters", {
   id: serial("id").primaryKey(),
   zipCode: varchar("zip_code", { length: 10 }).notNull(),
-  electionId: integer("election_id").references(() => elections.id).notNull(),
+  electionId: integer("election_id")
+    .references(() => elections.id)
+    .notNull(),
   interestLevel: integer("interest_level"), // 1-10 scale
   partyLean: varchar("party_lean", { length: 20 }),
   viewCount: integer("view_count").default(0),
@@ -427,7 +493,9 @@ export const geographicClusters = pgTable("geographic_clusters", {
 
 export const userInfluenceScores = pgTable("user_influence_scores", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   influenceScore: integer("influence_score"), // calculated metric
   referralCount: integer("referral_count").default(0),
   engagementLevel: varchar("engagement_level", { length: 20 }), // 'low', 'medium', 'high'
@@ -436,21 +504,27 @@ export const userInfluenceScores = pgTable("user_influence_scores", {
 });
 
 // Relations for campaign marketplace
-export const campaignAccountsRelations = relations(campaignAccounts, ({ many, one }) => ({
-  accessLogs: many(campaignAccessLogs),
-  purchases: many(dataPurchases),
-  election: one(elections, {
-    fields: [campaignAccounts.electionId],
-    references: [elections.id],
+export const campaignAccountsRelations = relations(
+  campaignAccounts,
+  ({ many, one }) => ({
+    accessLogs: many(campaignAccessLogs),
+    purchases: many(dataPurchases),
+    election: one(elections, {
+      fields: [campaignAccounts.electionId],
+      references: [elections.id],
+    }),
   }),
-}));
+);
 
-export const campaignAccessLogsRelations = relations(campaignAccessLogs, ({ one }) => ({
-  campaign: one(campaignAccounts, {
-    fields: [campaignAccessLogs.campaignId],
-    references: [campaignAccounts.id],
+export const campaignAccessLogsRelations = relations(
+  campaignAccessLogs,
+  ({ one }) => ({
+    campaign: one(campaignAccounts, {
+      fields: [campaignAccessLogs.campaignId],
+      references: [campaignAccounts.id],
+    }),
   }),
-}));
+);
 
 export const dataPurchasesRelations = relations(dataPurchases, ({ one }) => ({
   campaign: one(campaignAccounts, {
@@ -473,27 +547,37 @@ export const userSegmentsRelations = relations(userSegments, ({ one }) => ({
   }),
 }));
 
-export const geographicClustersRelations = relations(geographicClusters, ({ one }) => ({
-  election: one(elections, {
-    fields: [geographicClusters.electionId],
-    references: [elections.id],
+export const geographicClustersRelations = relations(
+  geographicClusters,
+  ({ one }) => ({
+    election: one(elections, {
+      fields: [geographicClusters.electionId],
+      references: [elections.id],
+    }),
   }),
-}));
+);
 
-export const userInfluenceScoresRelations = relations(userInfluenceScores, ({ one }) => ({
-  user: one(users, {
-    fields: [userInfluenceScores.userId],
-    references: [users.id],
+export const userInfluenceScoresRelations = relations(
+  userInfluenceScores,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userInfluenceScores.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
 // Insert schemas for campaign marketplace
-export const insertCampaignAccountSchema = createInsertSchema(campaignAccounts).omit({
+export const insertCampaignAccountSchema = createInsertSchema(
+  campaignAccounts,
+).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertCampaignAccessLogSchema = createInsertSchema(campaignAccessLogs).omit({
+export const insertCampaignAccessLogSchema = createInsertSchema(
+  campaignAccessLogs,
+).omit({
   id: true,
   timestamp: true,
 });
@@ -503,7 +587,9 @@ export const insertDataPurchaseSchema = createInsertSchema(dataPurchases).omit({
   downloadDate: true,
 });
 
-export const insertPollingResultSchema = createInsertSchema(pollingResults).omit({
+export const insertPollingResultSchema = createInsertSchema(
+  pollingResults,
+).omit({
   id: true,
 });
 
@@ -512,12 +598,16 @@ export const insertUserSegmentSchema = createInsertSchema(userSegments).omit({
   lastUpdated: true,
 });
 
-export const insertGeographicClusterSchema = createInsertSchema(geographicClusters).omit({
+export const insertGeographicClusterSchema = createInsertSchema(
+  geographicClusters,
+).omit({
   id: true,
   lastUpdated: true,
 });
 
-export const insertUserInfluenceScoreSchema = createInsertSchema(userInfluenceScores).omit({
+export const insertUserInfluenceScoreSchema = createInsertSchema(
+  userInfluenceScores,
+).omit({
   id: true,
   lastCalculated: true,
 });
@@ -526,7 +616,9 @@ export const insertUserInfluenceScoreSchema = createInsertSchema(userInfluenceSc
 export type CampaignAccount = typeof campaignAccounts.$inferSelect;
 export type InsertCampaignAccount = z.infer<typeof insertCampaignAccountSchema>;
 export type CampaignAccessLog = typeof campaignAccessLogs.$inferSelect;
-export type InsertCampaignAccessLog = z.infer<typeof insertCampaignAccessLogSchema>;
+export type InsertCampaignAccessLog = z.infer<
+  typeof insertCampaignAccessLogSchema
+>;
 export type DataPurchase = typeof dataPurchases.$inferSelect;
 export type InsertDataPurchase = z.infer<typeof insertDataPurchaseSchema>;
 export type PollingResult = typeof pollingResults.$inferSelect;
@@ -534,20 +626,26 @@ export type InsertPollingResult = z.infer<typeof insertPollingResultSchema>;
 export type UserSegment = typeof userSegments.$inferSelect;
 export type InsertUserSegment = z.infer<typeof insertUserSegmentSchema>;
 export type GeographicCluster = typeof geographicClusters.$inferSelect;
-export type InsertGeographicCluster = z.infer<typeof insertGeographicClusterSchema>;
+export type InsertGeographicCluster = z.infer<
+  typeof insertGeographicClusterSchema
+>;
 export type UserInfluenceScore = typeof userInfluenceScores.$inferSelect;
-export type InsertUserInfluenceScore = z.infer<typeof insertUserInfluenceScoreSchema>;
+export type InsertUserInfluenceScore = z.infer<
+  typeof insertUserInfluenceScoreSchema
+>;
 
 // Bot Prevention & Human Verification Tables
 export const userVerification = pgTable("user_verification", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   emailVerified: boolean("email_verified").default(false),
   phoneVerified: boolean("phone_verified").default(false),
   phoneNumber: varchar("phone_number", { length: 20 }),
   verificationLevel: integer("verification_level").default(0), // 0-4 trust levels
   lastVerified: timestamp("last_verified"),
-  riskScore: varchar("risk_score", { length: 5 }).default('0.00'), // 0.00 to 1.00
+  riskScore: varchar("risk_score", { length: 5 }).default("0.00"), // 0.00 to 1.00
   deviceFingerprint: varchar("device_fingerprint", { length: 255 }),
   ipAddress: varchar("ip_address", { length: 45 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -569,7 +667,9 @@ export const botDetectionLogs = pgTable("bot_detection_logs", {
 
 export const userBehaviorMetrics = pgTable("user_behavior_metrics", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   sessionId: varchar("session_id", { length: 255 }).notNull(),
   mouseMovements: jsonb("mouse_movements"), // Movement patterns
   scrollBehavior: jsonb("scroll_behavior"), // Scroll patterns and speed
@@ -583,7 +683,9 @@ export const userBehaviorMetrics = pgTable("user_behavior_metrics", {
 
 export const verificationChallenges = pgTable("verification_challenges", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
   challengeType: varchar("challenge_type", { length: 50 }).notNull(), // 'email', 'sms', 'captcha', 'id'
   challenge: varchar("challenge", { length: 255 }).notNull(), // Code or challenge data
   attempts: integer("attempts").default(0),
@@ -595,65 +697,91 @@ export const verificationChallenges = pgTable("verification_challenges", {
 });
 
 // Relations for verification system
-export const userVerificationRelations = relations(userVerification, ({ one }) => ({
-  user: one(users, {
-    fields: [userVerification.userId],
-    references: [users.id],
+export const userVerificationRelations = relations(
+  userVerification,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userVerification.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const botDetectionLogsRelations = relations(botDetectionLogs, ({ one }) => ({
-  user: one(users, {
-    fields: [botDetectionLogs.userId],
-    references: [users.id],
+export const botDetectionLogsRelations = relations(
+  botDetectionLogs,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [botDetectionLogs.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const userBehaviorMetricsRelations = relations(userBehaviorMetrics, ({ one }) => ({
-  user: one(users, {
-    fields: [userBehaviorMetrics.userId],
-    references: [users.id],
+export const userBehaviorMetricsRelations = relations(
+  userBehaviorMetrics,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userBehaviorMetrics.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
-export const verificationChallengesRelations = relations(verificationChallenges, ({ one }) => ({
-  user: one(users, {
-    fields: [verificationChallenges.userId],
-    references: [users.id],
+export const verificationChallengesRelations = relations(
+  verificationChallenges,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [verificationChallenges.userId],
+      references: [users.id],
+    }),
   }),
-}));
+);
 
 // Insert schemas for verification system
-export const insertUserVerificationSchema = createInsertSchema(userVerification).omit({
+export const insertUserVerificationSchema = createInsertSchema(
+  userVerification,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
 });
 
-export const insertBotDetectionLogSchema = createInsertSchema(botDetectionLogs).omit({
+export const insertBotDetectionLogSchema = createInsertSchema(
+  botDetectionLogs,
+).omit({
   id: true,
   timestamp: true,
 });
 
-export const insertUserBehaviorMetricsSchema = createInsertSchema(userBehaviorMetrics).omit({
+export const insertUserBehaviorMetricsSchema = createInsertSchema(
+  userBehaviorMetrics,
+).omit({
   id: true,
   timestamp: true,
 });
 
-export const insertVerificationChallengeSchema = createInsertSchema(verificationChallenges).omit({
+export const insertVerificationChallengeSchema = createInsertSchema(
+  verificationChallenges,
+).omit({
   id: true,
   createdAt: true,
 });
 
 // Types for verification system
 export type UserVerification = typeof userVerification.$inferSelect;
-export type InsertUserVerification = z.infer<typeof insertUserVerificationSchema>;
+export type InsertUserVerification = z.infer<
+  typeof insertUserVerificationSchema
+>;
 export type BotDetectionLog = typeof botDetectionLogs.$inferSelect;
 export type InsertBotDetectionLog = z.infer<typeof insertBotDetectionLogSchema>;
 export type UserBehaviorMetrics = typeof userBehaviorMetrics.$inferSelect;
-export type InsertUserBehaviorMetrics = z.infer<typeof insertUserBehaviorMetricsSchema>;
+export type InsertUserBehaviorMetrics = z.infer<
+  typeof insertUserBehaviorMetricsSchema
+>;
 export type VerificationChallenge = typeof verificationChallenges.$inferSelect;
-export type InsertVerificationChallenge = z.infer<typeof insertVerificationChallengeSchema>;
+export type InsertVerificationChallenge = z.infer<
+  typeof insertVerificationChallengeSchema
+>;
 
 // Verification levels enum
 export const VERIFICATION_LEVELS = {
@@ -661,7 +789,7 @@ export const VERIFICATION_LEVELS = {
   EMAIL_VERIFIED: 1,
   PHONE_VERIFIED: 2,
   BEHAVIOR_VERIFIED: 3,
-  ID_VERIFIED: 4
+  ID_VERIFIED: 4,
 } as const;
 
 // Session storage table for Replit Auth
@@ -728,7 +856,9 @@ export const congressCommittees = pgTable("congress_committees", {
 });
 
 // Insert schemas for congressional data
-export const insertCongressMemberSchema = createInsertSchema(congressMembers).omit({
+export const insertCongressMemberSchema = createInsertSchema(
+  congressMembers,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -740,7 +870,9 @@ export const insertCongressBillSchema = createInsertSchema(congressBills).omit({
   updatedAt: true,
 });
 
-export const insertCongressCommitteeSchema = createInsertSchema(congressCommittees).omit({
+export const insertCongressCommitteeSchema = createInsertSchema(
+  congressCommittees,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -752,4 +884,6 @@ export type InsertCongressMember = z.infer<typeof insertCongressMemberSchema>;
 export type CongressBill = typeof congressBills.$inferSelect;
 export type InsertCongressBill = z.infer<typeof insertCongressBillSchema>;
 export type CongressCommittee = typeof congressCommittees.$inferSelect;
-export type InsertCongressCommittee = z.infer<typeof insertCongressCommitteeSchema>;
+export type InsertCongressCommittee = z.infer<
+  typeof insertCongressCommitteeSchema
+>;

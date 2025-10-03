@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -14,20 +14,20 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       backdropBlur: {
-        xs: '2px',
+        xs: "2px",
       },
       colors: {
         // Modern design system colors
-        'brand-primary': 'var(--color-primary)',
-        'brand-accent': 'var(--color-accent)',
-        'brand-success': 'var(--color-success)',
-        'brand-error': 'var(--color-error)',
-        'surface-0': 'var(--color-surface-0)',
-        'surface-1': 'var(--color-surface-1)',
-        'app-bg': 'var(--app-bg)',
-        'app-fg': 'var(--app-fg)',
-        'text-muted': 'var(--color-muted)',
-        'border-subtle': 'var(--color-border)',
+        "brand-primary": "var(--color-primary)",
+        "brand-accent": "var(--color-accent)",
+        "brand-success": "var(--color-success)",
+        "brand-error": "var(--color-error)",
+        "surface-0": "var(--color-surface-0)",
+        "surface-1": "var(--color-surface-1)",
+        "app-bg": "var(--app-bg)",
+        "app-fg": "var(--app-fg)",
+        "text-muted": "var(--color-muted)",
+        "border-subtle": "var(--color-border)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

@@ -1,8 +1,12 @@
-import { type Election, type Candidate, type ElectionFilters } from "@shared/schema";
+import {
+  type Election,
+  type Candidate,
+  type ElectionFilters,
+} from "@shared/schema";
 
 export const partyColors = {
   D: "bg-blue-500 text-white",
-  R: "bg-red-500 text-white", 
+  R: "bg-red-500 text-white",
   I: "bg-purple-500 text-white",
   G: "bg-green-500 text-white",
   L: "bg-yellow-500 text-black",
@@ -11,7 +15,7 @@ export const partyColors = {
 export const partyNames = {
   D: "Democratic",
   R: "Republican",
-  I: "Independent", 
+  I: "Independent",
   G: "Green",
   L: "Libertarian",
 } as const;
@@ -24,13 +28,15 @@ export const electionTypeColors = {
 
 export const electionLevelColors = {
   federal: "bg-purple-100 text-purple-800",
-  state: "bg-blue-100 text-blue-800", 
+  state: "bg-blue-100 text-blue-800",
   local: "bg-green-100 text-green-800",
 } as const;
 
-export function getUrgencyLevel(date: Date | string): "urgent" | "soon" | "normal" | "future" {
+export function getUrgencyLevel(
+  date: Date | string,
+): "urgent" | "soon" | "normal" | "future" {
   const now = new Date();
-  const targetDate = typeof date === 'string' ? new Date(date) : date;
+  const targetDate = typeof date === "string" ? new Date(date) : date;
   const diffMs = targetDate.getTime() - now.getTime();
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
@@ -43,27 +49,35 @@ export function getUrgencyLevel(date: Date | string): "urgent" | "soon" | "norma
 
 export function getUrgencyColor(urgency: string): string {
   switch (urgency) {
-    case "urgent": return "border-l-red-500";
-    case "soon": return "border-l-orange-500";
-    case "normal": return "border-l-blue-500";
-    case "future": return "border-l-gray-300";
-    default: return "border-l-gray-300";
+    case "urgent":
+      return "border-l-red-500";
+    case "soon":
+      return "border-l-orange-500";
+    case "normal":
+      return "border-l-blue-500";
+    case "future":
+      return "border-l-gray-300";
+    default:
+      return "border-l-gray-300";
   }
 }
 
 export function formatElectionDate(date: Date | string): string {
-  const targetDate = typeof date === 'string' ? new Date(date) : date;
-  return targetDate.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  const targetDate = typeof date === "string" ? new Date(date) : date;
+  return targetDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
 export function calculateTimeRemaining(targetDate: Date | string) {
   const now = new Date().getTime();
-  const target = typeof targetDate === 'string' ? new Date(targetDate).getTime() : targetDate.getTime();
+  const target =
+    typeof targetDate === "string"
+      ? new Date(targetDate).getTime()
+      : targetDate.getTime();
   const difference = target - now;
 
   if (difference < 0) {
@@ -73,12 +87,14 @@ export function calculateTimeRemaining(targetDate: Date | string) {
       minutes: 0,
       seconds: 0,
       milliseconds: 0,
-      expired: true
+      expired: true,
     };
   }
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const hours = Math.floor(
+    (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+  );
   const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((difference % (1000 * 60)) / 1000);
   const milliseconds = Math.floor(difference % 1000);
@@ -89,7 +105,7 @@ export function calculateTimeRemaining(targetDate: Date | string) {
     minutes,
     seconds,
     milliseconds,
-    expired: false
+    expired: false,
   };
 }
 

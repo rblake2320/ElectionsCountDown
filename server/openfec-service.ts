@@ -33,7 +33,7 @@ interface CandidateFinancialData {
 }
 
 export class OpenFECService {
-  private baseUrl = 'https://api.open.fec.gov/v1';
+  private baseUrl = "https://api.open.fec.gov/v1";
   private apiKey: string;
 
   constructor(apiKey: string) {
@@ -43,18 +43,25 @@ export class OpenFECService {
   /**
    * Search for candidates by name, office, and state
    */
-  async searchCandidates(name: string, office: string, state: string, cycle: number = 2024): Promise<FECCandidate[]> {
+  async searchCandidates(
+    name: string,
+    office: string,
+    state: string,
+    cycle: number = 2024,
+  ): Promise<FECCandidate[]> {
     const params = new URLSearchParams({
       api_key: this.apiKey,
       name: name,
       office: office,
       state: state,
       cycle: cycle.toString(),
-      per_page: '20'
+      per_page: "20",
     });
 
     try {
-      const response = await fetch(`${this.baseUrl}/candidates/search/?${params}`);
+      const response = await fetch(
+        `${this.baseUrl}/candidates/search/?${params}`,
+      );
       if (!response.ok) {
         throw new Error(`FEC API error: ${response.status}`);
       }
@@ -62,7 +69,7 @@ export class OpenFECService {
       const data = await response.json();
       return data.results || [];
     } catch (error) {
-      console.error('Error searching FEC candidates:', error);
+      console.error("Error searching FEC candidates:", error);
       return [];
     }
   }
@@ -70,14 +77,19 @@ export class OpenFECService {
   /**
    * Get financial summary for a specific candidate
    */
-  async getCandidateFinancials(candidateId: string, cycle: number = 2024): Promise<FECFinancialSummary | null> {
+  async getCandidateFinancials(
+    candidateId: string,
+    cycle: number = 2024,
+  ): Promise<FECFinancialSummary | null> {
     const params = new URLSearchParams({
       api_key: this.apiKey,
-      cycle: cycle.toString()
+      cycle: cycle.toString(),
     });
 
     try {
-      const response = await fetch(`${this.baseUrl}/candidate/${candidateId}/totals/?${params}`);
+      const response = await fetch(
+        `${this.baseUrl}/candidate/${candidateId}/totals/?${params}`,
+      );
       if (!response.ok) {
         throw new Error(`FEC API error: ${response.status}`);
       }
@@ -85,7 +97,7 @@ export class OpenFECService {
       const data = await response.json();
       return data.results?.[0] || null;
     } catch (error) {
-      console.error('Error fetching candidate financials:', error);
+      console.error("Error fetching candidate financials:", error);
       return null;
     }
   }
@@ -93,11 +105,19 @@ export class OpenFECService {
   /**
    * Enrich candidate with FEC financial data
    */
-  async enrichCandidateWithFECData(candidateName: string, office: string, state: string): Promise<CandidateFinancialData | null> {
+  async enrichCandidateWithFECData(
+    candidateName: string,
+    office: string,
+    state: string,
+  ): Promise<CandidateFinancialData | null> {
     try {
       // Search for the candidate in FEC database
-      const candidates = await this.searchCandidates(candidateName, office, state);
-      
+      const candidates = await this.searchCandidates(
+        candidateName,
+        office,
+        state,
+      );
+
       if (candidates.length === 0) {
         console.log(`No FEC data found for candidate: ${candidateName}`);
         return null;
@@ -105,12 +125,16 @@ export class OpenFECService {
 
       // Use the first matching candidate
       const fecCandidate = candidates[0];
-      
+
       // Get financial data
-      const financials = await this.getCandidateFinancials(fecCandidate.candidate_id);
-      
+      const financials = await this.getCandidateFinancials(
+        fecCandidate.candidate_id,
+      );
+
       if (!financials) {
-        console.log(`No financial data found for FEC candidate: ${fecCandidate.candidate_id}`);
+        console.log(
+          `No financial data found for FEC candidate: ${fecCandidate.candidate_id}`,
+        );
         return null;
       }
 
@@ -119,12 +143,14 @@ export class OpenFECService {
         totalRaised: financials.receipts || 0,
         totalSpent: financials.disbursements || 0,
         cashOnHand: financials.cash_on_hand_end_period || 0,
-        lastReportDate: financials.coverage_end_date || '',
-        cycle: fecCandidate.cycle
+        lastReportDate: financials.coverage_end_date || "",
+        cycle: fecCandidate.cycle,
       };
-
     } catch (error) {
-      console.error(`Error enriching candidate ${candidateName} with FEC data:`, error);
+      console.error(
+        `Error enriching candidate ${candidateName} with FEC data:`,
+        error,
+      );
       return null;
     }
   }
@@ -132,14 +158,18 @@ export class OpenFECService {
   /**
    * Get election financial summary for all candidates in a race
    */
-  async getElectionSummary(office: string, state: string, cycle: number = 2024) {
+  async getElectionSummary(
+    office: string,
+    state: string,
+    cycle: number = 2024,
+  ) {
     try {
       const params = new URLSearchParams({
         api_key: this.apiKey,
         office: office,
         state: state,
         cycle: cycle.toString(),
-        per_page: '100'
+        per_page: "100",
       });
 
       const response = await fetch(`${this.baseUrl}/candidates/?${params}`);
@@ -153,7 +183,10 @@ export class OpenFECService {
       // Get financial data for each candidate
       const enrichedCandidates = await Promise.all(
         candidates.map(async (candidate: FECCandidate) => {
-          const financials = await this.getCandidateFinancials(candidate.candidate_id, cycle);
+          const financials = await this.getCandidateFinancials(
+            candidate.candidate_id,
+            cycle,
+          );
           return {
             name: candidate.name,
             party: candidate.party,
@@ -161,14 +194,20 @@ export class OpenFECService {
             totalRaised: financials?.receipts || 0,
             totalSpent: financials?.disbursements || 0,
             cashOnHand: financials?.cash_on_hand_end_period || 0,
-            lastReportDate: financials?.coverage_end_date || ''
+            lastReportDate: financials?.coverage_end_date || "",
           };
-        })
+        }),
       );
 
       // Calculate totals
-      const totalRaised = enrichedCandidates.reduce((sum, c) => sum + c.totalRaised, 0);
-      const totalSpent = enrichedCandidates.reduce((sum, c) => sum + c.totalSpent, 0);
+      const totalRaised = enrichedCandidates.reduce(
+        (sum, c) => sum + c.totalRaised,
+        0,
+      );
+      const totalSpent = enrichedCandidates.reduce(
+        (sum, c) => sum + c.totalSpent,
+        0,
+      );
 
       return {
         office,
@@ -177,11 +216,12 @@ export class OpenFECService {
         totalCandidates: candidates.length,
         totalRaised,
         totalSpent,
-        candidates: enrichedCandidates.sort((a, b) => b.totalRaised - a.totalRaised)
+        candidates: enrichedCandidates.sort(
+          (a, b) => b.totalRaised - a.totalRaised,
+        ),
       };
-
     } catch (error) {
-      console.error('Error getting election financial summary:', error);
+      console.error("Error getting election financial summary:", error);
       return null;
     }
   }
@@ -192,7 +232,7 @@ let fecService: OpenFECService | null = null;
 
 export function getOpenFECService(): OpenFECService | null {
   if (!process.env.OPENFEC_API_KEY) {
-    console.warn('OPENFEC_API_KEY not found. FEC data will not be available.');
+    console.warn("OPENFEC_API_KEY not found. FEC data will not be available.");
     return null;
   }
 

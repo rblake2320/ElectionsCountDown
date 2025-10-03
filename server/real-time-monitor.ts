@@ -1,15 +1,15 @@
-import { electionScraper, ScrapedElectionData } from './web-scraper';
-import { storage } from './storage';
-import { perplexityCongressService } from './perplexity-congress-service';
-import fetch from 'node-fetch';
+import { electionScraper, ScrapedElectionData } from "./web-scraper";
+import { storage } from "./storage";
+import { perplexityCongressService } from "./perplexity-congress-service";
+import fetch from "node-fetch";
 
 export interface MonitoringTarget {
   url: string;
-  type: 'results' | 'feed' | 'api';
-  priority: 'high' | 'medium' | 'low';
+  type: "results" | "feed" | "api";
+  priority: "high" | "medium" | "low";
   state?: string;
   lastChecked?: Date;
-  status: 'active' | 'inactive' | 'error';
+  status: "active" | "inactive" | "error";
 }
 
 export class RealTimeElectionMonitor {
@@ -26,59 +26,64 @@ export class RealTimeElectionMonitor {
     this.monitoringTargets = [
       // Federal sources
       {
-        url: 'https://results.elections.virginia.gov',
-        type: 'results',
-        priority: 'high',
-        state: 'VA',
-        status: 'active'
+        url: "https://results.elections.virginia.gov",
+        type: "results",
+        priority: "high",
+        state: "VA",
+        status: "active",
       },
       {
-        url: 'https://elections.wi.gov/elections-voting/results',
-        type: 'results',
-        priority: 'high',
-        state: 'WI',
-        status: 'active'
+        url: "https://elections.wi.gov/elections-voting/results",
+        type: "results",
+        priority: "high",
+        state: "WI",
+        status: "active",
       },
       {
-        url: 'https://results.enr.clarityelections.com/GA',
-        type: 'results',
-        priority: 'high',
-        state: 'GA',
-        status: 'active'
+        url: "https://results.enr.clarityelections.com/GA",
+        type: "results",
+        priority: "high",
+        state: "GA",
+        status: "active",
       },
       {
-        url: 'https://www.sos.alabama.gov/alabama-votes/voter/election-information',
-        type: 'feed',
-        priority: 'high',
-        state: 'AL',
-        status: 'active'
+        url: "https://www.sos.alabama.gov/alabama-votes/voter/election-information",
+        type: "feed",
+        priority: "high",
+        state: "AL",
+        status: "active",
       },
       {
-        url: 'https://results.sos.state.tx.us',
-        type: 'results',
-        priority: 'high',
-        state: 'TX',
-        status: 'active'
-      }
+        url: "https://results.sos.state.tx.us",
+        type: "results",
+        priority: "high",
+        state: "TX",
+        status: "active",
+      },
     ];
   }
 
   async startMonitoring(intervalMinutes: number = 5): Promise<void> {
     if (this.isRunning) {
-      console.log('Real-time monitoring already running');
+      console.log("Real-time monitoring already running");
       return;
     }
 
-    console.log(`Starting real-time election monitoring with ${intervalMinutes} minute intervals`);
+    console.log(
+      `Starting real-time election monitoring with ${intervalMinutes} minute intervals`,
+    );
     this.isRunning = true;
 
     // Initialize web scraper
     await electionScraper.initialize();
 
     // Start monitoring loop
-    this.monitoringInterval = setInterval(async () => {
-      await this.checkAllTargets();
-    }, intervalMinutes * 60 * 1000);
+    this.monitoringInterval = setInterval(
+      async () => {
+        await this.checkAllTargets();
+      },
+      intervalMinutes * 60 * 1000,
+    );
 
     // Run initial check
     await this.checkAllTargets();
@@ -91,25 +96,29 @@ export class RealTimeElectionMonitor {
     }
     this.isRunning = false;
     await electionScraper.destroy();
-    console.log('Real-time monitoring stopped');
+    console.log("Real-time monitoring stopped");
   }
 
   private async checkAllTargets(): Promise<void> {
-    console.log(`Checking ${this.monitoringTargets.length} monitoring targets...`);
-    
-    const activeTargets = this.monitoringTargets.filter(target => target.status === 'active');
-    
+    console.log(
+      `Checking ${this.monitoringTargets.length} monitoring targets...`,
+    );
+
+    const activeTargets = this.monitoringTargets.filter(
+      (target) => target.status === "active",
+    );
+
     await Promise.allSettled(
       activeTargets.map(async (target) => {
         try {
           await this.checkTarget(target);
           target.lastChecked = new Date();
-          target.status = 'active';
+          target.status = "active";
         } catch (error) {
           console.error(`Error checking target ${target.url}:`, error);
-          target.status = 'error';
+          target.status = "error";
         }
-      })
+      }),
     );
   }
 
@@ -118,18 +127,20 @@ export class RealTimeElectionMonitor {
 
     try {
       switch (target.type) {
-        case 'results':
-          const resultData = await electionScraper.scrapeElectionSite(target.url);
+        case "results":
+          const resultData = await electionScraper.scrapeElectionSite(
+            target.url,
+          );
           if (resultData) {
             newElections = [resultData];
           }
           break;
 
-        case 'feed':
+        case "feed":
           newElections = await electionScraper.fetchElectionFeed(target.url);
           break;
 
-        case 'api':
+        case "api":
           newElections = await this.fetchFromAPI(target.url);
           break;
       }
@@ -138,7 +149,6 @@ export class RealTimeElectionMonitor {
       for (const election of newElections) {
         await this.processNewElection(election, target);
       }
-
     } catch (error) {
       console.error(`Failed to check target ${target.url}:`, error);
     }
@@ -147,26 +157,27 @@ export class RealTimeElectionMonitor {
   private async fetchFromAPI(apiUrl: string): Promise<ScrapedElectionData[]> {
     try {
       const response = await fetch(apiUrl);
-      const data = await response.json() as any;
-      
+      const data = (await response.json()) as any;
+
       // Convert API response to standard format
       const elections: ScrapedElectionData[] = [];
-      
+
       if (Array.isArray(data)) {
         for (const item of data) {
           elections.push({
-            title: item.title || item.name || 'Unknown Election',
+            title: item.title || item.name || "Unknown Election",
             date: item.date || item.election_date || new Date().toISOString(),
-            location: item.location || item.district || 'Unknown',
-            state: item.state || 'Unknown',
-            type: item.type || 'General',
-            level: item.level || 'Local',
-            description: item.description || `Election data from API: ${apiUrl}`,
-            lastUpdated: new Date()
+            location: item.location || item.district || "Unknown",
+            state: item.state || "Unknown",
+            type: item.type || "General",
+            level: item.level || "Local",
+            description:
+              item.description || `Election data from API: ${apiUrl}`,
+            lastUpdated: new Date(),
           });
         }
       }
-      
+
       return elections;
     } catch (error) {
       console.error(`Failed to fetch from API ${apiUrl}:`, error);
@@ -174,17 +185,21 @@ export class RealTimeElectionMonitor {
     }
   }
 
-  private async processNewElection(election: ScrapedElectionData, source: MonitoringTarget): Promise<void> {
+  private async processNewElection(
+    election: ScrapedElectionData,
+    source: MonitoringTarget,
+  ): Promise<void> {
     try {
       // Check if this election already exists in database
       const existingElections = await storage.getElections({
         search: election.title,
-        state: election.state
+        state: election.state,
       } as any);
 
-      const isDuplicate = existingElections.some(existing => 
-        existing.title.toLowerCase() === election.title.toLowerCase() &&
-        existing.state === election.state
+      const isDuplicate = existingElections.some(
+        (existing) =>
+          existing.title.toLowerCase() === election.title.toLowerCase() &&
+          existing.state === election.state,
       );
 
       if (!isDuplicate) {
@@ -197,8 +212,8 @@ export class RealTimeElectionMonitor {
           date: new Date(election.date),
           type: election.type,
           level: election.level,
-          description: election.description || '',
-          isActive: true
+          description: election.description || "",
+          isActive: true,
         });
 
         // Add candidates if available
@@ -209,24 +224,28 @@ export class RealTimeElectionMonitor {
               party: candidate.party,
               electionId: newElection.id,
               votesReceived: candidate.votes,
-              votePercentage: candidate.percentage ? candidate.percentage.toString() : undefined,
-              isWinner: false
+              votePercentage: candidate.percentage
+                ? candidate.percentage.toString()
+                : undefined,
+              isWinner: false,
             });
           }
         }
 
-        console.log(`New election discovered: ${election.title} in ${election.state}`);
-        
+        console.log(
+          `New election discovered: ${election.title} in ${election.state}`,
+        );
+
         // Enhance with AI analysis if high priority
-        if (source.priority === 'high') {
+        if (source.priority === "high") {
           await this.enhanceWithAI(newElection.id, election);
         }
       } else {
         // Update existing election with new candidate data if available
-        const existing = existingElections.find(e => 
-          e.title.toLowerCase() === election.title.toLowerCase()
+        const existing = existingElections.find(
+          (e) => e.title.toLowerCase() === election.title.toLowerCase(),
         );
-        
+
         if (existing && election.candidates && election.candidates.length > 0) {
           await this.updateElectionResults(existing.id, election.candidates);
         }
@@ -236,18 +255,21 @@ export class RealTimeElectionMonitor {
     }
   }
 
-  private async enhanceWithAI(electionId: number, electionData: ScrapedElectionData): Promise<void> {
+  private async enhanceWithAI(
+    electionId: number,
+    electionData: ScrapedElectionData,
+  ): Promise<void> {
     try {
       // Use Perplexity AI to get additional context and verification
       const query = `Verify election details for ${electionData.title} in ${electionData.state}. 
                     Provide additional context about candidates, key issues, and voting procedures.`;
-      
+
       const aiAnalysis = await perplexityCongressService.searchWithAI(query);
-      
+
       if (aiAnalysis) {
         // Update election description with AI-enhanced information
         const enhancedDescription = `${electionData.description}\n\nAI Analysis: ${aiAnalysis}`;
-        
+
         // Note: In a production system, you'd update the election description here
         console.log(`Enhanced election ${electionId} with AI analysis`);
       }
@@ -256,16 +278,20 @@ export class RealTimeElectionMonitor {
     }
   }
 
-  private async updateElectionResults(electionId: number, candidates: ScrapedElectionData['candidates']): Promise<void> {
+  private async updateElectionResults(
+    electionId: number,
+    candidates: ScrapedElectionData["candidates"],
+  ): Promise<void> {
     if (!candidates) return;
 
     try {
       // Get existing candidates
-      const existingCandidates = await storage.getCandidatesByElection(electionId);
-      
+      const existingCandidates =
+        await storage.getCandidatesByElection(electionId);
+
       for (const newCandidate of candidates) {
-        const existing = existingCandidates.find(c => 
-          c.name.toLowerCase() === newCandidate.name.toLowerCase()
+        const existing = existingCandidates.find(
+          (c) => c.name.toLowerCase() === newCandidate.name.toLowerCase(),
         );
 
         if (existing && (newCandidate.votes || newCandidate.percentage)) {
@@ -273,44 +299,53 @@ export class RealTimeElectionMonitor {
           await storage.updateElectionResults(electionId, {
             candidateId: existing.id,
             votes: newCandidate.votes,
-            percentage: newCandidate.percentage
+            percentage: newCandidate.percentage,
           });
         }
       }
     } catch (error) {
-      console.error(`Failed to update results for election ${electionId}:`, error);
+      console.error(
+        `Failed to update results for election ${electionId}:`,
+        error,
+      );
     }
   }
 
-  addMonitoringTarget(target: Omit<MonitoringTarget, 'status'>): void {
+  addMonitoringTarget(target: Omit<MonitoringTarget, "status">): void {
     this.monitoringTargets.push({
       ...target,
-      status: 'active'
+      status: "active",
     });
     console.log(`Added monitoring target: ${target.url}`);
   }
 
   removeMonitoringTarget(url: string): void {
-    this.monitoringTargets = this.monitoringTargets.filter(target => target.url !== url);
+    this.monitoringTargets = this.monitoringTargets.filter(
+      (target) => target.url !== url,
+    );
     console.log(`Removed monitoring target: ${url}`);
   }
 
-  getMonitoringStatus(): { 
-    isRunning: boolean; 
-    targetCount: number; 
+  getMonitoringStatus(): {
+    isRunning: boolean;
+    targetCount: number;
     activeTargets: number;
     lastChecked?: Date;
   } {
-    const activeTargets = this.monitoringTargets.filter(t => t.status === 'active').length;
+    const activeTargets = this.monitoringTargets.filter(
+      (t) => t.status === "active",
+    ).length;
     const lastChecked = this.monitoringTargets
-      .filter(t => t.lastChecked)
-      .sort((a, b) => (b.lastChecked!.getTime() - a.lastChecked!.getTime()))[0]?.lastChecked;
+      .filter((t) => t.lastChecked)
+      .sort(
+        (a, b) => b.lastChecked!.getTime() - a.lastChecked!.getTime(),
+      )[0]?.lastChecked;
 
     return {
       isRunning: this.isRunning,
       targetCount: this.monitoringTargets.length,
       activeTargets,
-      lastChecked
+      lastChecked,
     };
   }
 }

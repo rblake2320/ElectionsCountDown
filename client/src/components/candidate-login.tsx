@@ -1,30 +1,38 @@
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
-import { Shield, UserPlus, LogIn, AlertCircle } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { apiRequest } from '@/lib/queryClient';
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
+import { Shield, UserPlus, LogIn, AlertCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { apiRequest } from "@/lib/queryClient";
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 const signupSchema = z.object({
-  candidateId: z.number().min(1, 'Please select a valid candidate'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  campaignName: z.string().min(1, 'Campaign name is required'),
+  candidateId: z.number().min(1, "Please select a valid candidate"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  campaignName: z.string().min(1, "Campaign name is required"),
   campaignTitle: z.string().optional(),
-  role: z.enum(['candidate', 'campaign_manager', 'staff']).default('campaign_manager'),
+  role: z
+    .enum(["candidate", "campaign_manager", "staff"])
+    .default("campaign_manager"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -35,15 +43,15 @@ interface CandidateLoginProps {
 }
 
 export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
-  const [activeTab, setActiveTab] = useState('login');
+  const [activeTab, setActiveTab] = useState("login");
   const { toast } = useToast();
 
   // Login form
   const loginForm = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -52,27 +60,27 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       candidateId: 0,
-      email: '',
-      password: '',
-      campaignName: '',
-      campaignTitle: '',
-      role: 'campaign_manager',
+      email: "",
+      password: "",
+      campaignName: "",
+      campaignTitle: "",
+      role: "campaign_manager",
     },
   });
 
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (data: LoginForm) => {
-      return await apiRequest('/api/candidate/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      return await apiRequest("/api/candidate/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
     },
     onSuccess: (data) => {
       if (data.success) {
-        localStorage.setItem('candidate_token', data.token);
-        localStorage.setItem('candidate_data', JSON.stringify(data.candidate));
+        localStorage.setItem("candidate_token", data.token);
+        localStorage.setItem("candidate_data", JSON.stringify(data.candidate));
         onLogin({ token: data.token, candidate: data.candidate });
         toast({
           title: "Login Successful",
@@ -92,16 +100,16 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
   // Signup mutation
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      return await apiRequest('/api/candidate/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      return await apiRequest("/api/candidate/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
     },
     onSuccess: (data) => {
       if (data.success) {
-        localStorage.setItem('candidate_token', data.token);
-        localStorage.setItem('candidate_data', JSON.stringify(data.candidate));
+        localStorage.setItem("candidate_token", data.token);
+        localStorage.setItem("candidate_data", JSON.stringify(data.candidate));
         onLogin({ token: data.token, candidate: data.candidate });
         toast({
           title: "Account Created",
@@ -139,7 +147,11 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login" className="flex items-center gap-2">
               <LogIn className="h-4 w-4" />
@@ -161,14 +173,17 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
+                <form
+                  onSubmit={loginForm.handleSubmit(handleLogin)}
+                  className="space-y-4"
+                >
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
                     <Input
                       id="login-email"
                       type="email"
                       placeholder="campaign@example.com"
-                      {...loginForm.register('email')}
+                      {...loginForm.register("email")}
                     />
                     {loginForm.formState.errors.email && (
                       <p className="text-sm text-red-600">
@@ -182,7 +197,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                     <Input
                       id="login-password"
                       type="password"
-                      {...loginForm.register('password')}
+                      {...loginForm.register("password")}
                     />
                     {loginForm.formState.errors.password && (
                       <p className="text-sm text-red-600">
@@ -191,12 +206,12 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full"
                     disabled={loginMutation.isPending}
                   >
-                    {loginMutation.isPending ? 'Signing In...' : 'Sign In'}
+                    {loginMutation.isPending ? "Signing In..." : "Sign In"}
                   </Button>
                 </form>
               </CardContent>
@@ -216,19 +231,25 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                 <Alert className="mb-4">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
-                    You must be listed as a candidate in our election database to create an account.
-                    Contact support if you're not finding your candidate ID.
+                    You must be listed as a candidate in our election database
+                    to create an account. Contact support if you're not finding
+                    your candidate ID.
                   </AlertDescription>
                 </Alert>
 
-                <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
+                <form
+                  onSubmit={signupForm.handleSubmit(handleSignup)}
+                  className="space-y-4"
+                >
                   <div className="space-y-2">
                     <Label htmlFor="candidate-id">Candidate ID</Label>
                     <Input
                       id="candidate-id"
                       type="number"
                       placeholder="Find your ID in our candidate database"
-                      {...signupForm.register('candidateId', { valueAsNumber: true })}
+                      {...signupForm.register("candidateId", {
+                        valueAsNumber: true,
+                      })}
                     />
                     {signupForm.formState.errors.candidateId && (
                       <p className="text-sm text-red-600">
@@ -243,7 +264,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                       id="signup-email"
                       type="email"
                       placeholder="campaign@example.com"
-                      {...signupForm.register('email')}
+                      {...signupForm.register("email")}
                     />
                     {signupForm.formState.errors.email && (
                       <p className="text-sm text-red-600">
@@ -258,7 +279,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                       id="signup-password"
                       type="password"
                       placeholder="Minimum 8 characters"
-                      {...signupForm.register('password')}
+                      {...signupForm.register("password")}
                     />
                     {signupForm.formState.errors.password && (
                       <p className="text-sm text-red-600">
@@ -272,7 +293,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                     <Input
                       id="campaign-name"
                       placeholder="e.g., Smith for Senate 2026"
-                      {...signupForm.register('campaignName')}
+                      {...signupForm.register("campaignName")}
                     />
                     {signupForm.formState.errors.campaignName && (
                       <p className="text-sm text-red-600">
@@ -282,20 +303,24 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="campaign-title">Your Title (Optional)</Label>
+                    <Label htmlFor="campaign-title">
+                      Your Title (Optional)
+                    </Label>
                     <Input
                       id="campaign-title"
                       placeholder="e.g., Campaign Manager, Communications Director"
-                      {...signupForm.register('campaignTitle')}
+                      {...signupForm.register("campaignTitle")}
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full"
                     disabled={signupMutation.isPending}
                   >
-                    {signupMutation.isPending ? 'Creating Account...' : 'Create Account'}
+                    {signupMutation.isPending
+                      ? "Creating Account..."
+                      : "Create Account"}
                   </Button>
                 </form>
               </CardContent>
@@ -304,9 +329,7 @@ export default function CandidateLogin({ onLogin }: CandidateLoginProps) {
         </Tabs>
 
         <div className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            Need help? Contact support for assistance with account setup.
-          </p>
+          <p>Need help? Contact support for assistance with account setup.</p>
         </div>
       </div>
     </div>
