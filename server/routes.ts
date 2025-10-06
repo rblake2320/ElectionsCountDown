@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { cacheService } from "./cache-service";
-import { filterSchema, congressMembers, candidateBiography, candidatePositions, candidates } from "@shared/schema";
+import { filterSchema, congressMembers, candidateProfiles, candidatePositions, candidates } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { getCongressBillService } from "./congress-bill-service";
@@ -1818,9 +1818,9 @@ Please provide detailed, current information about this specific election.`;
           
           // STEP 1: Check if we have local database data for this candidate
           try {
-            // Query candidate_biography table
-            const biographyResults = await db.select().from(candidateBiography).where(
-              eq(candidateBiography.candidateId, candidate.id)
+            // Query candidate_profiles table
+            const profileResults = await db.select().from(candidateProfiles).where(
+              eq(candidateProfiles.candidateId, candidate.id)
             );
             
             // Query candidate_positions table
@@ -1829,8 +1829,8 @@ Please provide detailed, current information about this specific election.`;
             );
             
             // If we have local data, transform it to match frontend expectations
-            if (biographyResults.length > 0) {
-              const bio = biographyResults[0];
+            if (profileResults.length > 0) {
+              const profile = profileResults[0];
               
               // Transform positions into topPriorities format
               const topPriorities = positionsResults.map((pos: any) => ({
@@ -1844,39 +1844,42 @@ Please provide detailed, current information about this specific election.`;
                 policyPositions[pos.category] = pos.position;
               });
               
-              // Parse education from biography if available
-              const education = bio.education ? 
-                (typeof bio.education === 'string' ? 
-                  [{ degree: bio.education, institution: 'Unknown', year: 'Unknown' }] :
-                  bio.education) : [];
+              // Parse education from profile
+              const education = profile.education || [];
               
-              // Parse employment history from professional_background
-              const employmentHistory = bio.professionalBackground ? 
-                [{ position: bio.professionalBackground, company: 'Various', years: 'Career' }] : [];
+              // Parse employment history from profile
+              const employmentHistory = profile.employmentHistory || [];
+              
+              // Parse previous offices
+              const previousOffices = profile.previousOffices || [];
               
               console.log(`✅ Using local database data for candidate: ${candidate.name}`);
               
               return {
                 id: candidate.id,
                 name: candidate.name,
-                fullName: bio.name || candidate.name,
-                preferredName: bio.name || candidate.name,
+                fullName: profile.fullName || candidate.name,
+                preferredName: profile.preferredName || profile.fullName || candidate.name,
                 party: candidate.party,
-                background: bio.biography || 'Candidate has not supplied that info',
-                politicalExperience: bio.biography || 'Candidate has not supplied that info',
-                currentOccupation: bio.professionalBackground || 'Candidate has not supplied that info',
-                currentResidence: bio.location || null,
-                age: bio.age || null,
+                background: profile.politicalExperience || 'Candidate has not supplied that info',
+                politicalExperience: profile.politicalExperience || 'Candidate has not supplied that info',
+                currentOccupation: profile.currentOccupation || 'Candidate has not supplied that info',
+                currentResidence: profile.currentResidence || null,
+                age: profile.age || null,
+                birthPlace: profile.birthPlace || null,
+                campaignSlogan: profile.campaignSlogan || null,
                 education: education,
                 employmentHistory: employmentHistory,
-                previousOffices: [],
+                previousOffices: previousOffices,
                 topPriorities: topPriorities,
                 policyPositions: policyPositions,
-                campaignWebsite: candidate.website || null,
+                campaignWebsite: profile.campaignWebsite || candidate.website || null,
                 isIncumbent: candidate.isIncumbent || false,
                 pollingSupport: candidate.pollingSupport,
                 dataSource: 'Local Database',
-                hasAuthenticData: true
+                hasAuthenticData: true,
+                dataCompleteness: profile.dataCompleteness || 0,
+                verificationStatus: profile.verificationStatus || 'pending'
               };
             }
           } catch (dbError) {

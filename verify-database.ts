@@ -1,19 +1,19 @@
 import { db } from "./server/db";
-import { candidateBiography, candidatePositions, candidates, elections } from "@shared/schema";
+import { candidateProfiles, candidatePositions, candidates, elections } from "@shared/schema";
 import { eq, like, sql } from "drizzle-orm";
 
 async function verifyDatabase() {
   console.log("🔍 Starting Database Verification...\n");
 
   try {
-    // 1. Check candidate_biography table
-    console.log("📊 Checking candidate_biography table...");
-    const bios = await db.select().from(candidateBiography).limit(10);
-    console.log(`   ✅ Found ${bios.length} biography entries`);
-    if (bios.length > 0) {
+    // 1. Check candidate_profiles table
+    console.log("📊 Checking candidate_profiles table...");
+    const profiles = await db.select().from(candidateProfiles).limit(10);
+    console.log(`   ✅ Found ${profiles.length} profile entries`);
+    if (profiles.length > 0) {
       console.log("   Sample entries:");
-      bios.forEach((bio: any) => {
-        console.log(`      - Candidate ID ${bio.candidateId}: ${bio.name || 'No name'}`);
+      profiles.forEach((profile: any) => {
+        console.log(`      - Candidate ID ${profile.candidateId}: ${profile.fullName || profile.preferredName || 'No name'}`);
       });
     }
     console.log("");
@@ -77,18 +77,18 @@ async function verifyDatabase() {
     }
     console.log("");
 
-    // 5. Check which candidates have both biography AND positions
+    // 5. Check which candidates have both profile AND positions
     console.log("📊 Checking data completeness...");
-    const allBios = await db.select().from(candidateBiography);
+    const allProfiles = await db.select().from(candidateProfiles);
     const candidatesWithData: any = {};
     
-    for (const bio of allBios) {
+    for (const profile of allProfiles) {
       const positions = await db.select().from(candidatePositions).where(
-        eq(candidatePositions.candidateId, bio.candidateId)
+        eq(candidatePositions.candidateId, profile.candidateId)
       );
-      candidatesWithData[bio.candidateId] = {
-        name: bio.name,
-        hasBio: true,
+      candidatesWithData[profile.candidateId] = {
+        name: profile.fullName || profile.preferredName,
+        hasProfile: true,
         positionCount: positions.length
       };
     }
@@ -102,7 +102,7 @@ async function verifyDatabase() {
 
     // 6. Summary
     console.log("📊 SUMMARY:");
-    console.log(`   - Total biographies: ${bios.length}`);
+    console.log(`   - Total profiles: ${profiles.length}`);
     console.log(`   - Total positions: ${positions.length}`);
     console.log(`   - Detroit elections: ${detroitElections.length}`);
     console.log(`   - Nashville elections: ${nashvilleElections.length}`);
