@@ -117,14 +117,53 @@ npx tsx populate_congress_and_cycles.ts
 🎉 Congressional data and election cycles populated successfully!
 ```
 
-### Step 7: Verify Success
+### Step 7: Populate Polling Data
+```bash
+npx tsx populate_polling_data.ts
+```
+
+**Expected Output:**
+```
+🚀 Starting external polling data population...
+
+📊 Populating Detroit Mayoral Polling Data...
+   Source: Target-Insyght Poll (July 8-10, 2025)
+   ✓ Updated polling for Mary Sheffield: 34%
+   ✓ Updated polling for Saunteel Jenkins: 17%
+   ✓ Updated polling for Solomon Kinloch Jr.: 16%
+   ✓ Updated polling for Fred Durhal III: 6%
+   ✓ Updated polling for James Craig: 6%
+   ✓ Updated polling for Todd Perkins: 4%
+   ✓ Inserted 6 polling entries
+
+📊 Populating Nashville Mayoral Polling Data...
+   ✓ Updated polling for Freddie O'Connell: 52%
+   ✓ Updated polling for David Briley: 28%
+   ✓ Inserted 2 polling entries
+
+📈 Adding Historical Polling Trends...
+   ✓ Inserted 5 historical polling entries
+
+✅ POLLING DATA POPULATION COMPLETE!
+
+📊 Summary:
+   Detroit Polling Entries: 6 candidates
+   Nashville Polling Entries: 2 candidates
+   Historical Trend Entries: 5 data points
+
+   📈 Total polling entries: 13
+
+🎉 External polling data populated successfully!
+```
+
+### Step 8: Verify Success
 ```bash
 npx tsx analyze_all_tables.ts
 ```
 
 Check that all tables now show data.
 
-### Step 8: Test the Platform
+### Step 9: Test the Platform
 1. Go to your live platform URL
 2. Navigate to Detroit or Nashville mayoral elections
 3. Click on candidate names (e.g., "James Craig", "Mary Sheffield")
@@ -148,10 +187,12 @@ After completing all steps, you should have:
 - ✅ 15 congressional bills in database
 - ✅ 15 congressional committees in database
 - ✅ 3 election cycles in database
+- ✅ 13 polling data entries (6 Detroit + 2 Nashville + 5 historical)
+- ✅ Candidates showing polling percentages and trends
 - ✅ Modal popups working with full candidate information
 - ✅ Congress section showing all members
 
-**Total: 607 rows of external data populated!**
+**Total: 620 rows of external data populated!**
 
 ---
 
@@ -191,6 +232,7 @@ npm install
 | `npx tsx analyze_all_tables.ts` | Analyze database state |
 | `npx tsx populate_all_tables.ts` | Populate candidate data |
 | `npx tsx populate_congress_and_cycles.ts` | Populate congressional data |
+| `npx tsx populate_polling_data.ts` | Populate external polling data |
 
 ---
 
