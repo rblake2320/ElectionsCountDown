@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { cacheService } from "./cache-service";
-import { filterSchema, congressMembers } from "@shared/schema";
+import { filterSchema, congressMembers, candidateBiography, candidatePositions, candidates } from "@shared/schema";
 import { db } from "./db";
+import { eq } from "drizzle-orm";
 import { getCongressBillService } from "./congress-bill-service";
 import { perplexityCongressService } from "./perplexity-congress-service";
 import { congressImportService } from "./congress-import-service";
@@ -1805,15 +1806,85 @@ Please provide detailed, current information about this specific election.`;
       }
 
       // Get basic candidate data
-      const candidates = await storage.getCandidatesByIds(ids);
+      const candidatesData = await storage.getCandidatesByIds(ids);
       
-      if (candidates.length === 0) {
+      if (candidatesData.length === 0) {
         return res.status(404).json({ error: 'No candidates found' });
       }
 
-      // Generate comprehensive candidate analysis using Perplexity AI
+      // Generate comprehensive candidate analysis - FIRST check local database
       const detailedCandidates = await Promise.all(
-        candidates.map(async (candidate) => {
+        candidatesData.map(async (candidate) => {
+          
+          // STEP 1: Check if we have local database data for this candidate
+          try {
+            // Query candidate_biography table
+            const biographyResults = await db.select().from(candidateBiography).where(
+              eq(candidateBiography.candidateId, candidate.id)
+            );
+            
+            // Query candidate_positions table
+            const positionsResults = await db.select().from(candidatePositions).where(
+              eq(candidatePositions.candidateId, candidate.id)
+            );
+            
+            // If we have local data, transform it to match frontend expectations
+            if (biographyResults.length > 0) {
+              const bio = biographyResults[0];
+              
+              // Transform positions into topPriorities format
+              const topPriorities = positionsResults.map((pos: any) => ({
+                priority: pos.category,
+                description: pos.position
+              }));
+              
+              // Transform positions into policyPositions object format
+              const policyPositions: any = {};
+              positionsResults.forEach((pos: any) => {
+                policyPositions[pos.category] = pos.position;
+              });
+              
+              // Parse education from biography if available
+              const education = bio.education ? 
+                (typeof bio.education === 'string' ? 
+                  [{ degree: bio.education, institution: 'Unknown', year: 'Unknown' }] :
+                  bio.education) : [];
+              
+              // Parse employment history from professional_background
+              const employmentHistory = bio.professionalBackground ? 
+                [{ position: bio.professionalBackground, company: 'Various', years: 'Career' }] : [];
+              
+              console.log(`✅ Using local database data for candidate: ${candidate.name}`);
+              
+              return {
+                id: candidate.id,
+                name: candidate.name,
+                fullName: bio.name || candidate.name,
+                preferredName: bio.name || candidate.name,
+                party: candidate.party,
+                background: bio.biography || 'Candidate has not supplied that info',
+                politicalExperience: bio.biography || 'Candidate has not supplied that info',
+                currentOccupation: bio.professionalBackground || 'Candidate has not supplied that info',
+                currentResidence: bio.location || null,
+                age: bio.age || null,
+                education: education,
+                employmentHistory: employmentHistory,
+                previousOffices: [],
+                topPriorities: topPriorities,
+                policyPositions: policyPositions,
+                campaignWebsite: candidate.website || null,
+                isIncumbent: candidate.isIncumbent || false,
+                pollingSupport: candidate.pollingSupport,
+                dataSource: 'Local Database',
+                hasAuthenticData: true
+              };
+            }
+          } catch (dbError) {
+            console.error(`Error querying local database for candidate ${candidate.id}:`, dbError);
+          }
+          
+          // STEP 2: If no local data, fall back to Perplexity AI
+          console.log(`⚠️  No local data for candidate ${candidate.name}, trying Perplexity AI...`);
           const prompt = `Provide comprehensive information about ${candidate.name}, candidate for ${election.title} in ${election.state}. Include:
 
 1. BACKGROUND & EXPERIENCE:
