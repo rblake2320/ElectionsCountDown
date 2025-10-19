@@ -1,0 +1,4287 @@
+{
+  "info": {
+    "title": "VoteSmart API - Expanded Schemas",
+    "description": "All schemas from the VoteSmart API with 100% expansion of nested objects and arrays",
+    "total_schemas": 86
+  },
+  "schemas": {
+    "AddressCandidate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "firstName",
+        "middleName",
+        "nickName",
+        "lastName",
+        "suffix"
+      ]
+    },
+    "AddressCandidateOffice": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "typeId": {
+              "type": "number"
+            },
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "zip": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "typeId",
+            "street",
+            "city",
+            "state",
+            "zip"
+          ]
+        },
+        "phone": {
+          "type": "object",
+          "properties": {
+            "phone1": {
+              "type": "string"
+            },
+            "phone2": {
+              "type": "string"
+            },
+            "fax1": {
+              "type": "string"
+            },
+            "fax2": {
+              "type": "string"
+            },
+            "tollFree": {
+              "type": "string"
+            },
+            "ttyd": {
+              "type": "string"
+            },
+            "cellphone": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "phone1",
+            "phone2",
+            "fax1",
+            "fax2",
+            "tollFree",
+            "ttyd",
+            "cellphone"
+          ]
+        },
+        "notes": {
+          "type": "object",
+          "properties": {
+            "contactName": {
+              "type": "string"
+            },
+            "contactTitle": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contactName",
+            "contactTitle",
+            "note"
+          ]
+        },
+        "candidate": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "title": {
+              "type": "string"
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "nickName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "suffix": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "firstName",
+            "middleName",
+            "nickName",
+            "lastName",
+            "suffix"
+          ]
+        }
+      },
+      "required": [
+        "address",
+        "phone",
+        "notes",
+        "candidate"
+      ]
+    },
+    "AddressOffice": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "typeId": {
+              "type": "number"
+            },
+            "street": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "zip": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "typeId",
+            "street",
+            "city",
+            "state",
+            "zip"
+          ]
+        },
+        "phone": {
+          "type": "object",
+          "properties": {
+            "phone1": {
+              "type": "string"
+            },
+            "phone2": {
+              "type": "string"
+            },
+            "fax1": {
+              "type": "string"
+            },
+            "fax2": {
+              "type": "string"
+            },
+            "tollFree": {
+              "type": "string"
+            },
+            "ttyd": {
+              "type": "string"
+            },
+            "cellphone": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "phone1",
+            "phone2",
+            "fax1",
+            "fax2",
+            "tollFree",
+            "ttyd",
+            "cellphone"
+          ]
+        },
+        "notes": {
+          "type": "object",
+          "properties": {
+            "contactName": {
+              "type": "string"
+            },
+            "contactTitle": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "contactName",
+            "contactTitle",
+            "note"
+          ]
+        }
+      },
+      "required": [
+        "address",
+        "phone",
+        "notes"
+      ]
+    },
+    "AddressWeb": {
+      "type": "object",
+      "properties": {
+        "webAddressTypeId": {
+          "type": "number"
+        },
+        "webAddressType": {
+          "type": "string"
+        },
+        "webAddress": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "webAddressTypeId",
+        "webAddressType",
+        "webAddress"
+      ]
+    },
+    "Bill": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "billNumber",
+        "title",
+        "type"
+      ]
+    },
+    "BillOffice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "office": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "billNumber",
+        "title",
+        "type",
+        "officeId",
+        "office"
+      ]
+    },
+    "BillOfficialCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "BillsByOfficial": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        },
+        "statusDate": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "office": {
+          "type": "string"
+        },
+        "actionId": {
+          "type": "number"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "vote": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "billNumber",
+        "title",
+        "categories",
+        "statusDate",
+        "officeId",
+        "office",
+        "actionId",
+        "stage",
+        "vote"
+      ]
+    },
+    "Bio": {
+      "type": "object",
+      "properties": {
+        "candidate": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "crpId": {
+              "type": "string"
+            },
+            "photo": {
+              "type": "string",
+              "nullable": true
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "nickName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "preferredName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "suffix": {
+              "type": "string"
+            },
+            "birthDate": {
+              "type": "string"
+            },
+            "birthPlace": {
+              "type": "string"
+            },
+            "pronunciation": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "Female",
+                "Male"
+              ]
+            },
+            "family": {
+              "type": "string"
+            },
+            "homeCity": {
+              "type": "string"
+            },
+            "homeState": {
+              "type": "string"
+            },
+            "religion": {
+              "type": "string"
+            },
+            "specialMsg": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "crpId",
+            "photo",
+            "firstName",
+            "nickName",
+            "middleName",
+            "preferredName",
+            "lastName",
+            "suffix",
+            "birthDate",
+            "birthPlace",
+            "pronunciation",
+            "gender",
+            "family",
+            "homeCity",
+            "homeState",
+            "religion",
+            "specialMsg"
+          ]
+        },
+        "offices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object"
+              },
+              "name": {
+                "type": "string"
+              },
+              "levelId": {
+                "type": "string"
+              },
+              "branchId": {
+                "type": "string"
+              },
+              "typeId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "shortTitle": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "levelId",
+              "branchId",
+              "typeId",
+              "title",
+              "shortTitle"
+            ]
+          }
+        },
+        "elections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "stateId": {
+                "type": "string"
+              },
+              "officeTypeId": {
+                "type": "string"
+              },
+              "special": {
+                "type": "boolean"
+              },
+              "electionYear": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "stateId",
+              "officeTypeId",
+              "special",
+              "electionYear"
+            ]
+          }
+        }
+      },
+      "required": [
+        "candidate",
+        "offices",
+        "elections"
+      ]
+    },
+    "Candidate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "crpId": {
+          "type": "string"
+        },
+        "photo": {
+          "type": "string",
+          "nullable": true
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "preferredName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "birthPlace": {
+          "type": "string"
+        },
+        "pronunciation": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Female",
+            "Male"
+          ]
+        },
+        "family": {
+          "type": "string"
+        },
+        "homeCity": {
+          "type": "string"
+        },
+        "homeState": {
+          "type": "string"
+        },
+        "religion": {
+          "type": "string"
+        },
+        "specialMsg": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "crpId",
+        "photo",
+        "firstName",
+        "nickName",
+        "middleName",
+        "preferredName",
+        "lastName",
+        "suffix",
+        "birthDate",
+        "birthPlace",
+        "pronunciation",
+        "gender",
+        "family",
+        "homeCity",
+        "homeState",
+        "religion",
+        "specialMsg"
+      ]
+    },
+    "CandidateAdditional": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "data"
+      ]
+    },
+    "CandidateDetail": {
+      "type": "object",
+      "properties": {
+        "candidate": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "crpId": {
+              "type": "string"
+            },
+            "photo": {
+              "type": "string",
+              "nullable": true
+            },
+            "firstName": {
+              "type": "string"
+            },
+            "nickName": {
+              "type": "string"
+            },
+            "middleName": {
+              "type": "string"
+            },
+            "preferredName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            },
+            "suffix": {
+              "type": "string"
+            },
+            "birthDate": {
+              "type": "string"
+            },
+            "birthPlace": {
+              "type": "string"
+            },
+            "pronunciation": {
+              "type": "string"
+            },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "Female",
+                "Male"
+              ]
+            },
+            "family": {
+              "type": "string"
+            },
+            "homeCity": {
+              "type": "string"
+            },
+            "homeState": {
+              "type": "string"
+            },
+            "religion": {
+              "type": "string"
+            },
+            "specialMsg": {
+              "type": "string"
+            },
+            "education": {
+              "type": "object",
+              "properties": {
+                "institutions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "degree": {
+                        "type": "string"
+                      },
+                      "field": {
+                        "type": "string"
+                      },
+                      "school": {
+                        "type": "string"
+                      },
+                      "span": {
+                        "type": "string"
+                      },
+                      "gpa": {
+                        "type": "number"
+                      },
+                      "fullText": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "degree",
+                      "field",
+                      "school",
+                      "span",
+                      "gpa",
+                      "fullText"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "institutions"
+              ]
+            },
+            "profession": {
+              "type": "object",
+              "properties": {
+                "experience": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "organization": {
+                        "type": "string"
+                      },
+                      "span": {
+                        "type": "string"
+                      },
+                      "special": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "fullText": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "organization",
+                      "span",
+                      "special",
+                      "district",
+                      "fullText"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "experience"
+              ]
+            },
+            "political": {
+              "type": "object",
+              "properties": {
+                "experience": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "organization": {
+                        "type": "string"
+                      },
+                      "span": {
+                        "type": "string"
+                      },
+                      "special": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "fullText": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "organization",
+                      "span",
+                      "special",
+                      "district",
+                      "fullText"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "experience"
+              ]
+            },
+            "congMembership": {
+              "type": "object",
+              "properties": {
+                "experience": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "organization": {
+                        "type": "string"
+                      },
+                      "span": {
+                        "type": "string"
+                      },
+                      "special": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "fullText": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "organization",
+                      "span",
+                      "special",
+                      "district",
+                      "fullText"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "experience"
+              ]
+            },
+            "orgMembership": {
+              "type": "object",
+              "properties": {
+                "experience": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "organization": {
+                        "type": "string"
+                      },
+                      "span": {
+                        "type": "string"
+                      },
+                      "special": {
+                        "type": "string"
+                      },
+                      "district": {
+                        "type": "string"
+                      },
+                      "fullText": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "organization",
+                      "span",
+                      "special",
+                      "district",
+                      "fullText"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "experience"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "crpId",
+            "photo",
+            "firstName",
+            "nickName",
+            "middleName",
+            "preferredName",
+            "lastName",
+            "suffix",
+            "birthDate",
+            "birthPlace",
+            "pronunciation",
+            "gender",
+            "family",
+            "homeCity",
+            "homeState",
+            "religion",
+            "specialMsg",
+            "education",
+            "profession",
+            "political",
+            "congMembership",
+            "orgMembership"
+          ]
+        },
+        "offices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "object"
+              },
+              "name": {
+                "type": "string"
+              },
+              "levelId": {
+                "type": "string"
+              },
+              "branchId": {
+                "type": "string"
+              },
+              "typeId": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "shortTitle": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "levelId",
+              "branchId",
+              "typeId",
+              "title",
+              "shortTitle"
+            ]
+          }
+        },
+        "elections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "stateId": {
+                "type": "string"
+              },
+              "officeTypeId": {
+                "type": "string"
+              },
+              "special": {
+                "type": "boolean"
+              },
+              "electionYear": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "stateId",
+              "officeTypeId",
+              "special",
+              "electionYear"
+            ]
+          }
+        }
+      },
+      "required": [
+        "candidate",
+        "offices",
+        "elections"
+      ]
+    },
+    "CandidateDetailBio": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "crpId": {
+          "type": "string"
+        },
+        "photo": {
+          "type": "string",
+          "nullable": true
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "preferredName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "birthDate": {
+          "type": "string"
+        },
+        "birthPlace": {
+          "type": "string"
+        },
+        "pronunciation": {
+          "type": "string"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "Female",
+            "Male"
+          ]
+        },
+        "family": {
+          "type": "string"
+        },
+        "homeCity": {
+          "type": "string"
+        },
+        "homeState": {
+          "type": "string"
+        },
+        "religion": {
+          "type": "string"
+        },
+        "specialMsg": {
+          "type": "string"
+        },
+        "education": {
+          "type": "object",
+          "properties": {
+            "institutions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "degree": {
+                    "type": "string"
+                  },
+                  "field": {
+                    "type": "string"
+                  },
+                  "school": {
+                    "type": "string"
+                  },
+                  "span": {
+                    "type": "string"
+                  },
+                  "gpa": {
+                    "type": "number"
+                  },
+                  "fullText": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "degree",
+                  "field",
+                  "school",
+                  "span",
+                  "gpa",
+                  "fullText"
+                ]
+              }
+            }
+          },
+          "required": [
+            "institutions"
+          ]
+        },
+        "profession": {
+          "type": "object",
+          "properties": {
+            "experience": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "organization": {
+                    "type": "string"
+                  },
+                  "span": {
+                    "type": "string"
+                  },
+                  "special": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "type": "string"
+                  },
+                  "fullText": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "organization",
+                  "span",
+                  "special",
+                  "district",
+                  "fullText"
+                ]
+              }
+            }
+          },
+          "required": [
+            "experience"
+          ]
+        },
+        "political": {
+          "type": "object",
+          "properties": {
+            "experience": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "organization": {
+                    "type": "string"
+                  },
+                  "span": {
+                    "type": "string"
+                  },
+                  "special": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "type": "string"
+                  },
+                  "fullText": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "organization",
+                  "span",
+                  "special",
+                  "district",
+                  "fullText"
+                ]
+              }
+            }
+          },
+          "required": [
+            "experience"
+          ]
+        },
+        "congMembership": {
+          "type": "object",
+          "properties": {
+            "experience": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "organization": {
+                    "type": "string"
+                  },
+                  "span": {
+                    "type": "string"
+                  },
+                  "special": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "type": "string"
+                  },
+                  "fullText": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "organization",
+                  "span",
+                  "special",
+                  "district",
+                  "fullText"
+                ]
+              }
+            }
+          },
+          "required": [
+            "experience"
+          ]
+        },
+        "orgMembership": {
+          "type": "object",
+          "properties": {
+            "experience": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "organization": {
+                    "type": "string"
+                  },
+                  "span": {
+                    "type": "string"
+                  },
+                  "special": {
+                    "type": "string"
+                  },
+                  "district": {
+                    "type": "string"
+                  },
+                  "fullText": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title",
+                  "organization",
+                  "span",
+                  "special",
+                  "district",
+                  "fullText"
+                ]
+              }
+            }
+          },
+          "required": [
+            "experience"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "crpId",
+        "photo",
+        "firstName",
+        "nickName",
+        "middleName",
+        "preferredName",
+        "lastName",
+        "suffix",
+        "birthDate",
+        "birthPlace",
+        "pronunciation",
+        "gender",
+        "family",
+        "homeCity",
+        "homeState",
+        "religion",
+        "specialMsg",
+        "education",
+        "profession",
+        "political",
+        "congMembership",
+        "orgMembership"
+      ]
+    },
+    "CandidateOfficeCommittee": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "id"
+      ]
+    },
+    "CandidateRating": {
+      "type": "object",
+      "properties": {
+        "sigId": {
+          "type": "number"
+        },
+        "ratingId": {
+          "type": "number"
+        },
+        "timeSpan": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "number"
+        },
+        "ratingText": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "number"
+        },
+        "optionText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "sigId",
+        "ratingId",
+        "timeSpan",
+        "rating",
+        "ratingText",
+        "rank",
+        "optionText"
+      ]
+    },
+    "CandidateResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "preferredName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "ballotName": {
+          "type": "string"
+        },
+        "electionParties": {
+          "type": "string"
+        },
+        "electionStatus": {
+          "type": "string"
+        },
+        "electionStage": {
+          "type": "string"
+        },
+        "electionDistrictId": {
+          "type": "string"
+        },
+        "electionDistrictName": {
+          "type": "string"
+        },
+        "electionOffice": {
+          "type": "string"
+        },
+        "electionOfficeId": {
+          "type": "number"
+        },
+        "electionStateId": {
+          "type": "string"
+        },
+        "electionOfficeTypeId": {
+          "type": "string"
+        },
+        "electionYear": {
+          "type": "number"
+        },
+        "electionSpecial": {
+          "type": "boolean"
+        },
+        "electionDate": {
+          "type": "string"
+        },
+        "officeParties": {
+          "type": "string"
+        },
+        "officeStatus": {
+          "type": "string"
+        },
+        "officeDistrictId": {
+          "type": "string"
+        },
+        "officeDistrictName": {
+          "type": "string"
+        },
+        "officeStateId": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "string"
+        },
+        "officeName": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "runningMateId": {
+          "type": "string"
+        },
+        "runningMateName": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "nickName",
+        "middleName",
+        "preferredName",
+        "lastName",
+        "suffix",
+        "title",
+        "ballotName",
+        "electionParties",
+        "electionStatus",
+        "electionStage",
+        "electionDistrictId",
+        "electionDistrictName",
+        "electionOffice",
+        "electionOfficeId",
+        "electionStateId",
+        "electionOfficeTypeId",
+        "electionYear",
+        "electionSpecial",
+        "electionDate",
+        "officeParties",
+        "officeStatus",
+        "officeDistrictId",
+        "officeDistrictName",
+        "officeStateId",
+        "officeId",
+        "officeName",
+        "officeTypeId",
+        "runningMateId",
+        "runningMateName",
+        "rank"
+      ]
+    },
+    "Committee": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "parentId": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "committeeTypeId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "jurisdiction": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "object",
+          "properties": {
+            "address1": {
+              "type": "string"
+            },
+            "address2": {
+              "type": "string"
+            },
+            "city": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "zip": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "fax": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            },
+            "staffContact": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "address1",
+            "address2",
+            "city",
+            "state",
+            "zip",
+            "phone",
+            "fax",
+            "email",
+            "url",
+            "staffContact"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "parentId",
+        "stateId",
+        "committeeTypeId",
+        "name",
+        "jurisdiction",
+        "contact"
+      ]
+    },
+    "CommitteeContact": {
+      "type": "object",
+      "properties": {
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "fax": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "staffContact": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address1",
+        "address2",
+        "city",
+        "state",
+        "zip",
+        "phone",
+        "fax",
+        "email",
+        "url",
+        "staffContact"
+      ]
+    },
+    "CommitteeMember": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "party": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidateId",
+        "title",
+        "firstName",
+        "middleName",
+        "lastName",
+        "suffix",
+        "party",
+        "position"
+      ]
+    },
+    "CommitteeSponsor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "CommitteeTypeIdName": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "CommitteeTypeState": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "parentId": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "committeeTypeId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "parentId",
+        "stateId",
+        "committeeTypeId",
+        "name"
+      ]
+    },
+    "District": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "stateId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "officeId",
+        "stateId"
+      ]
+    },
+    "Education": {
+      "type": "object",
+      "properties": {
+        "institutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "degree": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "school": {
+                "type": "string"
+              },
+              "span": {
+                "type": "string"
+              },
+              "gpa": {
+                "type": "number"
+              },
+              "fullText": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "degree",
+              "field",
+              "school",
+              "span",
+              "gpa",
+              "fullText"
+            ]
+          }
+        }
+      },
+      "required": [
+        "institutions"
+      ]
+    },
+    "Election": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "special": {
+          "type": "boolean"
+        },
+        "electionYear": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "stateId",
+        "officeTypeId",
+        "special",
+        "electionYear"
+      ]
+    },
+    "ElectionCandidate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "district": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "party": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "voteCount": {
+          "type": "number"
+        },
+        "votePercent": {
+          "type": "number"
+        },
+        "runningMateId": {
+          "type": "number"
+        },
+        "runningMateName": {
+          "type": "string"
+        },
+        "electionElectionstageId": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "officeId",
+        "district",
+        "firstName",
+        "middleName",
+        "nickName",
+        "lastName",
+        "suffix",
+        "party",
+        "status",
+        "voteCount",
+        "votePercent",
+        "runningMateId",
+        "runningMateName",
+        "electionElectionstageId"
+      ]
+    },
+    "ElectionStage": {
+      "type": "object",
+      "properties": {
+        "stageId": {
+          "type": "string"
+        },
+        "electionElectionstageId": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "electionDate": {
+          "type": "string"
+        },
+        "filingDeadline": {
+          "type": "string"
+        },
+        "npatMailed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stageId",
+        "electionElectionstageId",
+        "name",
+        "stateId",
+        "electionDate",
+        "filingDeadline",
+        "npatMailed"
+      ]
+    },
+    "ElectionWithStages": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "special": {
+          "type": "boolean"
+        },
+        "electionYear": {
+          "type": "number"
+        },
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stageId": {
+                "type": "string"
+              },
+              "electionElectionstageId": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "stateId": {
+                "type": "string"
+              },
+              "electionDate": {
+                "type": "string"
+              },
+              "filingDeadline": {
+                "type": "string"
+              },
+              "npatMailed": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "stageId",
+              "electionElectionstageId",
+              "name",
+              "stateId",
+              "electionDate",
+              "filingDeadline",
+              "npatMailed"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "stateId",
+        "officeTypeId",
+        "special",
+        "electionYear",
+        "stages"
+      ]
+    },
+    "Experience": {
+      "type": "object",
+      "properties": {
+        "experience": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "organization": {
+                "type": "string"
+              },
+              "span": {
+                "type": "string"
+              },
+              "special": {
+                "type": "string"
+              },
+              "district": {
+                "type": "string"
+              },
+              "fullText": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "organization",
+              "span",
+              "special",
+              "district",
+              "fullText"
+            ]
+          }
+        }
+      },
+      "required": [
+        "experience"
+      ]
+    },
+    "ExperienceProp": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "span": {
+          "type": "string"
+        },
+        "special": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "fullText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "organization",
+        "span",
+        "special",
+        "district",
+        "fullText"
+      ]
+    },
+    "Institution": {
+      "type": "object",
+      "properties": {
+        "degree": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "school": {
+          "type": "string"
+        },
+        "span": {
+          "type": "string"
+        },
+        "gpa": {
+          "type": "number"
+        },
+        "fullText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "degree",
+        "field",
+        "school",
+        "span",
+        "gpa",
+        "fullText"
+      ]
+    },
+    "LeadershipOfficial": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidateId",
+        "firstName",
+        "middleName",
+        "lastName",
+        "suffix",
+        "position",
+        "officeId",
+        "title"
+      ]
+    },
+    "LeadershipPosition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "string"
+        },
+        "officeName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "officeId",
+        "officeName"
+      ]
+    },
+    "Local": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "url"
+      ]
+    },
+    "LocalOfficial": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "electionParties": {
+          "type": "string"
+        },
+        "electionDistrictId": {
+          "type": "string"
+        },
+        "electionStateId": {
+          "type": "string"
+        },
+        "officeParties": {
+          "type": "string"
+        },
+        "officeDistrictId": {
+          "type": "string"
+        },
+        "officeDistrictName": {
+          "type": "string"
+        },
+        "officeStateId": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "string"
+        },
+        "officeName": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidateId",
+        "firstName",
+        "nickName",
+        "middleName",
+        "lastName",
+        "suffix",
+        "title",
+        "electionParties",
+        "electionDistrictId",
+        "electionStateId",
+        "officeParties",
+        "officeDistrictId",
+        "officeDistrictName",
+        "officeStateId",
+        "officeId",
+        "officeName",
+        "officeTypeId"
+      ]
+    },
+    "Measure": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "Failed",
+            "Passed"
+          ]
+        },
+        "electionDate": {
+          "type": "string"
+        },
+        "electionType": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "summaryUrl": {
+          "type": "string"
+        },
+        "measureText": {
+          "type": "string"
+        },
+        "textUrl": {
+          "type": "string"
+        },
+        "proUrl": {
+          "type": "string"
+        },
+        "conUrl": {
+          "type": "string"
+        },
+        "yes": {
+          "type": "number"
+        },
+        "no": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "title",
+        "outcome",
+        "electionDate",
+        "electionType",
+        "source",
+        "url",
+        "summary",
+        "summaryUrl",
+        "measureText",
+        "textUrl",
+        "proUrl",
+        "conUrl",
+        "yes",
+        "no"
+      ]
+    },
+    "MeasurePartial": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "Failed",
+            "Passed"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "title",
+        "outcome"
+      ]
+    },
+    "NpatCandidate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "passed": {
+          "type": "string"
+        },
+        "npatName": {
+          "type": "string"
+        },
+        "electionName": {
+          "type": "string"
+        },
+        "electionYear": {
+          "type": "number"
+        },
+        "electionDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "electionStage": {
+          "type": "string"
+        },
+        "surveyMessage": {
+          "type": "string"
+        },
+        "candidate": {
+          "type": "string"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "row": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "rowText": {
+                      "type": "string"
+                    },
+                    "rowType": {
+                      "type": "number"
+                    },
+                    "open": {
+                      "type": "boolean"
+                    },
+                    "optionText": {
+                      "type": "string"
+                    },
+                    "answerText": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "rowText",
+                    "rowType",
+                    "open",
+                    "optionText",
+                    "answerText"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "name",
+              "row"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "passed",
+        "npatName",
+        "electionName",
+        "electionYear",
+        "electionDate",
+        "electionStage",
+        "surveyMessage",
+        "candidate"
+      ]
+    },
+    "Office": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "levelId": {
+          "type": "string"
+        },
+        "branchId": {
+          "type": "string"
+        },
+        "typeId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "shortTitle": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "levelId",
+        "branchId",
+        "typeId",
+        "title",
+        "shortTitle"
+      ]
+    },
+    "OfficeAddress": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "typeId": {
+          "type": "number"
+        },
+        "street": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "typeId",
+        "street",
+        "city",
+        "state",
+        "zip"
+      ]
+    },
+    "OfficeBranch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "OfficeLevel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "OfficeNote": {
+      "type": "object",
+      "properties": {
+        "contactName": {
+          "type": "string"
+        },
+        "contactTitle": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "contactName",
+        "contactTitle",
+        "note"
+      ]
+    },
+    "OfficePhone": {
+      "type": "object",
+      "properties": {
+        "phone1": {
+          "type": "string"
+        },
+        "phone2": {
+          "type": "string"
+        },
+        "fax1": {
+          "type": "string"
+        },
+        "fax2": {
+          "type": "string"
+        },
+        "tollFree": {
+          "type": "string"
+        },
+        "ttyd": {
+          "type": "string"
+        },
+        "cellphone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phone1",
+        "phone2",
+        "fax1",
+        "fax2",
+        "tollFree",
+        "ttyd",
+        "cellphone"
+      ]
+    },
+    "OfficeType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "object"
+        },
+        "name": {
+          "type": "string"
+        },
+        "levelId": {
+          "type": "string"
+        },
+        "branchId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "levelId",
+        "branchId"
+      ]
+    },
+    "Official": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "officeParties": {
+          "type": "string"
+        },
+        "officeStatus": {
+          "type": "string"
+        },
+        "officeDistrictId": {
+          "type": "number"
+        },
+        "officeDistrictName": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "officeName": {
+          "type": "string"
+        },
+        "officeStateId": {
+          "type": "string"
+        },
+        "electionParties": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "nickName",
+        "middleName",
+        "lastName",
+        "suffix",
+        "title",
+        "officeParties",
+        "officeStatus",
+        "officeDistrictId",
+        "officeDistrictName",
+        "officeTypeId",
+        "officeId",
+        "officeName",
+        "officeStateId",
+        "electionParties"
+      ]
+    },
+    "OfficialByZip": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "officeParties": {
+          "type": "string"
+        },
+        "officeStatus": {
+          "type": "string"
+        },
+        "officeDistrictId": {
+          "type": "number"
+        },
+        "officeDistrictName": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "officeId": {
+          "type": "number"
+        },
+        "officeName": {
+          "type": "string"
+        },
+        "officeStateId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "nickName",
+        "middleName",
+        "lastName",
+        "suffix",
+        "title",
+        "officeParties",
+        "officeStatus",
+        "officeDistrictId",
+        "officeDistrictName",
+        "officeTypeId",
+        "officeId",
+        "officeName",
+        "officeStateId"
+      ]
+    },
+    "RatingCandidate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "timespan": {
+          "type": "string"
+        },
+        "ratingName": {
+          "type": "string"
+        },
+        "ratingText": {
+          "type": "string"
+        },
+        "ratingId": {
+          "type": "number"
+        },
+        "rating": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "timespan",
+        "ratingName",
+        "ratingText",
+        "ratingId",
+        "rating",
+        "categories"
+      ]
+    },
+    "RatingCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "RatingRating": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "rating": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "rating"
+      ]
+    },
+    "RatingSig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "parentId": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "phone1": {
+          "type": "string"
+        },
+        "phone2": {
+          "type": "string"
+        },
+        "fax": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "contactName": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "parentId",
+        "name",
+        "address",
+        "city",
+        "zip",
+        "phone1",
+        "phone2",
+        "fax",
+        "email",
+        "url",
+        "description",
+        "contactName",
+        "stateId",
+        "state"
+      ]
+    },
+    "Section": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "row": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "rowText": {
+                "type": "string"
+              },
+              "rowType": {
+                "type": "number"
+              },
+              "open": {
+                "type": "boolean"
+              },
+              "optionText": {
+                "type": "string"
+              },
+              "answerText": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "path",
+              "rowText",
+              "rowType",
+              "open",
+              "optionText",
+              "answerText"
+            ]
+          }
+        }
+      },
+      "required": [
+        "name",
+        "row"
+      ]
+    },
+    "SectionRow": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "rowText": {
+          "type": "string"
+        },
+        "rowType": {
+          "type": "number"
+        },
+        "open": {
+          "type": "boolean"
+        },
+        "optionText": {
+          "type": "string"
+        },
+        "answerText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "rowText",
+        "rowType",
+        "open",
+        "optionText",
+        "answerText"
+      ]
+    },
+    "Sig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "parentId": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "parentId",
+        "name"
+      ]
+    },
+    "SigRating": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "timespan": {
+          "type": "string"
+        },
+        "ratingName": {
+          "type": "string"
+        },
+        "ratingText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "timespan",
+        "ratingName",
+        "ratingText"
+      ]
+    },
+    "State": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "stateType": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "capital": {
+          "type": "string"
+        },
+        "area": {
+          "type": "string"
+        },
+        "population": {
+          "type": "string"
+        },
+        "statehood": {
+          "type": "string"
+        },
+        "motto": {
+          "type": "string"
+        },
+        "flower": {
+          "type": "string"
+        },
+        "tree": {
+          "type": "string"
+        },
+        "bird": {
+          "type": "string"
+        },
+        "highPoint": {
+          "type": "string"
+        },
+        "lowPoint": {
+          "type": "string"
+        },
+        "bicameral": {
+          "type": "string"
+        },
+        "upperLegis": {
+          "type": "string"
+        },
+        "lowerLegis": {
+          "type": "string"
+        },
+        "ltGov": {
+          "type": "string"
+        },
+        "senators": {
+          "type": "number"
+        },
+        "reps": {
+          "type": "number"
+        },
+        "termLimit": {
+          "type": "number"
+        },
+        "termLength": {
+          "type": "number"
+        },
+        "billUrl": {
+          "type": "string"
+        },
+        "voteUrl": {
+          "type": "string"
+        },
+        "voterReg": {
+          "type": "string"
+        },
+        "primaryDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "generalDate": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "absenteeWho": {
+          "type": "string"
+        },
+        "absenteeHow": {
+          "type": "string"
+        },
+        "absenteeWhen": {
+          "type": "string"
+        },
+        "largestCity": {
+          "type": "string"
+        },
+        "rollUpper": {
+          "type": "string"
+        },
+        "rollLower": {
+          "type": "string"
+        },
+        "usCircuit": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "stateType",
+        "nickName",
+        "capital",
+        "area",
+        "population",
+        "statehood",
+        "motto",
+        "flower",
+        "tree",
+        "bird",
+        "highPoint",
+        "lowPoint",
+        "bicameral",
+        "upperLegis",
+        "lowerLegis",
+        "ltGov",
+        "senators",
+        "reps",
+        "termLimit",
+        "termLength",
+        "billUrl",
+        "voteUrl",
+        "voterReg",
+        "primaryDate",
+        "generalDate",
+        "absenteeWho",
+        "absenteeHow",
+        "absenteeWhen",
+        "largestCity",
+        "rollUpper",
+        "rollLower",
+        "usCircuit"
+      ]
+    },
+    "StateList": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "StateType": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "roles"
+      ]
+    },
+    "UserCreate": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ]
+    },
+    "UserUpdate": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "password"
+      ]
+    },
+    "ValidationError": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "example": [
+            "email must be longer than or equal to 3 characters",
+            "password must be longer than or equal to 8 characters"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "errors": {
+          "type": "string",
+          "example": "Bad Request"
+        },
+        "statusCode": {
+          "type": "number",
+          "example": 400
+        }
+      },
+      "required": [
+        "message",
+        "errors",
+        "statusCode"
+      ]
+    },
+    "Vetoe": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "statusDate": {
+          "type": "string"
+        },
+        "billId": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "billTitle": {
+          "type": "string"
+        },
+        "vetoCode": {
+          "type": "string"
+        },
+        "vetoType": {
+          "type": "string"
+        },
+        "billSummary": {
+          "type": "string"
+        },
+        "billLink": {
+          "type": "string"
+        },
+        "vetoLetterLink": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "statusDate",
+        "billId",
+        "billNumber",
+        "billTitle",
+        "vetoCode",
+        "vetoType",
+        "billSummary",
+        "billLink",
+        "vetoLetterLink"
+      ]
+    },
+    "VizActiveState": {
+      "type": "object",
+      "properties": {
+        "stateId": {
+          "type": "string"
+        },
+        "releaseDate": {
+          "type": "string"
+        },
+        "officeTypeId": {
+          "type": "string"
+        },
+        "isReleased": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "stateId",
+        "releaseDate",
+        "officeTypeId",
+        "isReleased"
+      ]
+    },
+    "VizBillActionVoteOfficial": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "canidateId": {
+          "type": "number"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "middleName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "suffix": {
+          "type": "string"
+        },
+        "party": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "billNumber",
+        "title",
+        "canidateId",
+        "firstName",
+        "middleName",
+        "nickName",
+        "lastName",
+        "suffix",
+        "party",
+        "action"
+      ]
+    },
+    "VizCandidateEndorsement": {
+      "type": "object",
+      "properties": {
+        "sigId": {
+          "type": "number"
+        },
+        "sigName": {
+          "type": "string"
+        },
+        "endorseId": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "sigId",
+        "sigName",
+        "endorseId"
+      ]
+    },
+    "VizCandidateFinance": {
+      "type": "object",
+      "properties": {
+        "cand_name": {
+          "type": "string"
+        },
+        "cid": {
+          "type": "string"
+        },
+        "cycle": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "party": {
+          "type": "string"
+        },
+        "chamber": {
+          "type": "string"
+        },
+        "first_elected": {
+          "type": "string"
+        },
+        "next_election": {
+          "type": "string"
+        },
+        "total": {
+          "type": "string"
+        },
+        "spent": {
+          "type": "string"
+        },
+        "cash_on_hand": {
+          "type": "string"
+        },
+        "debt": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "last_updated": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "cand_name",
+        "cid",
+        "cycle",
+        "state",
+        "party",
+        "chamber",
+        "first_elected",
+        "next_election",
+        "total",
+        "spent",
+        "cash_on_hand",
+        "debt",
+        "origin",
+        "source",
+        "last_updated"
+      ]
+    },
+    "VizCandidateRating": {
+      "type": "object",
+      "properties": {
+        "rowId": {
+          "type": "number"
+        },
+        "rating": {
+          "type": "object",
+          "properties": {
+            "sigId": {
+              "type": "number"
+            },
+            "ratingId": {
+              "type": "number"
+            },
+            "timeSpan": {
+              "type": "string"
+            },
+            "rating": {
+              "type": "number"
+            },
+            "ratingText": {
+              "type": "string"
+            },
+            "rank": {
+              "type": "number"
+            },
+            "optionText": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sigId",
+            "ratingId",
+            "timeSpan",
+            "rating",
+            "ratingText",
+            "rank",
+            "optionText"
+          ]
+        }
+      },
+      "required": [
+        "rowId",
+        "rating"
+      ]
+    },
+    "VizPct": {
+      "type": "object",
+      "properties": {
+        "candidateId": {
+          "type": "number"
+        },
+        "pct": {
+          "type": "string"
+        },
+        "row": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rowId": {
+                "type": "number"
+              },
+              "optionText": {
+                "type": "string"
+              },
+              "outOptionText": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "rowId",
+              "optionText",
+              "outOptionText"
+            ]
+          }
+        }
+      },
+      "required": [
+        "candidateId",
+        "pct",
+        "row"
+      ]
+    },
+    "VizPctForm": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "row": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "rowId": {
+                "type": "number"
+              },
+              "subCategory": {
+                "type": "string"
+              },
+              "rowText": {
+                "type": "string"
+              },
+              "rowDetail": {
+                "type": "string"
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "option": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "option"
+                ]
+              }
+            },
+            "required": [
+              "rowId",
+              "subCategory",
+              "rowText",
+              "rowDetail",
+              "options"
+            ]
+          }
+        }
+      },
+      "required": [
+        "name",
+        "row"
+      ]
+    },
+    "VizPctFormRow": {
+      "type": "object",
+      "properties": {
+        "rowId": {
+          "type": "number"
+        },
+        "subCategory": {
+          "type": "string"
+        },
+        "rowText": {
+          "type": "string"
+        },
+        "rowDetail": {
+          "type": "string"
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "option": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "option"
+          ]
+        }
+      },
+      "required": [
+        "rowId",
+        "subCategory",
+        "rowText",
+        "rowDetail",
+        "options"
+      ]
+    },
+    "VizPctFormRowOption": {
+      "type": "object",
+      "properties": {
+        "option": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "option"
+      ]
+    },
+    "VizPctRow": {
+      "type": "object",
+      "properties": {
+        "rowId": {
+          "type": "number"
+        },
+        "optionText": {
+          "type": "string"
+        },
+        "outOptionText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rowId",
+        "optionText",
+        "outOptionText"
+      ]
+    },
+    "VizRatingAverageParty": {
+      "type": "object",
+      "properties": {
+        "partyName": {
+          "type": "string"
+        },
+        "averageRating": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "partyName",
+        "averageRating"
+      ]
+    },
+    "VizRatingPartyAverage": {
+      "type": "object",
+      "properties": {
+        "sigId": {
+          "type": "number"
+        },
+        "sigName": {
+          "type": "string"
+        },
+        "party": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "partyName": {
+                "type": "string"
+              },
+              "averageRating": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "partyName",
+              "averageRating"
+            ]
+          }
+        }
+      },
+      "required": [
+        "sigId",
+        "sigName",
+        "party"
+      ]
+    },
+    "VizReleaseDate": {
+      "type": "object",
+      "properties": {
+        "stateId": {
+          "type": "string"
+        },
+        "releaseDate": {
+          "type": "string"
+        },
+        "released": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stateId",
+        "releaseDate",
+        "released"
+      ]
+    },
+    "VizVote": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "billId": {
+          "type": "number"
+        },
+        "yeas": {
+          "type": "number"
+        },
+        "nays": {
+          "type": "number"
+        },
+        "pctRow": {
+          "type": "object",
+          "properties": {
+            "pctRowId": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "pctRowId"
+          ]
+        },
+        "party": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "partyName": {
+                "type": "string"
+              },
+              "action": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "partyName",
+              "action"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "billId",
+        "yeas",
+        "nays",
+        "pctRow",
+        "party"
+      ]
+    },
+    "VizVoteParty": {
+      "type": "object",
+      "properties": {
+        "partyName": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "partyName",
+        "action"
+      ]
+    },
+    "VizVotePctRow": {
+      "type": "object",
+      "properties": {
+        "pctRowId": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "pctRowId"
+      ]
+    },
+    "Vote": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "candidateName": {
+          "type": "string"
+        },
+        "officeParties": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "candidateName",
+        "officeParties",
+        "action"
+      ]
+    },
+    "VoteAction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "level": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "statusDate": {
+          "type": "string"
+        },
+        "rollNumber": {
+          "type": "number"
+        },
+        "yea": {
+          "type": "number"
+        },
+        "nay": {
+          "type": "number"
+        },
+        "voiceVote": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "level",
+        "stage",
+        "outcome",
+        "statusDate",
+        "rollNumber",
+        "yea",
+        "nay",
+        "voiceVote"
+      ]
+    },
+    "VoteAmendment": {
+      "type": "object",
+      "properties": {
+        "billNumber": {
+          "type": "string"
+        },
+        "actionId": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "statusDate": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "billNumber",
+        "actionId",
+        "title",
+        "statusDate"
+      ]
+    },
+    "VoteBill": {
+      "type": "object",
+      "properties": {
+        "billNumber": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "parentBill": {
+          "type": "number"
+        },
+        "title": {
+          "type": "string"
+        },
+        "officialTitle": {
+          "type": "string"
+        },
+        "dateIntroduced": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        },
+        "billtextLink": {
+          "type": "string"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        },
+        "sponsors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type"
+            ]
+          }
+        },
+        "committeeSponsors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "level": {
+                "type": "string"
+              },
+              "stage": {
+                "type": "string"
+              },
+              "outcome": {
+                "type": "string"
+              },
+              "statusDate": {
+                "type": "string"
+              },
+              "rollNumber": {
+                "type": "number"
+              },
+              "yea": {
+                "type": "number"
+              },
+              "nay": {
+                "type": "number"
+              },
+              "voiceVote": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "level",
+              "stage",
+              "outcome",
+              "statusDate",
+              "rollNumber",
+              "yea",
+              "nay",
+              "voiceVote"
+            ]
+          }
+        },
+        "amendments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "billNumber": {
+                "type": "string"
+              },
+              "actionId": {
+                "type": "number"
+              },
+              "title": {
+                "type": "string"
+              },
+              "statusDate": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "billNumber",
+              "actionId",
+              "title",
+              "statusDate"
+            ]
+          }
+        }
+      },
+      "required": [
+        "billNumber",
+        "stateId",
+        "parentBill",
+        "title",
+        "officialTitle",
+        "dateIntroduced",
+        "type",
+        "billtextLink",
+        "categories",
+        "sponsors",
+        "committeeSponsors",
+        "actions",
+        "amendments"
+      ]
+    },
+    "VoteBillAction": {
+      "type": "object",
+      "properties": {
+        "billId": {
+          "type": "number"
+        },
+        "billNumber": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number"
+        },
+        "category": {
+          "type": "string"
+        },
+        "categoryId": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        },
+        "stateId": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "rollNumber": {
+          "type": "number"
+        },
+        "yea": {
+          "type": "number"
+        },
+        "nay": {
+          "type": "number"
+        },
+        "voiceVote": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string"
+        },
+        "officialTitle": {
+          "type": "string"
+        },
+        "highlight": {
+          "type": "string"
+        },
+        "synopsis": {
+          "type": "string"
+        },
+        "officialSynopsis": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "statusDate": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "billId",
+        "billNumber",
+        "id",
+        "category",
+        "categoryId",
+        "type",
+        "stateId",
+        "level",
+        "stage",
+        "outcome",
+        "rollNumber",
+        "yea",
+        "nay",
+        "voiceVote",
+        "title",
+        "officialTitle",
+        "highlight",
+        "synopsis",
+        "officialSynopsis",
+        "note",
+        "statusDate"
+      ]
+    },
+    "VoteCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "VoteSponsor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type"
+      ]
+    }
+  }
+}
