@@ -2590,3 +2590,42 @@ function parsecandidateAnalysis(analysis: string, candidate: any) {
     website
   };
 }
+
+// Admin endpoint to execute all bug fixes
+app.post('/api/admin/execute-fixes', async (req, res) => {
+  try {
+    const results = {
+      localFix: 0,
+      louisianaFix: 0,
+      coloradoFix: 0
+    };
+    
+    // Fix 1: Local elections
+    const localResult = await db.execute(sql`
+      UPDATE elections 
+      SET level = 'local' 
+      WHERE title LIKE '%Mayor%' AND level != 'local'
+    `);
+    results.localFix = localResult.rowCount || 0;
+    
+    // Fix 2: Louisiana dates
+    const laResult = await db.execute(sql`
+      UPDATE elections 
+      SET date = '2026-12-05'::timestamp
+      WHERE state = 'Louisiana' AND date = '2026-11-03'::timestamp
+    `);
+    results.louisianaFix = laResult.rowCount || 0;
+    
+    // Fix 3: Colorado dates  
+    const coResult = await db.execute(sql`
+      UPDATE elections 
+      SET date = '2025-11-04'::timestamp
+      WHERE state = 'Colorado' AND date = '2025-11-05'::timestamp
+    `);
+    results.coloradoFix = coResult.rowCount || 0;
+    
+    res.json({ success: true, results });
+  } catch (error) {
+    res.status(500).json({ success: false, error: String(error) });
+  }
+});
