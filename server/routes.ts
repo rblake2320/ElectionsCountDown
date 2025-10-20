@@ -2449,6 +2449,63 @@ Please provide specific, factual information with sources where possible. Focus 
     }
   });
 
+  // Admin endpoint to fix election levels
+  app.post('/api/admin/fix-election-levels', async (req, res) => {
+    try {
+      const { elections } = await import('@shared/schema');
+      const { like, eq } = await import('drizzle-orm');
+      
+      console.log('🔧 Fixing election level categorization...');
+      
+      // Find all mayoral elections that aren't categorized as 'local'
+      const mayoralElections = await db.select().from(elections).where(
+        like(elections.title, '%Mayor%')
+      );
+      
+      const needsFixing = mayoralElections.filter((e: any) => e.level !== 'local');
+      
+      if (needsFixing.length === 0) {
+        return res.json({
+          success: true,
+          message: 'No mayoral elections need fixing - all are already local!',
+          fixed: 0
+        });
+      }
+      
+      console.log(`📊 Found ${needsFixing.length} mayoral elections to fix`);
+      
+      // Update each election
+      for (const election of needsFixing) {
+        console.log(`   Fixing: ${election.title}`);
+        await db.update(elections)
+          .set({ level: 'local' })
+          .where(eq(elections.id, election.id));
+      }
+      
+      // Verify the fix
+      const verifyMayoral = await db.select().from(elections).where(
+        like(elections.title, '%Mayor%')
+      );
+      
+      const localCount = verifyMayoral.filter((e: any) => e.level === 'local').length;
+      
+      res.json({
+        success: true,
+        message: `Successfully updated ${needsFixing.length} elections to 'local' level!`,
+        fixed: needsFixing.length,
+        verification: {
+          totalMayoral: verifyMayoral.length,
+          localCount: localCount,
+          allFixed: localCount === verifyMayoral.length
+        }
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Error fixing election levels:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
